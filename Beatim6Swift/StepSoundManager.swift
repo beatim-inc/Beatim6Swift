@@ -9,20 +9,21 @@ import SwiftUI
 import CoreBluetooth
 import AVFoundation
 
-class SoundManager {
-    static let shared = SoundManager()
+class StepSoundManager {
+    static let shared = StepSoundManager()
     var audioPlayer: AVAudioPlayer?
-    let soundName = "Assets/Audio/step_sound.mp3"
+    let soundName = "step_sound"
 
     func playSound() {
-        if let path = Bundle.main.path(forResource: soundName, ofType: "mp3") {
-            let url = URL(fileURLWithPath: path)
+        if let url = Bundle.main.url(forResource: soundName,withExtension:"mp3") {
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: url)
                 audioPlayer?.play()
             } catch {
                 print("Error playing sound: \(error.localizedDescription)")
             }
+        }else{
+            print("Error finding sound file")
         }
     }
 }

@@ -8,9 +8,11 @@
 import SwiftUI
 import CoreBluetooth
 
+
 struct ContentView: View {
     @StateObject var bleManager = BLEManager()
     @State private var selectedPeripheral: CBPeripheral?
+    let stepSoundManager = StepSoundManager()
     var body: some View {
         NavigationView {
                   VStack {
@@ -28,9 +30,9 @@ struct ContentView: View {
                           print(bleManager.isSwitchedOn)
                           bleManager.startScanning()
                       }
-                      Button("Play Sound") {
-                          print("Play Sound")
-                         // SoundManager.playSound()
+                      Button("Play StepSound") {
+                          print("Play StepSound")
+                          stepSoundManager.playSound()
                       }
                       .padding()
                   }
