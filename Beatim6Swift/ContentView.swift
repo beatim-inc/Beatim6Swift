@@ -29,8 +29,11 @@ struct ContentView: View {
                       Button("Scan for Devices") {
                           bleManager.startScanning()
                       }
-                      Button("Play StepSound") {
-                          stepSoundManager.playSound()
+                      
+                      Button("Connect All") {
+                          for peripheral in bleManager.peripherals {
+                                 bleManager.connectPeripheral(peripheral: peripheral)
+                             }
                       }
                       .padding()
                   }
