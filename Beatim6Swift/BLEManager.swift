@@ -17,9 +17,10 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     let serviceUUID = CBUUID(string: "56bb2dcf-04b3-4923-bbbd-ea12964d4d3b")
     let lStepcharacteristicUUID = CBUUID(string: "f48c7a6c-540c-4214-9e4c-f7041cfe6844")
     let rStepcharacteristicUUID = CBUUID(string: "718cf980-b71e-4e35-b3a6-b2cbe3cb6c97")
+    
+    var onStepDetectionNotified:  (() -> Void)?
 
-
-    override init() {
+   override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
@@ -83,8 +84,10 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         print("enter didUpdateValue")
         if let data = characteristic.value {
             // ここでデータを処理
-            //TODO:音再生
-            //print(value(forKey: "notifying") ?? "no value")
+            //TODO:ステップ検知が通知されたら...
+            if(false){
+              onStepDetectionNotified?()
+            }
            print(data)
         }
         print(characteristic)

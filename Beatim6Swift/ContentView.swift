@@ -8,9 +8,11 @@
 import SwiftUI
 import CoreBluetooth
 
+
 struct ContentView: View {
     @StateObject var bleManager = BLEManager()
     @State private var selectedPeripheral: CBPeripheral?
+    let stepSoundManager = StepSoundManager()
     var body: some View {
         NavigationView {
                   VStack {
@@ -25,16 +27,19 @@ struct ContentView: View {
                       .navigationTitle("BLE Devices")
 
                       Button("Scan for Devices") {
-                          print(bleManager.isSwitchedOn)
                           bleManager.startScanning()
                       }
-                      Button("Play Sound") {
-                          print("Play Sound")
-                         // SoundManager.playSound()
+                      Button("Play StepSound") {
+                          stepSoundManager.playSound()
                       }
                       .padding()
                   }
-              }
+        }.onAppear{
+            bleManager.onStepDetectionNotified = {
+                print("step detection notified")
+                stepSoundManager.playSound()
+            }
+        }
     }
 }
 
