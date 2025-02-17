@@ -84,12 +84,10 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         print("enter didUpdateValue")
         if let data = characteristic.value {
             // ここでデータを処理
-            //TODO:ステップ検知が通知されたら...
-            if(false){
-              onStepDetectionNotified?()
+            let decodedString = String(data: data, encoding: .utf8)
+            if decodedString == "step" {
+                    onStepDetectionNotified?()
             }
-           print(data)
         }
-        print(characteristic)
     }
 }
