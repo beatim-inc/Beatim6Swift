@@ -27,16 +27,16 @@ struct ContentView: View {
                       .navigationTitle("BLE Devices")
 
                       Button("Scan for Devices") {
-                          print(bleManager.isSwitchedOn)
                           bleManager.startScanning()
                       }
                       Button("Play StepSound") {
-                          print("Play StepSound")
                           stepSoundManager.playSound()
                       }
                       .padding()
                   }
-              }
+        }.onAppear{
+            bleManager.onStepDetectionNotified = {print("step detected")}
+        }
     }
 }
 
