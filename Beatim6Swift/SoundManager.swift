@@ -12,8 +12,9 @@ import AVFoundation
 class SoundManager {
     static let shared = SoundManager()
     var audioPlayer: AVAudioPlayer?
+    let soundName = "Assets/Audio/step_sound.mp3"
 
-    func playSound(_ soundName: String) {
+    func playSound() {
         if let path = Bundle.main.path(forResource: soundName, ofType: "mp3") {
             let url = URL(fileURLWithPath: path)
             do {

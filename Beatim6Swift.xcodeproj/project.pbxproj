@@ -45,6 +45,11 @@
 			path = Beatim6SwiftUITests;
 			sourceTree = "<group>";
 		};
+		E354994E2D62F1260057E2CC /* Assets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Assets;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +80,7 @@
 		E354990D2D62C4A40057E2CC = {
 			isa = PBXGroup;
 			children = (
+				E354994E2D62F1260057E2CC /* Assets */,
 				E35499182D62C4A40057E2CC /* Beatim6Swift */,
 				E35499292D62C4A50057E2CC /* Beatim6SwiftTests */,
 				E35499332D62C4A50057E2CC /* Beatim6SwiftUITests */,
@@ -109,6 +115,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				E35499182D62C4A40057E2CC /* Beatim6Swift */,
+				E354994E2D62F1260057E2CC /* Assets */,
 			);
 			name = Beatim6Swift;
 			packageProductDependencies = (
