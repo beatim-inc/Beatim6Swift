@@ -1,0 +1,563 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		E35499272D62C4A50057E2CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E354990E2D62C4A40057E2CC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E35499152D62C4A40057E2CC;
+			remoteInfo = Beatim6Swift;
+		};
+		E35499312D62C4A50057E2CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E354990E2D62C4A40057E2CC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E35499152D62C4A40057E2CC;
+			remoteInfo = Beatim6Swift;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		E35499162D62C4A40057E2CC /* Beatim6Swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beatim6Swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E35499262D62C4A50057E2CC /* Beatim6SwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Beatim6SwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E35499302D62C4A50057E2CC /* Beatim6SwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Beatim6SwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		E35499182D62C4A40057E2CC /* Beatim6Swift */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Beatim6Swift;
+			sourceTree = "<group>";
+		};
+		E35499292D62C4A50057E2CC /* Beatim6SwiftTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Beatim6SwiftTests;
+			sourceTree = "<group>";
+		};
+		E35499332D62C4A50057E2CC /* Beatim6SwiftUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Beatim6SwiftUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E35499132D62C4A40057E2CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E35499232D62C4A50057E2CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E354992D2D62C4A50057E2CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E354990D2D62C4A40057E2CC = {
+			isa = PBXGroup;
+			children = (
+				E35499182D62C4A40057E2CC /* Beatim6Swift */,
+				E35499292D62C4A50057E2CC /* Beatim6SwiftTests */,
+				E35499332D62C4A50057E2CC /* Beatim6SwiftUITests */,
+				E35499172D62C4A40057E2CC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E35499172D62C4A40057E2CC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E35499162D62C4A40057E2CC /* Beatim6Swift.app */,
+				E35499262D62C4A50057E2CC /* Beatim6SwiftTests.xctest */,
+				E35499302D62C4A50057E2CC /* Beatim6SwiftUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E35499152D62C4A40057E2CC /* Beatim6Swift */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E354993A2D62C4A50057E2CC /* Build configuration list for PBXNativeTarget "Beatim6Swift" */;
+			buildPhases = (
+				E35499122D62C4A40057E2CC /* Sources */,
+				E35499132D62C4A40057E2CC /* Frameworks */,
+				E35499142D62C4A40057E2CC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E35499182D62C4A40057E2CC /* Beatim6Swift */,
+			);
+			name = Beatim6Swift;
+			packageProductDependencies = (
+			);
+			productName = Beatim6Swift;
+			productReference = E35499162D62C4A40057E2CC /* Beatim6Swift.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E35499252D62C4A50057E2CC /* Beatim6SwiftTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E354993D2D62C4A50057E2CC /* Build configuration list for PBXNativeTarget "Beatim6SwiftTests" */;
+			buildPhases = (
+				E35499222D62C4A50057E2CC /* Sources */,
+				E35499232D62C4A50057E2CC /* Frameworks */,
+				E35499242D62C4A50057E2CC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E35499282D62C4A50057E2CC /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E35499292D62C4A50057E2CC /* Beatim6SwiftTests */,
+			);
+			name = Beatim6SwiftTests;
+			packageProductDependencies = (
+			);
+			productName = Beatim6SwiftTests;
+			productReference = E35499262D62C4A50057E2CC /* Beatim6SwiftTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E354992F2D62C4A50057E2CC /* Beatim6SwiftUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E35499402D62C4A50057E2CC /* Build configuration list for PBXNativeTarget "Beatim6SwiftUITests" */;
+			buildPhases = (
+				E354992C2D62C4A50057E2CC /* Sources */,
+				E354992D2D62C4A50057E2CC /* Frameworks */,
+				E354992E2D62C4A50057E2CC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E35499322D62C4A50057E2CC /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E35499332D62C4A50057E2CC /* Beatim6SwiftUITests */,
+			);
+			name = Beatim6SwiftUITests;
+			packageProductDependencies = (
+			);
+			productName = Beatim6SwiftUITests;
+			productReference = E35499302D62C4A50057E2CC /* Beatim6SwiftUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E354990E2D62C4A40057E2CC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					E35499152D62C4A40057E2CC = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					E35499252D62C4A50057E2CC = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = E35499152D62C4A40057E2CC;
+					};
+					E354992F2D62C4A50057E2CC = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = E35499152D62C4A40057E2CC;
+					};
+				};
+			};
+			buildConfigurationList = E35499112D62C4A40057E2CC /* Build configuration list for PBXProject "Beatim6Swift" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E354990D2D62C4A40057E2CC;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = E35499172D62C4A40057E2CC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E35499152D62C4A40057E2CC /* Beatim6Swift */,
+				E35499252D62C4A50057E2CC /* Beatim6SwiftTests */,
+				E354992F2D62C4A50057E2CC /* Beatim6SwiftUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E35499142D62C4A40057E2CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E35499242D62C4A50057E2CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E354992E2D62C4A50057E2CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E35499122D62C4A40057E2CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E35499222D62C4A50057E2CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E354992C2D62C4A50057E2CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E35499282D62C4A50057E2CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E35499152D62C4A40057E2CC /* Beatim6Swift */;
+			targetProxy = E35499272D62C4A50057E2CC /* PBXContainerItemProxy */;
+		};
+		E35499322D62C4A50057E2CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E35499152D62C4A40057E2CC /* Beatim6Swift */;
+			targetProxy = E35499312D62C4A50057E2CC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		E35499382D62C4A50057E2CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		E35499392D62C4A50057E2CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E354993B2D62C4A50057E2CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Beatim6Swift/Preview Content\"";
+				DEVELOPMENT_TEAM = M5867HGFAL;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nomueken.com.Beatim6Swift;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E354993C2D62C4A50057E2CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Beatim6Swift/Preview Content\"";
+				DEVELOPMENT_TEAM = M5867HGFAL;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nomueken.com.Beatim6Swift;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E354993E2D62C4A50057E2CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M5867HGFAL;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nomueken.com.Beatim6SwiftTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Beatim6Swift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Beatim6Swift";
+			};
+			name = Debug;
+		};
+		E354993F2D62C4A50057E2CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M5867HGFAL;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nomueken.com.Beatim6SwiftTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Beatim6Swift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Beatim6Swift";
+			};
+			name = Release;
+		};
+		E35499412D62C4A50057E2CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M5867HGFAL;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nomueken.com.Beatim6SwiftUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Beatim6Swift;
+			};
+			name = Debug;
+		};
+		E35499422D62C4A50057E2CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M5867HGFAL;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = nomueken.com.Beatim6SwiftUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Beatim6Swift;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E35499112D62C4A40057E2CC /* Build configuration list for PBXProject "Beatim6Swift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E35499382D62C4A50057E2CC /* Debug */,
+				E35499392D62C4A50057E2CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E354993A2D62C4A50057E2CC /* Build configuration list for PBXNativeTarget "Beatim6Swift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E354993B2D62C4A50057E2CC /* Debug */,
+				E354993C2D62C4A50057E2CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E354993D2D62C4A50057E2CC /* Build configuration list for PBXNativeTarget "Beatim6SwiftTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E354993E2D62C4A50057E2CC /* Debug */,
+				E354993F2D62C4A50057E2CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E35499402D62C4A50057E2CC /* Build configuration list for PBXNativeTarget "Beatim6SwiftUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E35499412D62C4A50057E2CC /* Debug */,
+				E35499422D62C4A50057E2CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E354990E2D62C4A40057E2CC /* Project object */;
+}
