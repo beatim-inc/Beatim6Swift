@@ -35,7 +35,10 @@ struct ContentView: View {
                       .padding()
                   }
         }.onAppear{
-            bleManager.onStepDetectionNotified = {print("step detected")}
+            bleManager.onStepDetectionNotified = {
+                print("step detection notified")
+                stepSoundManager.playSound()
+            }
         }
     }
 }
