@@ -25,15 +25,13 @@ struct ContentView: View {
                           }
                       }
                       .navigationTitle("BLE Devices")
-
-                      Button("Scan for Devices") {
-                          bleManager.startScanning()
-                      }
-                      
                       Button("Connect All") {
                           for peripheral in bleManager.peripherals {
                                  bleManager.connectPeripheral(peripheral: peripheral)
                              }
+                      }
+                      Button("Scan Again") {
+                          bleManager.startScanning()
                       }
                       .padding()
                   }
@@ -41,6 +39,9 @@ struct ContentView: View {
             bleManager.onStepDetectionNotified = {
                 print("step detection notified")
                 stepSoundManager.playSound()
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                bleManager.startScanning()
             }
         }
     }
