@@ -18,43 +18,54 @@ struct ContentView: View {
     let stepSoundManager = StepSoundManager()
     var body: some View {
         NavigationView {
-                  VStack {
-                      List(bleManager.peripherals, id: \..identifier) { peripheral in
-                          Button(action: {
-                              selectedPeripheral = peripheral
-                              bleManager.connectPeripheral(peripheral: peripheral)
-                          }) {
-                              Text(peripheral.name ?? "Unknown")
-                          }
-                      }
-                      .navigationTitle("BLE Devices")
-                      Button("Connect All") {
-                          for peripheral in bleManager.peripherals {
-                                 bleManager.connectPeripheral(peripheral: peripheral)
-                             }
-                      }
-                      Button("Scan Again") {
-                          bleManager.startScanning()
-                      }
-                      Button("Reset") {
-                          spmManager.start()
-                      }
-                      List {
-                          NavigationLink("Auth") {
-                              AuthView()
-                          }
-                          NavigationLink("Subscription Information") {
-                              SubscriptionInfoView()
-                          }
-                          NavigationLink("Search for music") {
-                              SearchSongsView()
-                          }
-                          NavigationLink("Search for album") {
-                              SearchAlbumView()
-                          }
-                      }
-                      .navigationTitle("Auth and set Music")
-                  }
+                VStack {
+                    VStack{
+                        List{
+                            //TODO:センサ一覧&コネクト画面にナビゲーション
+                            Text("Connected Sensors: \(bleManager.peripherals.count)")
+                        }
+                        .frame(height: 120).background(Color(.systemGray6))
+                    }
+                    /*
+                    VStack{
+                        Button("Connect All") {
+                            for peripheral in bleManager.peripherals {
+                                bleManager.connectPeripheral(peripheral: peripheral)
+                            }
+                        }
+                        Button("Scan Again") {
+                            bleManager.startScanning()
+                        }
+                    }
+                    */
+                    //Music
+                    VStack{
+                        List{
+                            //TODO:入力
+                            Text("BPM: 120")
+                            Text("Music Title: MUSIC_TITLE")
+                            NavigationLink("Search for music") {
+                                SearchSongsView()
+                            }
+                        }
+                        .frame(height:180)}
+                    //StepSound
+                    VStack{
+                        List{
+                            Text("step sound:\(stepSoundManager.soundName)")
+                        }.frame(height:120)}
+                    List {
+                        NavigationLink("Auth") {
+                            AuthView()
+                        }
+                        NavigationLink("Subscription Information") {
+                            SubscriptionInfoView()
+                        }
+                        NavigationLink("Search for album") {
+                            SearchAlbumView()
+                        }
+                    }
+                }.navigationTitle("Beatim")
         }.onAppear{
             bleManager.onStepDetectionNotified = {
                 print("step detection notified")
@@ -72,7 +83,6 @@ struct ContentView: View {
             for _ in 0..<10 {
             bleManager.startScanning()
             }
-
         }.task {
             for await subscription in MusicSubscription.subscriptionUpdates {
                 self.musicSubscription = subscription
