@@ -14,9 +14,10 @@ struct ContentView: View {
     @StateObject var bleManager = BLEManager()
     @State private var selectedPeripheral: CBPeripheral?
     @State private var musicSubscription: MusicSubscription?
+    @State private var selectedSound: String = StepSoundManager.shared.soundName
+    @StateObject var stepSoundManager = StepSoundManager()
     @State private var musicDefaultBpm: Double = 120
     @StateObject var spmManager = SPMManager()
-    let stepSoundManager = StepSoundManager()
     var body: some View {
         NavigationView {
                 VStack {
@@ -49,7 +50,13 @@ struct ContentView: View {
                     //StepSound
                     VStack{
                         List{
-                            Text("step sound:\(stepSoundManager.soundName)")
+                            NavigationLink(
+                                "Select Step Sound",
+                                destination: StepSoundSelectionView(
+                                    selectedSound: $stepSoundManager.soundName,
+                                    setSoundName: stepSoundManager.setSoundName)
+                            )
+                            Text("Step sound:\(stepSoundManager.soundName)")
                         }.frame(height:120)}
                     List {
                         NavigationLink("Auth") {
