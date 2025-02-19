@@ -72,24 +72,37 @@ struct ContentView: View {
                         }
                     }
                 }.navigationTitle("Beatim")
-        }.onAppear{
+        }
+        .onAppear{
             bleManager.onStepDetectionNotified = {
                 print("step detection notified")
                 stepSoundManager.playSound()
                 spmManager.addStepData()
                 spmManager.calculateSPM()
+                
                 if(spmManager.spm > 200 || spmManager.spm < 10) {
                     return;
                 }
-//                ApplicationMusicPlayer.shared.state.playbackRate =
-//                //TODO曲に合わせる
-//                Float(spmManager.spm/musicDefaultBpm)
+
+                // 前回更新したSPMとの差が5%以上の場合のみ更新
+                let changeRate = abs(spmManager.spm - spmManager.lastUpdatedSPM) / spmManager.lastUpdatedSPM
+                if changeRate < 0.10 { // 10%未満の変化なら更新しない
+                    return
+                }
+                
+                // playbackRate 更新
+                ApplicationMusicPlayer.shared.state.playbackRate = 
+                    Float(spmManager.spm / musicDefaultBpm)
+                
+                // 更新したSPMを記録
+                spmManager.lastUpdatedSPM = spmManager.spm
             }
             //TODO:見つかるまでスキャンを繰り返す
             for _ in 0..<10 {
             bleManager.startScanning()
             }
-        }.task {
+        }
+        .task {
             for await subscription in MusicSubscription.subscriptionUpdates {
                 self.musicSubscription = subscription
             }
