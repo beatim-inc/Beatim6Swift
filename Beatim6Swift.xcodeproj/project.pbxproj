@@ -29,9 +29,22 @@
 		E35499302D62C4A50057E2CC /* Beatim6SwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Beatim6SwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E30252C12D65730C00B68F53 /* Exceptions for "Beatim6Swift" folder in "Beatim6Swift" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E35499152D62C4A40057E2CC /* Beatim6Swift */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E35499182D62C4A40057E2CC /* Beatim6Swift */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E30252C12D65730C00B68F53 /* Exceptions for "Beatim6Swift" folder in "Beatim6Swift" target */,
+			);
 			path = Beatim6Swift;
 			sourceTree = "<group>";
 		};
@@ -399,6 +412,8 @@
 				DEVELOPMENT_TEAM = M5867HGFAL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Beatim6Swift/Info.plist;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "このアプリはApple Musicライブラリの音楽を再生します";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "このアプリはBLEデバイスと接続し、ステップデータを受信するためにBluetoothを使用します。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -410,7 +425,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nomueken.com.Beatim6Swift;
+				PRODUCT_BUNDLE_IDENTIFIER = beatim.com.Beatim6Swift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -429,6 +444,8 @@
 				DEVELOPMENT_TEAM = M5867HGFAL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Beatim6Swift/Info.plist;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "このアプリはApple Musicライブラリの音楽を再生します";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "このアプリはBLEデバイスと接続し、ステップデータを受信するためにBluetoothを使用します。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -440,7 +457,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nomueken.com.Beatim6Swift;
+				PRODUCT_BUNDLE_IDENTIFIER = beatim.com.Beatim6Swift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

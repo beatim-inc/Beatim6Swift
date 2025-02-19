@@ -7,11 +7,13 @@
 
 import SwiftUI
 import CoreBluetooth
+import MusicKit
 
 
 struct ContentView: View {
     @StateObject var bleManager = BLEManager()
     @State private var selectedPeripheral: CBPeripheral?
+    @State private var musicSubscription: MusicSubscription?
     let stepSoundManager = StepSoundManager()
     var body: some View {
         NavigationView {
@@ -33,6 +35,25 @@ struct ContentView: View {
                       Button("Scan Again") {
                           bleManager.startScanning()
                       }
+                      Button("Request authorization") {
+                          Task {
+                              await MusicAuthorization.request()
+                          }
+                      }
+                      Button("Reload authorization status") {
+                          print(musicSubscription?.description ?? "no subscription")
+                      }
+                      Button("Perform search") {
+                          Task {
+                              do {
+                                  let request = MusicCatalogSearchRequest(term: "a", types: [Song.self])
+                                  let response = try await request.response()
+                                 print(response.songs)
+                              } catch {
+                                  fatalError("Error")
+                              }
+                          }
+                      }
                       .padding()
                   }
         }.onAppear{
@@ -40,8 +61,14 @@ struct ContentView: View {
                 print("step detection notified")
                 stepSoundManager.playSound()
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                bleManager.startScanning()
+            //TODO:見つかるまでスキャンを繰り返す
+            for _ in 0..<10 {
+            bleManager.startScanning()
+            }
+
+        }.task {
+            for await subscription in MusicSubscription.subscriptionUpdates {
+                self.musicSubscription = subscription
             }
         }
     }
