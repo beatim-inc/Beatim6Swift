@@ -34,12 +34,13 @@ struct ContentView: View {
                         List{
                             //TODO:入力
                             Text("BPM: \(musicDefaultBpm)")
+                            Text("Playback Rate:\(spmManager.spm/musicDefaultBpm)")
                             Text("Music Title: MUSIC_TITLE")
                             NavigationLink("Search for music") {
                                 SearchSongsView()
                             }
                         }
-                        .frame(height:180)}
+                        .frame(height:200)}
                     //StepSound
                     VStack{
                         List{
