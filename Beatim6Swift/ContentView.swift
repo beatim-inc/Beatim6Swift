@@ -15,7 +15,7 @@ struct ContentView: View {
     @State private var selectedPeripheral: CBPeripheral?
     @State private var musicSubscription: MusicSubscription?
     @State private var musicDefaultBpm: Double = 120
-    let spmManager = SPMManager()
+    @StateObject var spmManager = SPMManager()
     let stepSoundManager = StepSoundManager()
     var body: some View {
         NavigationView {
