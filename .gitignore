@@ -1,0 +1,53 @@
+# macOS関連
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode関連
+*.xcuserstate
+*.xcscmblueprint
+*.xcworkspace/
+*.xcuserdatad/
+*.xccheckout
+*.xcuserstate
+
+# Derived Data（ビルドの中間ファイル）
+DerivedData/
+.idea/
+xcuserdata/
+
+# ビルド成果物
+build/
+*.o
+*.so
+*.dylib
+*.a
+*.la
+*.lo
+
+# Swift Package Manager（SPM）
+.swiftpm/
+Package.resolved
+
+# Carthage
+Carthage/Build/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# FirebaseやGoogle関連
+GoogleService-Info.plist
+
+# 環境変数ファイル（セキュリティ対策）
+.env
+*.env.*
+
+# 追加のログやキャッシュ
+*.log
+*.swp
+*.swo
+*.swn
+*.mode1v3
+*.mode2v3
+*.perspectivev3

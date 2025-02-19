@@ -9,12 +9,11 @@ import SwiftUI
 import CoreBluetooth
 import AVFoundation
 
-class StepSoundManager {
+class StepSoundManager: ObservableObject {
     static let shared = StepSoundManager()
     var audioPlayer: AVAudioPlayer?
-    let soundName = "step_sound"
+    @Published var soundName = "step_sound" // soundName を変更可能にする
 
-    
     init() {
         setupAudioSession()
     }
@@ -27,17 +26,20 @@ class StepSoundManager {
             print("Failed to set audio session: \(error)")
         }
     }
-    
-    
+
+    func setSoundName(to newSoundName: String) {
+        soundName = newSoundName
+    }
+
     func playSound() {
-        if let url = Bundle.main.url(forResource: soundName,withExtension:"mp3") {
+        if let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") {
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: url)
                 audioPlayer?.play()
             } catch {
                 print("Error playing sound: \(error.localizedDescription)")
             }
-        }else{
+        } else {
             print("Error finding sound file")
         }
     }
