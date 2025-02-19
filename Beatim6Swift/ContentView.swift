@@ -35,26 +35,21 @@ struct ContentView: View {
                       Button("Scan Again") {
                           bleManager.startScanning()
                       }
-                      Button("Request authorization") {
-                          Task {
-                              await MusicAuthorization.request()
+                      List {
+                          NavigationLink("Auth") {
+                              AuthView()
+                          }
+                          NavigationLink("Subscription Information") {
+                              SubscriptionInfoView()
+                          }
+                          NavigationLink("Search for music") {
+                              SearchSongsView()
+                          }
+                          NavigationLink("Search for album") {
+                              SearchAlbumView()
                           }
                       }
-                      Button("Reload authorization status") {
-                          print(musicSubscription?.description ?? "no subscription")
-                      }
-                      Button("Perform search") {
-                          Task {
-                              do {
-                                  let request = MusicCatalogSearchRequest(term: "a", types: [Song.self])
-                                  let response = try await request.response()
-                                 print(response.songs)
-                              } catch {
-                                  fatalError("Error")
-                              }
-                          }
-                      }
-                      .padding()
+                      .navigationTitle("Auth and set Music")
                   }
         }.onAppear{
             bleManager.onStepDetectionNotified = {
