@@ -24,8 +24,8 @@ struct ContentView: View {
                     VStack{
                         List{
                             NavigationLink(destination: SensorListView(bleManager: bleManager)) {
-                                                   Text("Connected Sensors: \(bleManager.peripherals.count)")
-                                               }
+                                    Text("Connected Sensors: \(bleManager.peripherals.count)")
+                                }
                             Text("SPM: \(spmManager.spm)")
                         }
                         .frame(height: 120).background(Color(.systemGray6))
@@ -51,12 +51,14 @@ struct ContentView: View {
                     VStack{
                         List{
                             NavigationLink(
-                                "Select Step Sound",
                                 destination: StepSoundSelectionView(
                                     selectedSound: $stepSoundManager.soundName,
-                                    setSoundName: stepSoundManager.setSoundName)
+                                    setSoundName: stepSoundManager.setSoundName
+                                )
                             )
-                            Text("Step sound:\(stepSoundManager.soundName)")
+                            {
+                                Text("Step Sound: \(stepSoundManager.soundName)")
+                            }
                         }.frame(height:120)}
                     List {
                         NavigationLink("Auth") {
@@ -79,9 +81,9 @@ struct ContentView: View {
                 if(spmManager.spm > 200 || spmManager.spm < 10) {
                     return;
                 }
-                ApplicationMusicPlayer.shared.state.playbackRate =
-                //TODO曲に合わせる
-                Float(spmManager.spm/musicDefaultBpm)
+//                ApplicationMusicPlayer.shared.state.playbackRate =
+//                //TODO曲に合わせる
+//                Float(spmManager.spm/musicDefaultBpm)
             }
             //TODO:見つかるまでスキャンを繰り返す
             for _ in 0..<10 {
