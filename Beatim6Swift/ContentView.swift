@@ -14,6 +14,7 @@ struct ContentView: View {
     @StateObject var bleManager = BLEManager()
     @State private var selectedPeripheral: CBPeripheral?
     @State private var musicSubscription: MusicSubscription?
+    let spmManager = SPMManager()
     let stepSoundManager = StepSoundManager()
     var body: some View {
         NavigationView {
@@ -35,6 +36,9 @@ struct ContentView: View {
                       Button("Scan Again") {
                           bleManager.startScanning()
                       }
+                      Button("Reset") {
+                          spmManager.start()
+                      }
                       List {
                           NavigationLink("Auth") {
                               AuthView()
@@ -55,6 +59,14 @@ struct ContentView: View {
             bleManager.onStepDetectionNotified = {
                 print("step detection notified")
                 stepSoundManager.playSound()
+                spmManager.addStepData()
+                spmManager.calculateSPM()
+                if(spmManager.spm > 200 || spmManager.spm < 10) {
+                    return;
+                }
+                ApplicationMusicPlayer.shared.state.playbackRate =
+                //TODO曲に合わせる
+                Float(spmManager.spm/120.0)
             }
             //TODO:見つかるまでスキャンを繰り返す
             for _ in 0..<10 {

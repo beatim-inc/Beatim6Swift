@@ -23,6 +23,10 @@ final class SPMManager: ObservableObject {
     }
     
     func addStepData() {
+        if(lastStepTime == nil){
+            lastStepTime = Date()
+            return
+        }
         let interval = Date().timeIntervalSince(lastStepTime!)
         intervals.append(interval)
     }
