@@ -14,6 +14,7 @@ struct ContentView: View {
     @StateObject var bleManager = BLEManager()
     @State private var selectedPeripheral: CBPeripheral?
     @State private var musicSubscription: MusicSubscription?
+    @State private var musicDefaultBpm: Double = 120
     let spmManager = SPMManager()
     let stepSoundManager = StepSoundManager()
     var body: some View {
@@ -21,28 +22,18 @@ struct ContentView: View {
                 VStack {
                     VStack{
                         List{
-                            //TODO:センサ一覧&コネクト画面にナビゲーション
-                            Text("Connected Sensors: \(bleManager.peripherals.count)")
+                            NavigationLink(destination: SensorListView(bleManager: bleManager)) {
+                                                   Text("Connected Sensors: \(bleManager.peripherals.count)")
+                                               }
+                            Text("SPM: \(spmManager.spm)")
                         }
                         .frame(height: 120).background(Color(.systemGray6))
                     }
-                    /*
-                    VStack{
-                        Button("Connect All") {
-                            for peripheral in bleManager.peripherals {
-                                bleManager.connectPeripheral(peripheral: peripheral)
-                            }
-                        }
-                        Button("Scan Again") {
-                            bleManager.startScanning()
-                        }
-                    }
-                    */
                     //Music
                     VStack{
                         List{
                             //TODO:入力
-                            Text("BPM: 120")
+                            Text("BPM: \(musicDefaultBpm)")
                             Text("Music Title: MUSIC_TITLE")
                             NavigationLink("Search for music") {
                                 SearchSongsView()
@@ -77,7 +68,7 @@ struct ContentView: View {
                 }
                 ApplicationMusicPlayer.shared.state.playbackRate =
                 //TODO曲に合わせる
-                Float(spmManager.spm/120.0)
+                Float(spmManager.spm/musicDefaultBpm)
             }
             //TODO:見つかるまでスキャンを繰り返す
             for _ in 0..<10 {
