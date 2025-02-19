@@ -32,8 +32,13 @@ struct ContentView: View {
                     //Music
                     VStack{
                         List{
-                            //TODO:入力
-                            Text("BPM: \(musicDefaultBpm)")
+                            NavigationLink("BPM: \(musicDefaultBpm)"){
+                                BpmSettingView(bpm:musicDefaultBpm,
+                                onBpmUpdate: { newBpm in
+                                musicDefaultBpm = newBpm
+                                }
+                                )
+                            }
                             Text("Playback Rate:\(spmManager.spm/musicDefaultBpm)")
                             Text("Music Title: MUSIC_TITLE")
                             NavigationLink("Search for music") {
