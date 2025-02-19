@@ -20,58 +20,59 @@ struct ContentView: View {
     @StateObject var spmManager = SPMManager()
     var body: some View {
         NavigationView {
-                VStack {
-                    VStack{
-                        List{
-                            NavigationLink(destination: SensorListView(bleManager: bleManager)) {
-                                    Text("Connected Sensors: \(bleManager.peripherals.count)")
-                                }
-                            Text("SPM: \(spmManager.spm)")
-                        }
-                        .frame(height: 120).background(Color(.systemGray6))
-                    }
-                    //Music
-                    VStack{
-                        List{
-                            NavigationLink("BPM: \(musicDefaultBpm)"){
-                                BpmSettingView(bpm:musicDefaultBpm,
-                                onBpmUpdate: { newBpm in
-                                musicDefaultBpm = newBpm
-                                }
-                                )
-                            }
-                            Text("Playback Rate:\(spmManager.spm/musicDefaultBpm)")
-                            Text("Music Title: MUSIC_TITLE")
-                            NavigationLink("Search for music") {
-                                SearchSongsView()
-                            }
-                        }
-                        .frame(height:200)}
-                    //StepSound
-                    VStack{
-                        List{
-                            NavigationLink(
-                                destination: StepSoundSelectionView(
-                                    selectedSound: $stepSoundManager.soundName,
-                                    setSoundName: stepSoundManager.setSoundName
-                                )
-                            )
-                            {
-                                Text("Step Sound: \(stepSoundManager.soundName)")
-                            }
-                        }.frame(height:120)}
-                    List {
+                Form {
+                    // Apple Music Authorization
+                    Section {
                         NavigationLink("Auth") {
                             AuthView()
                         }
                         NavigationLink("Subscription Information") {
                             SubscriptionInfoView()
                         }
-                        NavigationLink("Search for album") {
+                    }
+
+                    // Sensor
+                    Section {
+                        NavigationLink(destination: SensorListView(bleManager: bleManager)) {
+                                Text("Connected Sensors: \(bleManager.peripherals.count)")
+                            }
+                        Text("SPM: \(spmManager.spm)")
+                    }
+                    .background(Color(.systemGray6))
+
+                    // Music Selection
+                    Section{
+                        NavigationLink("Album: ALBUM_TITLE") {
                             SearchAlbumView()
                         }
+                        NavigationLink("Music: MUSIC_TITLE") {
+                            SearchSongsView()
+                        }
+                        NavigationLink("BPM: \(musicDefaultBpm)"){
+                            BpmSettingView(bpm:musicDefaultBpm,
+                            onBpmUpdate: { newBpm in
+                            musicDefaultBpm = newBpm
+                            }
+                            )
+                        }
+                        Text("Playback Rate: \(spmManager.spm/musicDefaultBpm)")
                     }
-                }.navigationTitle("Beatim")
+
+                    // Step Sound Selection
+                    Section{
+                        NavigationLink(
+                            destination: StepSoundSelectionView(
+                                selectedSound: $stepSoundManager.soundName,
+                                setSoundName: stepSoundManager.setSoundName
+                            )
+                        )
+                        {
+                            Text("Step Sound: \(stepSoundManager.soundName)")
+                        }
+                    }
+
+                    
+            }.navigationTitle("Beatim")
         }
         .onAppear{
             bleManager.onStepDetectionNotified = {
