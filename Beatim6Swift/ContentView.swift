@@ -36,7 +36,7 @@ struct ContentView: View {
                     // Sensor
                     Section {
                         NavigationLink(destination: SensorListView(bleManager: bleManager)) {
-                                Text("Connected Sensors: \(bleManager.peripherals.count)")
+                                Text("Connected Sensors: \(bleManager.connectedPeripherals.count)")
                             }
                         Text("SPM: \(spmManager.spm)")
                     }
@@ -49,7 +49,7 @@ struct ContentView: View {
                         NavigationLink("Music: MUSIC_TITLE") {
                             SearchSongsView()
                         }
-                        NavigationLink("Defoult BPM: \(musicDefaultBpm)"){
+                        NavigationLink("Default BPM: \(musicDefaultBpm)"){
                             BpmSettingView(bpm:musicDefaultBpm,
                             onBpmUpdate: { newBpm in
                             musicDefaultBpm = newBpm
@@ -77,6 +77,7 @@ struct ContentView: View {
         }
         .onAppear{
             authManager.requestMusicAuthorization()
+            bleManager.startScanning()
             bleManager.onStepDetectionNotified = {
                 print("step detection notified")
                 stepSoundManager.playSound()

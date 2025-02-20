@@ -13,22 +13,23 @@ struct SensorListView: View {
 
     var body: some View {
         Form {
-            Button("Scan Sensors") {
-                bleManager.startScanning()
+            Section {
+                List(bleManager.peripherals, id: \..identifier) { peripheral in
+                    Button(action: {
+                        bleManager.connectPeripheral(peripheral: peripheral)
+                    }) {
+                        Text(peripheral.name ?? "Unknown")
+                    }
+                }
             }
 
-            List(bleManager.peripherals, id: \..identifier) { peripheral in
-                Button(action: {
-                    bleManager.connectPeripheral(peripheral: peripheral)
-                }) {
-                    Text(peripheral.name ?? "Unknown")
-                }
+            Section {
+                Button("Scan Sensors") {
+                bleManager.startScanning()
             }
-            
             Button("Connect All") {
-                for peripheral in bleManager.peripherals {
-                    bleManager.connectPeripheral(peripheral: peripheral)
-                }
+                bleManager.autoConnectAllPeripherals()
+            }
             }
         }
         .navigationTitle("Sensor List")
