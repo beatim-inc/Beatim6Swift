@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var musicDefaultBpm: Double = 120
     @StateObject var spmManager = SPMManager()
     @State private var currentSongTitle: String = "Not Playing"
+    @State private var currentAlbumTitle: String = ""
     @State private var playbackTimer: Timer?
 
     var body: some View {
@@ -27,7 +28,7 @@ struct ContentView: View {
                 Form {
                     // // Apple Music Authorization
                     // Section {
-                    //     NavigationLink(destination: AuthView(authManager: authManager)) { // 🎯 修正
+                    //     NavigationLink(destination: AuthView(authManager: authManager)) {
                     //         Text("Auth")
                     //     }
                     //     NavigationLink("Subscription Information") {
@@ -61,7 +62,7 @@ struct ContentView: View {
                             HStack {
                                 Text("Album")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("ALBUM_TITLE")
+                                Text(currentAlbumTitle)
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
                             }
@@ -173,7 +174,8 @@ struct ContentView: View {
                             print("🎵 再生中: \(title) - \(artist) (\(album))")
 
                             DispatchQueue.main.async {
-                                self.currentSongTitle = "\(title) - \(artist)"
+                                self.currentSongTitle = "\(title)"
+                                self.currentAlbumTitle = "\(album) - \(artist)"
                             }
                         } else {
                             print("⚠️ queue.currentEntry が Song ではありません")
@@ -182,6 +184,7 @@ struct ContentView: View {
                 } else {
                     DispatchQueue.main.async {
                         self.currentSongTitle = "Not Playing"
+                        self.currentAlbumTitle = ""
                     }
                     print("🎵 再生中ではないため、曲情報をリセット")
                 }
