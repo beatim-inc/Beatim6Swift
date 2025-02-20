@@ -12,24 +12,26 @@ import MusicKit
 
 struct ContentView: View {
     @StateObject var bleManager = BLEManager()
+    @StateObject var authManager = AuthManager()
     @State private var selectedPeripheral: CBPeripheral?
     @State private var musicSubscription: MusicSubscription?
     @State private var selectedSound: String = StepSoundManager.shared.soundName
     @StateObject var stepSoundManager = StepSoundManager()
     @State private var musicDefaultBpm: Double = 120
     @StateObject var spmManager = SPMManager()
+
     var body: some View {
         NavigationView {
                 Form {
-                    // Apple Music Authorization
-                    Section {
-                        NavigationLink("Auth") {
-                            AuthView()
-                        }
-                        NavigationLink("Subscription Information") {
-                            SubscriptionInfoView()
-                        }
-                    }
+                    // // Apple Music Authorization
+                    // Section {
+                    //     NavigationLink(destination: AuthView(authManager: authManager)) { // 🎯 修正
+                    //         Text("Auth")
+                    //     }
+                    //     NavigationLink("Subscription Information") {
+                    //         SubscriptionInfoView()
+                    //     }
+                    // }
 
                     // Sensor
                     Section {
@@ -38,7 +40,6 @@ struct ContentView: View {
                             }
                         Text("SPM: \(spmManager.spm)")
                     }
-                    .background(Color(.systemGray6))
 
                     // Music Selection
                     Section{
@@ -48,7 +49,7 @@ struct ContentView: View {
                         NavigationLink("Music: MUSIC_TITLE") {
                             SearchSongsView()
                         }
-                        NavigationLink("BPM: \(musicDefaultBpm)"){
+                        NavigationLink("Defoult BPM: \(musicDefaultBpm)"){
                             BpmSettingView(bpm:musicDefaultBpm,
                             onBpmUpdate: { newBpm in
                             musicDefaultBpm = newBpm
@@ -75,6 +76,7 @@ struct ContentView: View {
             }.navigationTitle("Beatim")
         }
         .onAppear{
+            authManager.requestMusicAuthorization()
             bleManager.onStepDetectionNotified = {
                 print("step detection notified")
                 stepSoundManager.playSound()

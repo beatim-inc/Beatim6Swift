@@ -8,18 +8,15 @@
 import SwiftUI
 import MusicKit
 
+import SwiftUI
+import MusicKit
+
 struct AuthView: View {
-    
-    @State private var currentAuthStatus: MusicAuthorization.Status
-    
-    init() {
-        _currentAuthStatus = .init(initialValue: MusicAuthorization.currentStatus)
-    }
-    
+    @ObservedObject var authManager: AuthManager
+
     var body: some View {
         Form {
-            
-            switch currentAuthStatus {
+            switch authManager.currentAuthStatus {
             case .notDetermined:
                 Text("Authorization status not yet determined.")
             case .authorized:
@@ -31,18 +28,15 @@ struct AuthView: View {
             @unknown default:
                 Text("Unknown case")
             }
-            
+
             Button("Request authorization") {
-                Task {
-                    await MusicAuthorization.request()
-                }
+                authManager.requestMusicAuthorization()
             }
-            
+
             Button("Reload authorization status") {
-                self.currentAuthStatus = MusicAuthorization.currentStatus
+                authManager.reloadAuthStatus()
             }
-            
         }
     }
-    
 }
+
