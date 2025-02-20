@@ -11,17 +11,18 @@ import MusicKit
 
 
 struct ContentView: View {
-    @StateObject var bleManager = BLEManager()
     @StateObject var authManager = AuthManager()
-    @State private var selectedPeripheral: CBPeripheral?
-    @State private var musicSubscription: MusicSubscription?
-    @State private var selectedSound: String = StepSoundManager.shared.soundName
-    @StateObject var stepSoundManager = StepSoundManager()
-    @State private var musicDefaultBpm: Double = 120
+    @StateObject var bleManager = BLEManager()
     @StateObject var spmManager = SPMManager()
-    @State private var currentSongTitle: String = "Not Playing"
-    @State private var currentAlbumTitle: String = ""
+    @StateObject var stepSoundManager = StepSoundManager()
+
+    @State private var musicSubscription: MusicSubscription?
+    @State private var selectedPeripheral: CBPeripheral?
     @State private var playbackTimer: Timer?
+    @State private var currentAlbumTitle: String = ""
+    @State private var currentSongTitle: String = "Not Playing"
+    @State private var musicDefaultBpm: Double = 120
+    @State private var selectedSound: String = StepSoundManager.shared.soundName
 
     var body: some View {
         NavigationView {
@@ -117,32 +118,20 @@ struct ContentView: View {
             authManager.requestMusicAuthorization()
             bleManager.startScanning()
             startMusicPlaybackObserver() // 🎯 Apple Music の現在の曲情報を定期監視
+
             bleManager.onStepDetectionNotified = {
                 print("step detection notified")
                 stepSoundManager.playSound()
                 spmManager.addStepData()
-                spmManager.calculateSPM()
-                
-                if(spmManager.spm > 200 || spmManager.spm < 10) {
-                    return;
-                }
-
-                // 前回更新したSPMとの差が5%以上の場合のみ更新
-                let changeRate = abs(spmManager.spm - spmManager.lastUpdatedSPM) / spmManager.lastUpdatedSPM
-                if changeRate < 0.10 { // 10%未満の変化なら更新しない
-                    return
-                }
-                
-                // playbackRate 更新
-                ApplicationMusicPlayer.shared.state.playbackRate = 
-                    Float(spmManager.spm / musicDefaultBpm)
-                
-                // 更新したSPMを記録
-                spmManager.lastUpdatedSPM = spmManager.spm
             }
             //TODO:見つかるまでスキャンを繰り返す
             for _ in 0..<10 {
-            bleManager.startScanning()
+                bleManager.startScanning()
+            }
+        }
+        .onChange(of: spmManager.spm) { oldSPM, newSPM in
+            if newSPM > 10 && newSPM < 200 {
+                ApplicationMusicPlayer.shared.state.playbackRate = Float(newSPM / musicDefaultBpm)
             }
         }
         .onDisappear {

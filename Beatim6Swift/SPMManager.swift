@@ -28,48 +28,30 @@ final class SPMManager: ObservableObject {
         if let lastTime = lastStepTime {
             let interval = now.timeIntervalSince(lastTime)
             intervals.append(interval)
+
+            if intervals.count == 10 {
+                calculateSPM()
+                intervals.removeAll() // SPM計算後にintervalsをクリア
+            }
         }
         lastStepTime = now
     }
 
     func calculateSPM() {
-        guard !intervals.isEmpty else {
+        guard intervals.count == 10 else {
             spm = 0.0
             return
         }
         
-        // 直近10ステップ（またはそれ未満）のデータを取得
-        let recentIntervals = Array(intervals.suffix(10))
+        // 最大値と最小値を除いた配列を作成
+        let sortedIntervals = intervals.sorted()
+        let filteredIntervals = sortedIntervals[1..<9] // 最大値と最小値を除いた8個のデータ
         
-        guard recentIntervals.count > 2 else { // 四分位範囲を計算するために最低3つ以上必要
-            let totalTime = recentIntervals.reduce(0, +)
-            let stepCount = Double(recentIntervals.count)
-            spm = stepCount > 0 ? (stepCount / totalTime) * 60.0 : 0.0
-            print(spm)
-            return
-        }
-        
-        // ソートして四分位数を計算
-        let sortedIntervals = recentIntervals.sorted()
-        let q1Index = Int(Double(sortedIntervals.count - 1) * 0.25)
-        let q3Index = Int(Double(sortedIntervals.count - 1) * 0.75)
-        
-        let q1 = sortedIntervals[q1Index]
-        let q3 = sortedIntervals[q3Index]
-        
-        // Q1 以上 Q3 以下の値のみをフィルタ
-        let filteredIntervals = sortedIntervals.filter { $0 >= q1 && $0 <= q3 }
-        
-        guard !filteredIntervals.isEmpty else {
-            spm = 0.0
-            return
-        }
-        
-        let totalTime = filteredIntervals.reduce(0, +) // 合計時間
+        let totalTime = filteredIntervals.reduce(0, +)
         let stepCount = Double(filteredIntervals.count)
         
         spm = (stepCount / totalTime) * 60.0
-        print(spm)
+        print("Updated SPM: \(spm)")
     }
 
     func stop() {
