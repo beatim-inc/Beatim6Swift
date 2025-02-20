@@ -9,7 +9,6 @@
 *.xcworkspace/
 *.xcuserdatad/
 *.xccheckout
-*.xcuserstate
 
 # Derived Data（ビルドの中間ファイル）
 DerivedData/
