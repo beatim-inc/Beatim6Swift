@@ -19,6 +19,8 @@ struct ContentView: View {
     @StateObject var stepSoundManager = StepSoundManager()
     @State private var musicDefaultBpm: Double = 120
     @StateObject var spmManager = SPMManager()
+    @State private var currentSongTitle: String = "Not Playing"
+    @State private var playbackTimer: Timer?
 
     var body: some View {
         NavigationView {
@@ -68,7 +70,7 @@ struct ContentView: View {
                             HStack {
                                 Text("Song")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("SONG_TITLE")
+                                Text(currentSongTitle)
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
                             }
@@ -113,6 +115,7 @@ struct ContentView: View {
         .onAppear{
             authManager.requestMusicAuthorization()
             bleManager.startScanning()
+            startMusicPlaybackObserver() // 🎯 Apple Music の現在の曲情報を定期監視
             bleManager.onStepDetectionNotified = {
                 print("step detection notified")
                 stepSoundManager.playSound()
@@ -141,11 +144,56 @@ struct ContentView: View {
             bleManager.startScanning()
             }
         }
+        .onDisappear {
+            stopMusicPlaybackObserver() // 🎯 画面を離れたらタイマーを停止
+        }
         .task {
             for await subscription in MusicSubscription.subscriptionUpdates {
                 self.musicSubscription = subscription
             }
         }
+    }
+
+    private func startMusicPlaybackObserver() {
+        print("startMusicPlaybackObserver")
+        
+        playbackTimer?.invalidate() // 既存のタイマーがあれば停止
+        playbackTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { _ in
+            Task {
+                let player = ApplicationMusicPlayer.shared
+                let state = player.state // 🎯 現在のプレイヤー状態を取得
+
+                if state.playbackStatus == .playing { // 🎯 再生中の場合のみ取得
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // 🎯 1秒遅らせて取得
+                        if let queueEntry = player.queue.currentEntry?.item,
+                        case .song(let nowPlayingItem) = queueEntry { // 🎯 `case .song(let nowPlayingItem)` で取り出す
+                            let title = nowPlayingItem.title
+                            let artist = nowPlayingItem.artistName
+                            let album = nowPlayingItem.albumTitle ?? ""
+                            print("🎵 再生中: \(title) - \(artist) (\(album))")
+
+                            DispatchQueue.main.async {
+                                self.currentSongTitle = "\(title) - \(artist)"
+                            }
+                        } else {
+                            print("⚠️ queue.currentEntry が Song ではありません")
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.currentSongTitle = "Not Playing"
+                    }
+                    print("🎵 再生中ではないため、曲情報をリセット")
+                }
+            }
+        }
+    }
+
+
+    // 🎯 画面を離れたときにタイマーを停止
+    private func stopMusicPlaybackObserver() {
+        playbackTimer?.invalidate()
+        playbackTimer = nil
     }
 }
 
