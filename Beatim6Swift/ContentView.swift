@@ -76,6 +76,11 @@ struct ContentView: View {
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
                             }
+                            .onChange(of: currentSongTitle) { _,_ in
+                                if spmManager.spm > 10 && spmManager.spm < 200 {
+                                    updatePlaybackRate()
+                                }
+                            }
                         }
                         NavigationLink(destination: BpmSettingView(bpm: musicDefaultBpm, onBpmUpdate: { newBpm in
                             musicDefaultBpm = newBpm
@@ -83,7 +88,7 @@ struct ContentView: View {
                             HStack {
                                 Text("Default BPM")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(String(format: "%.2f", musicDefaultBpm))")
+                                Text("\(String(format: "%.1f", musicDefaultBpm))")
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
                             }
@@ -91,7 +96,7 @@ struct ContentView: View {
                         HStack {
                             Text("Playback Rate")
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
+                            Text("\(String(format: "%.2f", ApplicationMusicPlayer.shared.state.playbackRate))")
                                 .foregroundColor(.gray)
                                 .frame(alignment: .trailing)
                         }
@@ -131,7 +136,7 @@ struct ContentView: View {
         }
         .onChange(of: spmManager.spm) { oldSPM, newSPM in
             if newSPM > 10 && newSPM < 200 {
-                ApplicationMusicPlayer.shared.state.playbackRate = Float(newSPM / musicDefaultBpm)
+                updatePlaybackRate()
             }
         }
         .onDisappear {
@@ -144,17 +149,18 @@ struct ContentView: View {
         }
     }
 
+    /// Apple Music の現在の曲情報を定期監視
     private func startMusicPlaybackObserver() {
         print("startMusicPlaybackObserver")
         
         playbackTimer?.invalidate() // 既存のタイマーがあれば停止
-        playbackTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { _ in
+        playbackTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
             Task {
                 let player = ApplicationMusicPlayer.shared
                 let state = player.state // 🎯 現在のプレイヤー状態を取得
 
                 if state.playbackStatus == .playing { // 🎯 再生中の場合のみ取得
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // 🎯 1秒遅らせて取得
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // 🎯 0.1秒遅らせて取得
                         if let queueEntry = player.queue.currentEntry?.item,
                         case .song(let nowPlayingItem) = queueEntry { // 🎯 `case .song(let nowPlayingItem)` で取り出す
                             let title = nowPlayingItem.title
@@ -181,11 +187,19 @@ struct ContentView: View {
         }
     }
 
-
-    // 🎯 画面を離れたときにタイマーを停止
+    /// 画面を離れたときにタイマーを停止
     private func stopMusicPlaybackObserver() {
         playbackTimer?.invalidate()
         playbackTimer = nil
+    }
+
+    /// 再生速度の更新
+    private func updatePlaybackRate() {
+        let player = ApplicationMusicPlayer.shared
+        let state = player.state
+        if state.playbackStatus == .playing {
+            player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
+        }
     }
 }
 

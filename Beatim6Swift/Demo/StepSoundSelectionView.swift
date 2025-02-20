@@ -30,10 +30,5 @@ struct StepSoundSelectionView: View {
                 }
             }
             .navigationTitle("Select Step Sound")
-            .toolbar {
-                Button("Done") {
-                    presentationMode.wrappedValue.dismiss()
-                }
-            }
         }
 }

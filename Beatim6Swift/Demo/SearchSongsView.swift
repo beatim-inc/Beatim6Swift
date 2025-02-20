@@ -15,6 +15,8 @@ struct SearchSongsView: View {
     @State private var isPerformingSearch: Bool = false
     @State private var musicSubscription: MusicSubscription?
     private var resultLimit: Int = 5
+
+    @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     
     var body: some View {
         
@@ -22,6 +24,7 @@ struct SearchSongsView: View {
             
             Section {
                 TextField("Search term", text: $searchTerm)
+                    .focused($isSearchFieldFocused) // 🎯 フォーカス適用
                     .onSubmit { // 🎯 Enter キーで検索実行
                         performSearch()
                     }
@@ -37,6 +40,9 @@ struct SearchSongsView: View {
             
         }
         .navigationTitle("Search Songs")
+        .onAppear {
+            isSearchFieldFocused = true // 🎯 画面表示時に自動フォーカス
+        }
         .task {
             for await subscription in MusicSubscription.subscriptionUpdates {
                 self.musicSubscription = subscription

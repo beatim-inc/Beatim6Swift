@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
 struct BpmSettingView: View {
     @Environment(\.presentationMode) var presentationMode
@@ -14,14 +15,14 @@ struct BpmSettingView: View {
     var onBpmUpdate: (Double) -> Void
 
     init(bpm: Double, onBpmUpdate: @escaping (Double) -> Void) {
-        _bpmValue = State(initialValue: String(format: "%.2f", bpm))
+        _bpmValue = State(initialValue: String(format: "%.1f", bpm))
         self.onBpmUpdate = onBpmUpdate
     }
 
     var body: some View {
         Form {
             Section {
-                TextField("Enter BPM", text: $bpmValue)
+                AutoFocusTextField(text: $bpmValue, onCommit: saveBpm)
                     .keyboardType(.decimalPad)
                     .onChange(of: bpmValue) { oldValue, newValue in
                         bpmValue = filterNumericInput(newValue) // 🎯 入力バリデーション
@@ -29,16 +30,15 @@ struct BpmSettingView: View {
             }
         }
         .navigationTitle("BPM Setting")
-        .toolbar {
-            Button("Save") {
-                if let newBpm = Double(bpmValue) {
-                    onBpmUpdate(newBpm)
-                } else {
-                    print("無効な BPM 値")
-                }
-                presentationMode.wrappedValue.dismiss()
-            }
+    }
+
+    private func saveBpm() {
+        if let newBpm = Double(bpmValue) {
+            onBpmUpdate(newBpm)
+        } else {
+            print("無効な BPM 値")
         }
+        presentationMode.wrappedValue.dismiss()
     }
 
     // 🎯 数値と1つの小数点のみ許可するバリデーション関数
@@ -53,5 +53,65 @@ struct BpmSettingView: View {
         }
 
         return filtered
+    }
+}
+
+// 🎯 自動フォーカス & "Done" ボタン付き UITextField ラッパー
+struct AutoFocusTextField: UIViewRepresentable {
+    @Binding var text: String
+    var onCommit: () -> Void
+
+    func makeUIView(context: Context) -> UITextField {
+        let textField = UITextField()
+        textField.text = text
+        textField.borderStyle = .none // SwiftUI のスタイルを維持
+        textField.backgroundColor = .clear
+        textField.keyboardType = .decimalPad
+        textField.textAlignment = .left
+        textField.delegate = context.coordinator
+        
+        // 🎯 キーボード上部に "Done" ボタンを追加
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: context.coordinator, action: #selector(Coordinator.doneTapped))
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        toolbar.setItems([flexSpace, doneButton], animated: false)
+        textField.inputAccessoryView = toolbar
+
+        return textField
+    }
+
+    func updateUIView(_ uiView: UITextField, context: Context) {
+        if uiView.text != text {
+            uiView.text = text
+        }
+        DispatchQueue.main.async {
+            if !uiView.isFirstResponder {
+                uiView.becomeFirstResponder() // 🎯 自動フォーカス
+                uiView.selectAll(nil) // 🎯 すべて選択
+            }
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, UITextFieldDelegate {
+        var parent: AutoFocusTextField
+
+        init(_ parent: AutoFocusTextField) {
+            self.parent = parent
+        }
+
+        func textFieldDidChangeSelection(_ textField: UITextField) {
+            DispatchQueue.main.async {
+                self.parent.text = textField.text ?? ""
+            }
+        }
+
+        @objc func doneTapped() {
+            parent.onCommit() // 🎯 "Done" ボタンで Save を実行
+        }
     }
 }
