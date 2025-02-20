@@ -13,7 +13,6 @@ struct SearchSongsView: View {
     @State private var searchTerm: String = ""
     @State private var searchResultSongs: MusicItemCollection<Song> = []
     @State private var isPerformingSearch: Bool = false
-    
     @State private var musicSubscription: MusicSubscription?
     private var resultLimit: Int = 5
     
@@ -23,30 +22,10 @@ struct SearchSongsView: View {
             
             Section {
                 TextField("Search term", text: $searchTerm)
-            }
-            
-            Button("Perform search") {
-                Task {
-                    /*
-                     Here, we're searching for songs,
-                     you can also modify the parameters to search for
-                     artists, albums, or other types of data.
-                     */
-                    do {
-                        let request = MusicCatalogSearchRequest(term: searchTerm, types: [Song.self])
-                        self.isPerformingSearch = true
-                        let response = try await request.response()
-                        self.isPerformingSearch = false
-                        self.searchResultSongs = response.songs
-                    } catch {
-                        print(error.localizedDescription)
-                        fatalError("Error")
-                        // Have you created a token? Please refer to https://developer.apple.com/documentation/musickit/using-automatic-token-generation-for-apple-music-api
-                        // If you cannot find this app within the Identifiers' list, try to add any entitlement in the Xcode project window (like `iCloud` or `Push notification`) so that Xcode can automatically create a provisioning profile for this app.
+                    .onSubmit { // 🎯 Enter キーで検索実行
+                        performSearch()
                     }
-                }
             }
-            .disabled(!(musicSubscription?.canPlayCatalogContent ?? false) || isPerformingSearch)
             
             if isPerformingSearch {
                 ProgressView()
@@ -57,12 +36,28 @@ struct SearchSongsView: View {
             }
             
         }
+        .navigationTitle("Search Songs")
         .task {
             for await subscription in MusicSubscription.subscriptionUpdates {
                 self.musicSubscription = subscription
             }
         }
         
+    }
+
+    // 🎯 検索処理をメソッド化（Enterキー & ボタン 両方で使用）
+    private func performSearch() {
+        Task {
+            do {
+                let request = MusicCatalogSearchRequest(term: searchTerm, types: [Song.self])
+                self.isPerformingSearch = true
+                let response = try await request.response()
+                self.isPerformingSearch = false
+                self.searchResultSongs = response.songs
+            } catch {
+                print("Error: \(error.localizedDescription)")
+            }
+        }
     }
     
 }

@@ -36,43 +36,78 @@ struct ContentView: View {
                     // Sensor
                     Section {
                         NavigationLink(destination: SensorListView(bleManager: bleManager)) {
-                                Text("Connected Sensors: \(bleManager.connectedPeripherals.count)")
+                            HStack {
+                                Text("Connected Sensors")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text("\(bleManager.connectedPeripherals.count)")
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
                             }
-                        Text("SPM: \(spmManager.spm)")
+                        }
+                        HStack {
+                            Text("SPM")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(String(format: "%.2f", spmManager.spm))")
+                                .foregroundColor(.gray)
+                                .frame(alignment: .trailing)
+                        }
                     }
 
                     // Music Selection
-                    Section{
-                        NavigationLink("Album: ALBUM_TITLE") {
-                            SearchAlbumView()
-                        }
-                        NavigationLink("Music: MUSIC_TITLE") {
-                            SearchSongsView()
-                        }
-                        NavigationLink("Default BPM: \(musicDefaultBpm)"){
-                            BpmSettingView(bpm:musicDefaultBpm,
-                            onBpmUpdate: { newBpm in
-                            musicDefaultBpm = newBpm
+                    Section {
+                        NavigationLink(destination: SearchAlbumView()) {
+                            HStack {
+                                Text("Album")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text("ALBUM_TITLE")
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
                             }
-                            )
                         }
-                        Text("Playback Rate: \(spmManager.spm/musicDefaultBpm)")
+                        NavigationLink(destination: SearchSongsView()) {
+                            HStack {
+                                Text("Music")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text("MUSIC_TITLE")
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
+                            }
+                        }
+                        NavigationLink(destination: BpmSettingView(bpm: musicDefaultBpm, onBpmUpdate: { newBpm in
+                            musicDefaultBpm = newBpm
+                        })) {
+                            HStack {
+                                Text("Default BPM")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text("\(String(format: "%.2f", musicDefaultBpm))")
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
+                            }
+                        }
+                        HStack {
+                            Text("Playback Rate")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
+                                .foregroundColor(.gray)
+                                .frame(alignment: .trailing)
+                        }
                     }
 
                     // Step Sound Selection
-                    Section{
-                        NavigationLink(
-                            destination: StepSoundSelectionView(
-                                selectedSound: $stepSoundManager.soundName,
-                                setSoundName: stepSoundManager.setSoundName
-                            )
-                        )
-                        {
-                            Text("Step Sound: \(stepSoundManager.soundName)")
+                    Section {
+                        NavigationLink(destination: StepSoundSelectionView(
+                            selectedSound: $stepSoundManager.soundName,
+                            setSoundName: stepSoundManager.setSoundName
+                        )) {
+                            HStack {
+                                Text("Step Sound")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text("\(stepSoundManager.soundName)")
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
+                            }
                         }
                     }
-
-                    
             }.navigationTitle("Beatim")
         }
         .onAppear{

@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct BpmSettingView: View {
+    @Environment(\.presentationMode) var presentationMode
     @State private var bpmValue: String
     var onBpmUpdate: (Double) -> Void
 
@@ -19,22 +20,21 @@ struct BpmSettingView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("BPM 設定")) {
-                TextField("BPM を入力", text: $bpmValue)
-                    .keyboardType(.numberPad)
-            }
-
             Section {
-                Button("保存") {
-                    if let newBpm = Double(bpmValue) {
-                        onBpmUpdate(newBpm)
-                    } else {
-                        print("無効な BPM 値")
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
+                TextField("Enter BPM", text: $bpmValue)
+                    .keyboardType(.numberPad)
             }
         }
         .navigationTitle("BPM Setting")
+        .toolbar {
+            Button("Save") {
+                if let newBpm = Double(bpmValue) {
+                    onBpmUpdate(newBpm)
+                } else {
+                    print("無効な BPM 値")
+                }
+                presentationMode.wrappedValue.dismiss()
+            }
+        }
     }
 }
