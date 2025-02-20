@@ -1,23 +1,24 @@
 import MusicKit
 import SwiftUI
 
+import MusicKit
+import SwiftUI
+
+@MainActor // 🎯 UI スレッドで動作するように明示
 class AuthManager: ObservableObject {
     @Published var currentAuthStatus: MusicAuthorization.Status = MusicAuthorization.currentStatus
     
     func requestMusicAuthorization() {
         Task {
-            if currentAuthStatus == .notDetermined { // 🎯 初回のみリクエスト
+            if currentAuthStatus == .notDetermined {
                 let status = await MusicAuthorization.request()
-                DispatchQueue.main.async {
-                    self.currentAuthStatus = status
-                }
+                self.currentAuthStatus = status
             }
         }
     }
     
     func reloadAuthStatus() {
-        DispatchQueue.main.async {
-            self.currentAuthStatus = MusicAuthorization.currentStatus
-        }
+        self.currentAuthStatus = MusicAuthorization.currentStatus
     }
 }
+
