@@ -14,15 +14,18 @@ struct BpmSettingView: View {
     var onBpmUpdate: (Double) -> Void
 
     init(bpm: Double, onBpmUpdate: @escaping (Double) -> Void) {
-          _bpmValue = State(initialValue: String(format: "%.0f", bpm))
-          self.onBpmUpdate = onBpmUpdate
-      }
+        _bpmValue = State(initialValue: String(format: "%.2f", bpm))
+        self.onBpmUpdate = onBpmUpdate
+    }
 
     var body: some View {
         Form {
             Section {
                 TextField("Enter BPM", text: $bpmValue)
-                    .keyboardType(.numberPad)
+                    .keyboardType(.decimalPad)
+                    .onChange(of: bpmValue) { oldValue, newValue in
+                        bpmValue = filterNumericInput(newValue) // 🎯 入力バリデーション
+                    }
             }
         }
         .navigationTitle("BPM Setting")
@@ -36,5 +39,19 @@ struct BpmSettingView: View {
                 presentationMode.wrappedValue.dismiss()
             }
         }
+    }
+
+    // 🎯 数値と1つの小数点のみ許可するバリデーション関数
+    private func filterNumericInput(_ input: String) -> String {
+        let allowedCharacters = "0123456789."
+        let filtered = input.filter { allowedCharacters.contains($0) }
+        
+        // 小数点が2つ以上入力されないように制限
+        let decimalCount = filtered.filter { $0 == "." }.count
+        if decimalCount > 1 {
+            return String(filtered.dropLast()) // 余分な小数点を削除
+        }
+
+        return filtered
     }
 }

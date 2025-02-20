@@ -66,9 +66,9 @@ struct ContentView: View {
                         }
                         NavigationLink(destination: SearchSongsView()) {
                             HStack {
-                                Text("Music")
+                                Text("Song")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("MUSIC_TITLE")
+                                Text("SONG_TITLE")
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
                             }
