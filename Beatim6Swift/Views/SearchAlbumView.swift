@@ -15,6 +15,8 @@ struct SearchAlbumView: View {
     @State private var isPerformingSearch: Bool = false
     @State private var musicSubscription: MusicSubscription?
     private var resultLimit: Int = 5
+
+    @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     
     var body: some View {
         
@@ -22,15 +24,11 @@ struct SearchAlbumView: View {
             
             Section {
                 TextField("Search term", text: $searchTerm)
+                    .focused($isSearchFieldFocused) // 🎯 フォーカス適用
                     .onSubmit {
                         performSearch()
                     }
             }
-            
-            // Button("Perform search") {
-            //     performSearch()
-            // }
-            // .disabled(!(musicSubscription?.canPlayCatalogContent ?? false) || isPerformingSearch)
             
             if isPerformingSearch {
                 ProgressView()
@@ -58,6 +56,9 @@ struct SearchAlbumView: View {
             
         }
         .navigationTitle("Search Albums")
+        .onAppear {
+            isSearchFieldFocused = true // 🎯 画面表示時に自動フォーカス
+        }
         .task {
             for await subscription in MusicSubscription.subscriptionUpdates {
                 self.musicSubscription = subscription
@@ -94,15 +95,16 @@ struct AlbumDetailsView: View {
     var body: some View {
         
         Form {
-            
             // Play using app player
-            Button("Play the entier album") {
-                Task {
-                    ApplicationMusicPlayer.shared.queue = .init(for: [album])
-                    do {
-                        try await ApplicationMusicPlayer.shared.play()
-                    } catch {
-                        print(error.localizedDescription)
+            Section {
+                Button("Play the album") {
+                    Task {
+                        ApplicationMusicPlayer.shared.queue = .init(for: [album])
+                        do {
+                            try await ApplicationMusicPlayer.shared.play()
+                        } catch {
+                            print(error.localizedDescription)
+                        }
                     }
                 }
             }
