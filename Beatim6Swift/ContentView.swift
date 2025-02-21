@@ -55,8 +55,9 @@ struct ContentView: View {
                                 .foregroundColor(.gray)
                                 .frame(alignment: .trailing)
                         }
-                        Button("play step sound"){
+                        Button("add step manually"){
                             stepSoundManager.playSound()
+                            spmManager.addStepData()
                         }
                     }
 
