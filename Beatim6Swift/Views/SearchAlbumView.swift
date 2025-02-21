@@ -40,13 +40,17 @@ struct SearchAlbumView: View {
                 NavigationLink {
                     AlbumDetailsView(album: album)
                 } label: {
-                    HStack {
+                    HStack(alignment: .center) {
                         if let artwork = album.artwork {
-                            ArtworkImage(artwork, height: 100)
+                            ArtworkImage(artwork, height: 40)
                         }
-                        VStack {
+                        VStack(alignment: .leading) {
                             Text(album.title)
+                                .font(.headline) // タイトルを大きく
+                                .foregroundColor(.primary) // 通常の色
                             Text(album.artistName)
+                                .font(.subheadline) // アーティスト名を小さく
+                                .foregroundColor(.gray) // 灰色に
                         }
                     }
                 }
@@ -91,33 +95,17 @@ struct AlbumDetailsView: View {
         
         Form {
             
-            Section("Play the entier album") {
-                // Play using system player
-                Button("Play using iOS system player") {
-                    Task {
-                        SystemMusicPlayer.shared.queue = .init(for: [album])
-                        do {
-                            try await SystemMusicPlayer.shared.play()
-                        } catch {
-                            print(error.localizedDescription)
-                        }
-                    }
-                }
-                // Play using app player
-                Button("Play using in-app player") {
-                    Task {
-                        ApplicationMusicPlayer.shared.queue = .init(for: [album])
-                        do {
-                            try await ApplicationMusicPlayer.shared.play()
-                        } catch {
-                            print(error.localizedDescription)
-                        }
+            // Play using app player
+            Button("Play the entier album") {
+                Task {
+                    ApplicationMusicPlayer.shared.queue = .init(for: [album])
+                    do {
+                        try await ApplicationMusicPlayer.shared.play()
+                    } catch {
+                        print(error.localizedDescription)
                     }
                 }
             }
-            
-            Text("Album ID: \(album.url?.absoluteString ?? "")")
-            Text("There's a total of \(album.trackCount) tracks.")
             
             if let tracks = self.updatedAlbumObject?.tracks {
                 ForEach(tracks) { track in
