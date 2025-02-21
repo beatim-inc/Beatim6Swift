@@ -48,12 +48,16 @@ struct ContentView: View {
                                     .frame(alignment: .trailing)
                             }
                         }
-                        HStack {
-                            Text("SPM")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(String(format: "%.2f", spmManager.spm))")
-                                .foregroundColor(.gray)
-                                .frame(alignment: .trailing)
+                        NavigationLink(destination: SpmSettingView(spm: spmManager.spm, onSpmUpdate: { newSpm in
+                            spmManager.spm = newSpm
+                        })) {
+                            HStack {
+                                Text("SPM")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text("\(String(format: "%.2f", spmManager.spm))")
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
+                            }
                         }
                     }
 

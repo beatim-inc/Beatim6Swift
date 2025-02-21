@@ -12,7 +12,7 @@ final class SPMManager: ObservableObject {
     //インターバル
     private var intervals: [TimeInterval] = []
     //SPM
-    @Published private(set) var spm: Double = 0.0
+    @Published var spm: Double = 0.0
     @Published var lastUpdatedSPM: Double = 0.0
     //最後に足を着けた時刻
     //Timer等を使用した方がパフォーマンスが上がるかも?
