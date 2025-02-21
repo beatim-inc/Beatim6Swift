@@ -55,6 +55,9 @@ struct ContentView: View {
                                 .foregroundColor(.gray)
                                 .frame(alignment: .trailing)
                         }
+                        Button("play step sound"){
+                            stepSoundManager.playSound()
+                        }
                     }
 
                     // Music Selection
