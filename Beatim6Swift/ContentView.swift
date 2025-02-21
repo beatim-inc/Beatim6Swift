@@ -54,11 +54,12 @@ struct ContentView: View {
                             HStack {
                                 Text("SPM")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(String(format: "%.2f", spmManager.spm))")
+                                Text("\(String(format: "%.1f", spmManager.spm))")
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
                             }
                         }
+                        Toggle("Step Detection Updates SPM", isOn: $spmManager.allowStepUpdate)
                     }
 
                     // Music Selection
@@ -131,7 +132,9 @@ struct ContentView: View {
             bleManager.onStepDetectionNotified = {
                 print("step detection notified")
                 stepSoundManager.playSound()
-                spmManager.addStepData()
+                if spmManager.allowStepUpdate {
+                    spmManager.addStepData()
+                }
             }
             //TODO:見つかるまでスキャンを繰り返す
             for _ in 0..<10 {
