@@ -19,10 +19,14 @@ struct ContentView: View {
     @State private var musicSubscription: MusicSubscription?
     @State private var selectedPeripheral: CBPeripheral?
     @State private var playbackTimer: Timer?
+    
+    @State private var currentPlaylistTitle: String = ""
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
     @State private var musicDefaultBpm: Double = 120
     @State private var selectedSound: String = StepSoundManager.shared.soundName
+    
+    @State private var isNavigatingToSearch = false
 
     var body: some View {
         NavigationView {
@@ -59,11 +63,24 @@ struct ContentView: View {
                                     .frame(alignment: .trailing)
                             }
                         }
-                        Toggle("Step Detection Updates SPM", isOn: $spmManager.allowStepUpdate)
+                        Toggle("Auto SPM Update", isOn: $spmManager.allowStepUpdate)
                     }
 
                     // Music Selection
                     Section {
+                        NavigationLink(
+                            destination: SearchPlaylistView(),
+                            isActive: $isNavigatingToSearch,
+                            label: {
+                                HStack {
+                                    Text("Playlist")
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    Text(currentPlaylistTitle)
+                                        .foregroundColor(.gray)
+                                        .frame(alignment: .trailing)
+                                }
+                            }
+                        )
                         NavigationLink(destination: SearchAlbumView()) {
                             HStack {
                                 Text("Album")
@@ -166,6 +183,9 @@ struct ContentView: View {
                 let player = ApplicationMusicPlayer.shared
                 let state = player.state // 🎯 現在のプレイヤー状態を取得
 
+                if isNavigatingToSearch {
+                    return
+                }
                 if state.playbackStatus == .playing { // 🎯 再生中の場合のみ取得
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // 🎯 0.1秒遅らせて取得
                         if let queueEntry = player.queue.currentEntry?.item,
