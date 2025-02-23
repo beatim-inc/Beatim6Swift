@@ -29,7 +29,7 @@ struct ContentView: View {
     // Playlist 検索用の ViewModel を保持
     @StateObject var searchPlaylistVM = SearchPlaylistViewModel()
     
-    @State private var isNavigatingToSearch = false
+    @State private var isNavigatingToSearchPlaylist = false
 
     var body: some View {
         NavigationStack {
@@ -72,7 +72,7 @@ struct ContentView: View {
                     // Music Selection
                     Section {
                         Button {
-                            isNavigatingToSearch = true
+                            isNavigatingToSearchPlaylist = true
                         } label: {
                             HStack {
                                 Text("Playlist")
@@ -147,7 +147,7 @@ struct ContentView: View {
                     }
             }
             .navigationTitle("Beatim")
-            .navigationDestination(isPresented: $isNavigatingToSearch) {
+            .navigationDestination(isPresented: $isNavigatingToSearchPlaylist) {
                 SearchPlaylistView(viewModel: searchPlaylistVM)
             }
         }
@@ -190,7 +190,7 @@ struct ContentView: View {
         playbackTimer?.invalidate() // 既存のタイマーがあれば停止
         playbackTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
             Task {
-                if await isNavigatingToSearch { return }
+                if await isNavigatingToSearchPlaylist { return }
                 
                 let player = ApplicationMusicPlayer.shared
                 let state = player.state // 🎯 現在のプレイヤー状態を取得
