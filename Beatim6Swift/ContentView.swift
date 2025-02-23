@@ -19,13 +19,20 @@ struct ContentView: View {
     @State private var musicSubscription: MusicSubscription?
     @State private var selectedPeripheral: CBPeripheral?
     @State private var playbackTimer: Timer?
+    
+    @State private var currentPlaylistTitle: String = ""
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
     @State private var musicDefaultBpm: Double = 120
     @State private var selectedSound: String = StepSoundManager.shared.soundName
+    
+    // Playlist 検索用の ViewModel を保持
+    @StateObject var searchPlaylistVM = SearchPlaylistViewModel()
+    
+    @State private var isNavigatingToSearchPlaylist = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
                 Form {
                     // // Apple Music Authorization
                     // Section {
@@ -59,11 +66,27 @@ struct ContentView: View {
                                     .frame(alignment: .trailing)
                             }
                         }
-                        Toggle("Step Detection Updates SPM", isOn: $spmManager.allowStepUpdate)
+                        Toggle("Auto SPM Update", isOn: $spmManager.allowStepUpdate)
                     }
 
                     // Music Selection
                     Section {
+                        Button {
+                            isNavigatingToSearchPlaylist = true
+                        } label: {
+                            HStack {
+                                Text("Playlist")
+                                    .foregroundColor(.primary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Spacer()
+                                Text(currentPlaylistTitle)
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 14)) // やや小さめに設定
+                                    .foregroundColor(.secondary) // システムのセカンダリカラーを使用
+                            }
+                        }
                         NavigationLink(destination: SearchAlbumView()) {
                             HStack {
                                 Text("Album")
@@ -122,7 +145,11 @@ struct ContentView: View {
                             }
                         }
                     }
-            }.navigationTitle("Beatim")
+            }
+            .navigationTitle("Beatim")
+            .navigationDestination(isPresented: $isNavigatingToSearchPlaylist) {
+                SearchPlaylistView(viewModel: searchPlaylistVM)
+            }
         }
         .onAppear{
             authManager.requestMusicAuthorization()
@@ -163,31 +190,34 @@ struct ContentView: View {
         playbackTimer?.invalidate() // 既存のタイマーがあれば停止
         playbackTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
             Task {
+                if await isNavigatingToSearchPlaylist { return }
+                
                 let player = ApplicationMusicPlayer.shared
                 let state = player.state // 🎯 現在のプレイヤー状態を取得
-
+                
                 if state.playbackStatus == .playing { // 🎯 再生中の場合のみ取得
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // 🎯 0.1秒遅らせて取得
-                        if let queueEntry = player.queue.currentEntry?.item,
+                    // 0.1秒待機（Task.sleep はナノ秒単位）
+                    try? await Task.sleep(nanoseconds: 100_000_000)
+                    
+                    if let queueEntry = player.queue.currentEntry?.item,
                         case .song(let nowPlayingItem) = queueEntry { // 🎯 `case .song(let nowPlayingItem)` で取り出す
                             let title = nowPlayingItem.title
                             let artist = nowPlayingItem.artistName
                             let album = nowPlayingItem.albumTitle ?? ""
                             print("🎵 再生中: \(title) - \(artist) (\(album))")
 
-                            DispatchQueue.main.async {
-                                self.currentSongTitle = "\(title)"
+                            await MainActor.run {
+                                self.currentSongTitle = title
                                 self.currentAlbumTitle = "\(album) - \(artist)"
                             }
                         } else {
-                            print("⚠️ queue.currentEntry が Song ではありません")
+                        print("⚠️ queue.currentEntry が Song ではありません")
                         }
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.currentSongTitle = "Not Playing"
-                        self.currentAlbumTitle = ""
-                    }
+                    } else {
+                        await MainActor.run {
+                            self.currentSongTitle = "Not Playing"
+                            self.currentAlbumTitle = ""
+                        }
                     print("🎵 再生中ではないため、曲情報をリセット")
                 }
             }
