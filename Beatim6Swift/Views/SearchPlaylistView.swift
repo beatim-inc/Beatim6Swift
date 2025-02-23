@@ -11,6 +11,8 @@ import MusicKit
 struct SearchPlaylistView: View {
     
     @ObservedObject var viewModel: SearchPlaylistViewModel
+
+    @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     
     // ユーザーライブラリへのアクセスにはMusicSubscriptionではなく、
     // MusicLibraryへの権限確認が必要です（ここでは簡略化しています）。
@@ -21,14 +23,14 @@ struct SearchPlaylistView: View {
             
             Section {
                 TextField("Search term", text: $viewModel.searchTerm)
+                    .focused($isSearchFieldFocused) // 🎯 フォーカス適用
+                    .submitLabel(.search)
+                    .onSubmit {
+                        Task {
+                            await viewModel.performSearch()
+                        }
+                    }
             }
-            
-            Button("Perform search") {
-                Task {
-                    await viewModel.performSearch()
-                }
-            }
-            .disabled(viewModel.isPerformingSearch)
             
             if viewModel.isPerformingSearch {
                 ProgressView()
@@ -51,6 +53,9 @@ struct SearchPlaylistView: View {
             }
         }
         .navigationTitle("Search Playlists")
+        .onAppear {
+            isSearchFieldFocused = true // 🎯 画面表示時に自動フォーカス
+        }
     }
 }
 
@@ -66,20 +71,9 @@ struct PlaylistDetailsView: View {
         
         Form {
             
-            Section("再生オプション") {
-                // システムプレイヤーで再生
-                Button("Play using iOS system player") {
-                    Task {
-                        SystemMusicPlayer.shared.queue = .init(for: [playlist])
-                        do {
-                            try await SystemMusicPlayer.shared.play()
-                        } catch {
-                            print(error.localizedDescription)
-                        }
-                    }
-                }
+            Section{
                 // アプリ内プレイヤーで再生
-                Button("Play using in-app player") {
+                Button("Play the entire playlist") {
                     Task {
                         ApplicationMusicPlayer.shared.queue = .init(for: [playlist])
                         do {
@@ -91,8 +85,6 @@ struct PlaylistDetailsView: View {
                 }
             }
             
-            // プレイリストの固有IDを表示
-            Text("Playlist ID: \(playlist.id)")
             
             if let tracks = self.updatedPlaylistObject?.tracks {
                 ForEach(tracks) { track in

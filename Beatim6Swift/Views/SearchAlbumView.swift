@@ -97,7 +97,7 @@ struct AlbumDetailsView: View {
         Form {
             // Play using app player
             Section {
-                Button("Play the album") {
+                Button("Play the entire album") {
                     Task {
                         ApplicationMusicPlayer.shared.queue = .init(for: [album])
                         do {
