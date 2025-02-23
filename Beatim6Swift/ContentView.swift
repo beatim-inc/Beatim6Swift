@@ -29,7 +29,7 @@ struct ContentView: View {
     @State private var isNavigatingToSearch = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
                 Form {
                     // // Apple Music Authorization
                     // Section {
@@ -68,19 +68,17 @@ struct ContentView: View {
 
                     // Music Selection
                     Section {
-                        NavigationLink(
-                            destination: SearchPlaylistView(),
-                            isActive: $isNavigatingToSearch,
-                            label: {
-                                HStack {
-                                    Text("Playlist")
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    Text(currentPlaylistTitle)
-                                        .foregroundColor(.gray)
-                                        .frame(alignment: .trailing)
-                                }
+                        Button {
+                            isNavigatingToSearch = true
+                        } label: {
+                            HStack {
+                                Text("Playlist")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text(currentPlaylistTitle)
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
                             }
-                        )
+                        }
                         NavigationLink(destination: SearchAlbumView()) {
                             HStack {
                                 Text("Album")
@@ -139,7 +137,11 @@ struct ContentView: View {
                             }
                         }
                     }
-            }.navigationTitle("Beatim")
+            }
+            .navigationTitle("Beatim")
+            .navigationDestination(isPresented: $isNavigatingToSearch) {
+                SearchPlaylistView()
+            }
         }
         .onAppear{
             authManager.requestMusicAuthorization()
@@ -180,34 +182,34 @@ struct ContentView: View {
         playbackTimer?.invalidate() // 既存のタイマーがあれば停止
         playbackTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
             Task {
+                if await isNavigatingToSearch { return }
+                
                 let player = ApplicationMusicPlayer.shared
                 let state = player.state // 🎯 現在のプレイヤー状態を取得
-
-                if isNavigatingToSearch {
-                    return
-                }
+                
                 if state.playbackStatus == .playing { // 🎯 再生中の場合のみ取得
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // 🎯 0.1秒遅らせて取得
-                        if let queueEntry = player.queue.currentEntry?.item,
+                    // 0.1秒待機（Task.sleep はナノ秒単位）
+                    try? await Task.sleep(nanoseconds: 100_000_000)
+                    
+                    if let queueEntry = player.queue.currentEntry?.item,
                         case .song(let nowPlayingItem) = queueEntry { // 🎯 `case .song(let nowPlayingItem)` で取り出す
                             let title = nowPlayingItem.title
                             let artist = nowPlayingItem.artistName
                             let album = nowPlayingItem.albumTitle ?? ""
                             print("🎵 再生中: \(title) - \(artist) (\(album))")
 
-                            DispatchQueue.main.async {
-                                self.currentSongTitle = "\(title)"
+                            await MainActor.run {
+                                self.currentSongTitle = title
                                 self.currentAlbumTitle = "\(album) - \(artist)"
                             }
                         } else {
-                            print("⚠️ queue.currentEntry が Song ではありません")
+                        print("⚠️ queue.currentEntry が Song ではありません")
                         }
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.currentSongTitle = "Not Playing"
-                        self.currentAlbumTitle = ""
-                    }
+                    } else {
+                        await MainActor.run {
+                            self.currentSongTitle = "Not Playing"
+                            self.currentAlbumTitle = ""
+                        }
                     print("🎵 再生中ではないため、曲情報をリセット")
                 }
             }
