@@ -26,6 +26,9 @@ struct ContentView: View {
     @State private var musicDefaultBpm: Double = 120
     @State private var selectedSound: String = StepSoundManager.shared.soundName
     
+    // Playlist 検索用の ViewModel を保持
+    @StateObject var searchPlaylistVM = SearchPlaylistViewModel()
+    
     @State private var isNavigatingToSearch = false
 
     var body: some View {
@@ -73,10 +76,15 @@ struct ContentView: View {
                         } label: {
                             HStack {
                                 Text("Playlist")
+                                    .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                Spacer()
                                 Text(currentPlaylistTitle)
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 14)) // やや小さめに設定
+                                    .foregroundColor(.secondary) // システムのセカンダリカラーを使用
                             }
                         }
                         NavigationLink(destination: SearchAlbumView()) {
@@ -140,7 +148,7 @@ struct ContentView: View {
             }
             .navigationTitle("Beatim")
             .navigationDestination(isPresented: $isNavigatingToSearch) {
-                SearchPlaylistView()
+                SearchPlaylistView(viewModel: searchPlaylistVM)
             }
         }
         .onAppear{

@@ -10,9 +10,7 @@ import MusicKit
 
 struct SearchPlaylistView: View {
     
-    @State private var searchTerm: String = ""
-    @State private var searchResultPlaylists: MusicItemCollection<Playlist> = []
-    @State private var isPerformingSearch: Bool = false
+    @ObservedObject var viewModel: SearchPlaylistViewModel
     
     // ユーザーライブラリへのアクセスにはMusicSubscriptionではなく、
     // MusicLibraryへの権限確認が必要です（ここでは簡略化しています）。
@@ -22,38 +20,27 @@ struct SearchPlaylistView: View {
         Form {
             
             Section {
-                TextField("Search term", text: $searchTerm)
+                TextField("Search term", text: $viewModel.searchTerm)
             }
             
             Button("Perform search") {
                 Task {
-                    do {
-                        // ユーザーライブラリ内のプレイリストを検索するためにMusicLibrarySearchRequestを使用
-                        let request = MusicLibrarySearchRequest(term: searchTerm, types: [Playlist.self])
-                        self.isPerformingSearch = true
-                        let response = try await request.response()
-                        self.isPerformingSearch = false
-                        self.searchResultPlaylists = response.playlists
-                        print("playlists: \(self.searchResultPlaylists)")
-                    } catch {
-                        print(error.localizedDescription)
-                        // エラーハンドリング（必要に応じてエラーメッセージの表示等）
-                    }
+                    await viewModel.performSearch()
                 }
             }
-            .disabled(isPerformingSearch)
+            .disabled(viewModel.isPerformingSearch)
             
-            if isPerformingSearch {
+            if viewModel.isPerformingSearch {
                 ProgressView()
             }
             
-            ForEach(self.searchResultPlaylists) { playlist in
+            ForEach(viewModel.searchResultPlaylists) { playlist in
                 NavigationLink {
                     PlaylistDetailsView(playlist: playlist)
                 } label: {
                     HStack {
                         if let artwork = playlist.artwork {
-                            ArtworkImage(artwork, height: 100)
+                            ArtworkImage(artwork, height: 40)
                         }
                         VStack(alignment: .leading) {
                             Text(playlist.name)
@@ -62,8 +49,8 @@ struct SearchPlaylistView: View {
                     }
                 }
             }
-            
         }
+        .navigationTitle("Search Playlists")
     }
 }
 
