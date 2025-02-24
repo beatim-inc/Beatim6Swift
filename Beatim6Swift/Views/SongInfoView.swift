@@ -9,7 +9,7 @@ import SwiftUI
 import MusicKit
 
 struct SongInfoView: View {
-    
+    @EnvironmentObject var stepSoundManager: StepSoundManager
     var songItem: Song
     
     var body: some View {         
@@ -19,7 +19,8 @@ struct SongInfoView: View {
                 ApplicationMusicPlayer.shared.queue = .init(for: [songItem])
                 do {
                     try await ApplicationMusicPlayer.shared.prepareToPlay()
-                    ApplicationMusicPlayer.shared.state.playbackRate = 1.0
+                    stepSoundManager.playSoundPeriodically(BPM: 110.0)
+                    ApplicationMusicPlayer.shared.state.playbackRate = 110.0/93.0
 //                        try await ApplicationMusicPlayer.shared.play() //これを入れると再生速度が1になってしまう
                     print(ApplicationMusicPlayer.shared.state.playbackRate)
                     print(ApplicationMusicPlayer.shared.state.playbackStatus)

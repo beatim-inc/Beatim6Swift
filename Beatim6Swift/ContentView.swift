@@ -105,7 +105,7 @@ struct ContentView: View {
                                     .frame(alignment: .trailing)
                             }
                         }
-                        NavigationLink(destination: SearchSongsView()) {
+                        NavigationLink(destination: SearchSongsView().environmentObject(stepSoundManager)) {
                             HStack {
                                 Text("Song")
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -151,6 +151,24 @@ struct ContentView: View {
                                 Text("\(stepSoundManager.soundName)")
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
+                            }
+                        }
+                        Button {
+                            stepSoundManager.playSoundPeriodically(BPM: spmManager.spm)
+                        } label: {
+                            HStack {
+                                Text("Play StepSound Periodically")
+                                    .foregroundColor(.primary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+                        Button {
+                            stepSoundManager.stopPeriodicSound()
+                        } label: {
+                            HStack {
+                                Text("Stop Periodic StepSound")
+                                    .foregroundColor(.primary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
                     }
@@ -246,6 +264,8 @@ struct ContentView: View {
         if state.playbackStatus == .playing {
             player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
         }
+        stepSoundManager.stopPeriodicSound()
+        stepSoundManager.playSoundPeriodically(BPM: spmManager.spm)
     }
 }
 

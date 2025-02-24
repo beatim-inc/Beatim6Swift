@@ -14,6 +14,7 @@ struct SearchSongsView: View {
     @State private var searchResultSongs: MusicItemCollection<Song> = []
     @State private var isPerformingSearch: Bool = false
     @State private var musicSubscription: MusicSubscription?
+    @EnvironmentObject var stepSoundManager: StepSoundManager
     private var resultLimit: Int = 5
 
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
@@ -31,7 +32,7 @@ struct SearchSongsView: View {
             }
             
             if isPerformingSearch {
-                ProgressView()
+                ProgressView().environmentObject(stepSoundManager)
             }
             
             ForEach(self.searchResultSongs) { song in
