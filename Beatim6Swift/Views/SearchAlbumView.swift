@@ -15,6 +15,8 @@ struct SearchAlbumView: View {
     @State private var isPerformingSearch: Bool = false
     @State private var musicSubscription: MusicSubscription?
     private var resultLimit: Int = 5
+
+    @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     
     var body: some View {
         
@@ -22,15 +24,11 @@ struct SearchAlbumView: View {
             
             Section {
                 TextField("Search term", text: $searchTerm)
+                    .focused($isSearchFieldFocused) // 🎯 フォーカス適用
                     .onSubmit {
                         performSearch()
                     }
             }
-            
-            // Button("Perform search") {
-            //     performSearch()
-            // }
-            // .disabled(!(musicSubscription?.canPlayCatalogContent ?? false) || isPerformingSearch)
             
             if isPerformingSearch {
                 ProgressView()
@@ -40,13 +38,17 @@ struct SearchAlbumView: View {
                 NavigationLink {
                     AlbumDetailsView(album: album)
                 } label: {
-                    HStack {
+                    HStack(alignment: .center) {
                         if let artwork = album.artwork {
-                            ArtworkImage(artwork, height: 100)
+                            ArtworkImage(artwork, height: 40)
                         }
-                        VStack {
+                        VStack(alignment: .leading) {
                             Text(album.title)
+                                .font(.headline) // タイトルを大きく
+                                .foregroundColor(.primary) // 通常の色
                             Text(album.artistName)
+                                .font(.subheadline) // アーティスト名を小さく
+                                .foregroundColor(.gray) // 灰色に
                         }
                     }
                 }
@@ -54,6 +56,9 @@ struct SearchAlbumView: View {
             
         }
         .navigationTitle("Search Albums")
+        .onAppear {
+            isSearchFieldFocused = true // 🎯 画面表示時に自動フォーカス
+        }
         .task {
             for await subscription in MusicSubscription.subscriptionUpdates {
                 self.musicSubscription = subscription
@@ -90,21 +95,9 @@ struct AlbumDetailsView: View {
     var body: some View {
         
         Form {
-            
-            Section("Play the entier album") {
-                // Play using system player
-                Button("Play using iOS system player") {
-                    Task {
-                        SystemMusicPlayer.shared.queue = .init(for: [album])
-                        do {
-                            try await SystemMusicPlayer.shared.play()
-                        } catch {
-                            print(error.localizedDescription)
-                        }
-                    }
-                }
-                // Play using app player
-                Button("Play using in-app player") {
+            // Play using app player
+            Section {
+                Button("Play the entire album") {
                     Task {
                         ApplicationMusicPlayer.shared.queue = .init(for: [album])
                         do {
@@ -115,9 +108,6 @@ struct AlbumDetailsView: View {
                     }
                 }
             }
-            
-            Text("Album ID: \(album.url?.absoluteString ?? "")")
-            Text("There's a total of \(album.trackCount) tracks.")
             
             if let tracks = self.updatedAlbumObject?.tracks {
                 ForEach(tracks) { track in
