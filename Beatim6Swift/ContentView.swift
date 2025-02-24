@@ -71,7 +71,9 @@ struct ContentView: View {
 
                         Button("add step manually"){
                             stepSoundManager.playSound()
-                            spmManager.addStepData()
+                            if spmManager.allowStepUpdate {
+                                spmManager.addStepData()
+                            }
                         }
 
                     }
