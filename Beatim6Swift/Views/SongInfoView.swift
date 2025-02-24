@@ -10,7 +10,10 @@ import MusicKit
 
 struct SongInfoView: View {
     @EnvironmentObject var stepSoundManager: StepSoundManager
+    @EnvironmentObject var spmManager: SPMManager
     var songItem: Song
+    var musicDefaultbpm: Double
+
     
     var body: some View {         
         // Play using app player
@@ -19,8 +22,8 @@ struct SongInfoView: View {
                 ApplicationMusicPlayer.shared.queue = .init(for: [songItem])
                 do {
                     try await ApplicationMusicPlayer.shared.prepareToPlay()
-                    stepSoundManager.playSoundPeriodically(BPM: 110.0)
-                    ApplicationMusicPlayer.shared.state.playbackRate = 110.0/93.0
+                    //stepSoundManager.playSoundPeriodically(BPM:spmManager.spm)
+                    ApplicationMusicPlayer.shared.state.playbackRate = Float(spmManager.spm/musicDefaultbpm)
 //                        try await ApplicationMusicPlayer.shared.play() //これを入れると再生速度が1になってしまう
                     print(ApplicationMusicPlayer.shared.state.playbackRate)
                     print(ApplicationMusicPlayer.shared.state.playbackStatus)

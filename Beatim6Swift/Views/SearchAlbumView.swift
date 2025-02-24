@@ -113,7 +113,7 @@ struct AlbumDetailsView: View {
                 ForEach(tracks) { track in
                     switch track {
                     case .song(let songItem):
-                        SongInfoView(songItem: songItem)
+                        SongInfoView(songItem: songItem,musicDefaultbpm: 120)
                     case .musicVideo(_):
                         EmptyView()
                     @unknown default:

@@ -15,9 +15,15 @@ struct SearchSongsView: View {
     @State private var isPerformingSearch: Bool = false
     @State private var musicSubscription: MusicSubscription?
     @EnvironmentObject var stepSoundManager: StepSoundManager
+    @EnvironmentObject var spmManager: SPMManager
+    var defaultBpm : Double
     private var resultLimit: Int = 5
 
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
+    
+    init(musicDefaultBpm: Double){
+        defaultBpm = musicDefaultBpm
+    }
     
     var body: some View {
         
@@ -32,11 +38,11 @@ struct SearchSongsView: View {
             }
             
             if isPerformingSearch {
-                ProgressView().environmentObject(stepSoundManager)
+                ProgressView()
             }
             
             ForEach(self.searchResultSongs) { song in
-                SongInfoView(songItem: song)
+                SongInfoView(songItem: song, musicDefaultbpm: defaultBpm).environmentObject(stepSoundManager).environmentObject(spmManager)
             }
             
         }

@@ -105,7 +105,7 @@ struct ContentView: View {
                                     .frame(alignment: .trailing)
                             }
                         }
-                        NavigationLink(destination: SearchSongsView().environmentObject(stepSoundManager)) {
+                        NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm).environmentObject(stepSoundManager).environmentObject(spmManager)) {
                             HStack {
                                 Text("Song")
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -264,8 +264,6 @@ struct ContentView: View {
         if state.playbackStatus == .playing {
             player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
         }
-        stepSoundManager.stopPeriodicSound()
-        stepSoundManager.playSoundPeriodically(BPM: spmManager.spm)
     }
 }
 
