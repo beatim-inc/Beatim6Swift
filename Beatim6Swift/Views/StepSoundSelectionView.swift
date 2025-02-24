@@ -11,7 +11,7 @@ struct StepSoundSelectionView: View {
     @Environment(\.presentationMode) var presentationMode
     @Binding var selectedSound: String
     var setSoundName: (String) -> Void
-    let availableSounds = ["BaseDrum", "Crap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2"]
+    let availableSounds = ["None","BaseDrum", "Crap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2"]
     
     var body: some View {
             List(availableSounds, id: \..self) { sound in
