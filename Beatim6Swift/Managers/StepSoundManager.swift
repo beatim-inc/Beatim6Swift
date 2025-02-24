@@ -14,7 +14,7 @@ class StepSoundManager: ObservableObject {
     var audioPlayer: AVAudioPlayer?
     @Published var soundName = "Crap" // soundName を変更可能にする
     private var timer: Timer?
-    var isPeriodicStepSoundActive: Bool = false
+    @Published var isPeriodicStepSoundActive: Bool = false
 
     init() {
         setupAudioSession()
@@ -47,7 +47,7 @@ class StepSoundManager: ObservableObject {
     }
     
     func playSound(){
-        if(!isPeriodicStepSoundActive){playSound()}
+        if(!isPeriodicStepSoundActive){playSoundOnce()}
     }
     
     func playSoundPeriodically(BPM: Double) {
@@ -56,7 +56,7 @@ class StepSoundManager: ObservableObject {
             timer?.invalidate()
             let interval = 60.0 / BPM
             timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-                self?.playSound()
+                if(self?.isPeriodicStepSoundActive == true){self?.playSoundOnce()}
             }
         }
     }

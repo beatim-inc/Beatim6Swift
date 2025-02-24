@@ -23,7 +23,9 @@ struct SongInfoView: View {
                 do {
                     try await ApplicationMusicPlayer.shared.prepareToPlay()
                     stepSoundManager.playSoundPeriodically(BPM:spmManager.spm)
-                    ApplicationMusicPlayer.shared.state.playbackRate = Float(spmManager.spm/musicDefaultbpm)
+                    ApplicationMusicPlayer.shared.state.playbackRate =
+                    (spmManager.spm > 0 ?
+                    Float(spmManager.spm/musicDefaultbpm) : 1.0)
 //                        try await ApplicationMusicPlayer.shared.play() //これを入れると再生速度が1になってしまう
                     print(ApplicationMusicPlayer.shared.state.playbackRate)
                     print(ApplicationMusicPlayer.shared.state.playbackStatus)
