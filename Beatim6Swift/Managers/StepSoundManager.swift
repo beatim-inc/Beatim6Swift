@@ -51,6 +51,7 @@ class StepSoundManager: ObservableObject {
     }
     
     func playSoundPeriodically(BPM: Double) {
+        if(BPM <= 0){return;}
         if(isPeriodicStepSoundActive){
             timer?.invalidate()
             let interval = 60.0 / BPM
