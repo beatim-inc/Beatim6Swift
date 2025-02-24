@@ -22,7 +22,7 @@ struct SongInfoView: View {
                 ApplicationMusicPlayer.shared.queue = .init(for: [songItem])
                 do {
                     try await ApplicationMusicPlayer.shared.prepareToPlay()
-                    //stepSoundManager.playSoundPeriodically(BPM:spmManager.spm)
+                    stepSoundManager.playSoundPeriodically(BPM:spmManager.spm)
                     ApplicationMusicPlayer.shared.state.playbackRate = Float(spmManager.spm/musicDefaultbpm)
 //                        try await ApplicationMusicPlayer.shared.play() //これを入れると再生速度が1になってしまう
                     print(ApplicationMusicPlayer.shared.state.playbackRate)
