@@ -14,6 +14,7 @@ class StepSoundManager: ObservableObject {
     var audioPlayer: AVAudioPlayer?
     @Published var soundName = "Crap" // soundName を変更可能にする
     private var timer: Timer?
+    var isPeriodicStepSoundActive: Bool = false
 
     init() {
         setupAudioSession()
@@ -32,7 +33,7 @@ class StepSoundManager: ObservableObject {
         soundName = newSoundName
     }
 
-    func playSound() {
+    private func playSoundOnce() {
         if let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") {
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: url)
@@ -44,11 +45,18 @@ class StepSoundManager: ObservableObject {
             print("Error finding sound file")
         }
     }
+    
+    func playSound(){
+        if(!isPeriodicStepSoundActive){playSound()}
+    }
+    
     func playSoundPeriodically(BPM: Double) {
-        timer?.invalidate()
-        let interval = 60.0 / BPM
-        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            self?.playSound()
+        if(isPeriodicStepSoundActive){
+            timer?.invalidate()
+            let interval = 60.0 / BPM
+            timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+                self?.playSound()
+            }
         }
     }
     func stopPeriodicSound() {
