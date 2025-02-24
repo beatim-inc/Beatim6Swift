@@ -66,7 +66,14 @@ struct ContentView: View {
                                     .frame(alignment: .trailing)
                             }
                         }
+
                         Toggle("Auto SPM Update", isOn: $spmManager.allowStepUpdate)
+
+                        Button("add step manually"){
+                            stepSoundManager.playSound()
+                            spmManager.addStepData()
+                        }
+
                     }
 
                     // Music Selection
