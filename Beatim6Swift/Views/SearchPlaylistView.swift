@@ -64,6 +64,8 @@ struct SearchPlaylistView: View {
  */
 struct PlaylistDetailsView: View {
     
+    @StateObject private var stepSoundManager = StepSoundManager()
+    @StateObject private var spmManager = SPMManager()
     @State private var updatedPlaylistObject: Playlist?
     var playlist: Playlist
 
@@ -92,6 +94,8 @@ struct PlaylistDetailsView: View {
                     case .song(let songItem):
                         //TODO:musicDefaultBpmをcontentviewから貰う
                         SongInfoView(songItem: songItem, musicDefaultbpm: 120)
+                            .environmentObject(stepSoundManager)
+                            .environmentObject(spmManager)
                     case .musicVideo(_):
                         EmptyView()
                     @unknown default:
