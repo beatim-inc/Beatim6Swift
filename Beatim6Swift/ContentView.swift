@@ -165,6 +165,7 @@ struct ContentView: View {
                                     .frame(alignment: .trailing)
                             }
                         }
+                        Toggle("Delayed StepSound", isOn: $stepSoundManager.isDelayedStepSoundActive)
                         Toggle("Periodic StepSound", isOn: $stepSoundManager.isPeriodicStepSoundActive)
                         Button {
                             stepSoundManager.playSoundPeriodically(BPM: spmManager.spm)

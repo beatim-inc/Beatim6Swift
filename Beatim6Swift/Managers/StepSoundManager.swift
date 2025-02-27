@@ -17,6 +17,9 @@ class StepSoundManager: ObservableObject {
     private var timer: Timer?
     private var isStepSoundRight: Bool = false
     @Published var isPeriodicStepSoundActive: Bool = false
+    @Published var isDelayedStepSoundActive = false
+    private let maxDelayTime = 0.5
+    private let minDelayTime = 0.2
 
     init() {
         setupAudioSession()
@@ -52,11 +55,28 @@ class StepSoundManager: ObservableObject {
         }
     }
     
+    private func playDelayedSoundOnce(soundName: String){
+        let delay = Double.random(in: minDelayTime...maxDelayTime)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            self.playSoundOnce(soundName: soundName)
+        }
+    }
+    
     func playRightStepSound(){
-        if(!isPeriodicStepSoundActive){playSoundOnce(soundName:rightStepSoundName)}
+        if(isPeriodicStepSoundActive){return}
+        if(isDelayedStepSoundActive){
+            playDelayedSoundOnce(soundName: rightStepSoundName)
+        }else{
+            playSoundOnce(soundName:rightStepSoundName)
+        }
     }
     func playLeftStepSound(){
-        if(!isPeriodicStepSoundActive){playSoundOnce(soundName: leftStepSoundName)}
+        if(isPeriodicStepSoundActive){return}
+        if(isDelayedStepSoundActive){
+            playDelayedSoundOnce(soundName: leftStepSoundName)
+        }else{
+            playSoundOnce(soundName: leftStepSoundName)
+        }
     }
     
     func playSoundPeriodically(BPM: Double) {
