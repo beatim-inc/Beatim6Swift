@@ -18,8 +18,8 @@ class StepSoundManager: ObservableObject {
     private var isStepSoundRight: Bool = false
     @Published var isPeriodicStepSoundActive: Bool = false
     @Published var isDelayedStepSoundActive = false
-    private let maxDelayTime = 0.5
-    private let minDelayTime = 0.2
+    private let maxDelayTime = 0.7
+    private let minDelayTime = 0.0
 
     init() {
         setupAudioSession()
