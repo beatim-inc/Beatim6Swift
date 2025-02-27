@@ -11,6 +11,8 @@ import SwiftUI
 
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     var centralManager: CBCentralManager!
+    var parameters: StepDetectionParameters
+
     @Published var isSwitchedOn = false
     @Published var peripherals = [CBPeripheral]() // 🎯 接続可能なデバイスのリスト
     @Published var connectedPeripherals = [CBPeripheral]() // 🎯 接続中のデバイスのリスト
@@ -21,10 +23,18 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     let leftPeripheralUUID = UUID(uuidString: "721E54CA-E1BA-595E-AF97-C49D2998436A") // M5StickCP2(L)
     let rightPeripheralUUID = UUID(uuidString: "EFDABB3F-18AD-F631-846F-A58A9427D077") // M5StickCP2(R)
     
+    var prevGxL: Float = 0.0
+    var prevGxR: Float = 0.0
+    var lastStepTimeL: TimeInterval = 0
+    var lastStepTimeR: TimeInterval = 0
+    var stepCountL = 0
+    var stepCountR = 0
+
     var onLStepDetectionNotified: (() -> Void)?
     var onRStepDetectionNotified: (() -> Void)?
 
-   override init() {
+    init(parameters: StepDetectionParameters) {
+        self.parameters = parameters
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
@@ -108,21 +118,52 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        print("enter didUpdateValue")
-        if let data = characteristic.value {
-            // ここでデータを処理
-            let decodedString = String(data: data, encoding: .utf8)
-            if decodedString == "step" {
-                if peripheral.identifier == leftPeripheralUUID {
-                    print("Left step detected")
-                    onLStepDetectionNotified?()
-                } else if peripheral.identifier == rightPeripheralUUID {
-                    print("Right step detected")
-                    onRStepDetectionNotified?()
-                } else {
-                    print("Unknown step source")
-                }
+        guard let data = characteristic.value, let decodedString = String(data: data, encoding: .utf8) else { return }
+        let imuData = decodedString.split(separator: ",").compactMap { Float($0) }
+        
+        if imuData.count == 6 {
+            let ax = imuData[0], ay = imuData[1], az = imuData[2]
+            let gx = imuData[3], gy = imuData[4], gz = imuData[5]
+            
+            let currentTime = Date().timeIntervalSince1970 * 1000 // ミリ秒単位
+
+            if peripheral.identifier == leftPeripheralUUID {
+                detectStep(peripheral: "L", gx: gx, currentTime: currentTime)
+            } else if peripheral.identifier == rightPeripheralUUID {
+                detectStep(peripheral: "R", gx: gx, currentTime: currentTime)
             }
+
+            print("IMU Data: ax:\(ax), ay:\(ay), az:\(az), gx:\(gx), gy:\(gy), gz:\(gz)")
+        }
+    }
+
+    private func detectStep(peripheral: String, gx: Float, currentTime: TimeInterval) {
+        let stepTrigger = parameters.stepTrigger
+        let diffGxThreshold = parameters.diffGxThreshold
+        let debounceTime = parameters.debounceTime
+        
+        if peripheral == "L" {
+            if (gx - stepTrigger) * (prevGxL - stepTrigger) < 0 &&
+                gx - prevGxL < diffGxThreshold &&
+                currentTime - lastStepTimeL > debounceTime {
+
+                lastStepTimeL = currentTime
+                stepCountL += 1
+                print("✅ Left step detected! Total: \(stepCountL)")
+                onLStepDetectionNotified?()
+            }
+            prevGxL = gx
+        } else if peripheral == "R" {
+            if (gx - stepTrigger) * (prevGxR - stepTrigger) < 0 &&
+                gx - prevGxR < diffGxThreshold &&
+                currentTime - lastStepTimeR > debounceTime {
+
+                lastStepTimeR = currentTime
+                stepCountR += 1
+                print("✅ Right step detected! Total: \(stepCountR)")
+                onRStepDetectionNotified?()
+            }
+            prevGxR = gx
         }
     }
 }

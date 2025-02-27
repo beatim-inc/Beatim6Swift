@@ -12,9 +12,10 @@ import MusicKit
 
 struct ContentView: View {
     @StateObject var authManager = AuthManager()
-    @StateObject var bleManager = BLEManager()
+    @StateObject var parameters = StepDetectionParameters()
     @StateObject var spmManager = SPMManager()
     @StateObject var stepSoundManager = StepSoundManager()
+    @StateObject var searchPlaylistVM = SearchPlaylistViewModel()
 
     @State private var musicSubscription: MusicSubscription?
     @State private var selectedPeripheral: CBPeripheral?
@@ -24,11 +25,16 @@ struct ContentView: View {
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
     @State private var musicDefaultBpm: Double = 120
-    
-    // Playlist 検索用の ViewModel を保持
-    @StateObject var searchPlaylistVM = SearchPlaylistViewModel()
-    
+    @State private var selectedSound: String = StepSoundManager.shared.soundName
     @State private var isNavigatingToSearchPlaylist = false
+    
+    @StateObject var bleManager: BLEManager
+    
+    init() {
+        let params = StepDetectionParameters()
+        _parameters = StateObject(wrappedValue: params)
+        _bleManager = StateObject(wrappedValue: BLEManager(parameters: params))
+    }
 
     var body: some View {
         NavigationStack {
@@ -52,6 +58,12 @@ struct ContentView: View {
                                 Text("\(bleManager.connectedPeripherals.count)")
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
+                            }
+                        }
+                        NavigationLink(destination: StepDetectionSettings(parameters: parameters)) {
+                            HStack {
+                                Text("Step Detection Settings")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
                         NavigationLink(destination: SpmSettingView(spm: spmManager.spm, onSpmUpdate: { newSpm in
