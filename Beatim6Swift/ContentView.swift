@@ -24,7 +24,7 @@ struct ContentView: View {
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
     @State private var musicDefaultBpm: Double = 120
-    @State private var selectedSound: String = StepSoundManager.shared.soundName
+    @State private var selectedSound: String = StepSoundManager.shared.rightStepSoundName
     
     // Playlist 検索用の ViewModel を保持
     @StateObject var searchPlaylistVM = SearchPlaylistViewModel()
@@ -33,7 +33,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-                Form {
+            Form {
                     // // Apple Music Authorization
                     // Section {
                     //     NavigationLink(destination: AuthView(authManager: authManager)) {
@@ -70,7 +70,7 @@ struct ContentView: View {
                         Toggle("Auto SPM Update", isOn: $spmManager.allowStepUpdate)
 
                         Button("add step manually"){
-                            stepSoundManager.playSound()
+                            stepSoundManager.playRightStepSound()
                             if spmManager.allowStepUpdate {
                                 spmManager.addStepData()
                             }
@@ -142,13 +142,14 @@ struct ContentView: View {
                     // Step Sound Selection
                     Section {
                         NavigationLink(destination: StepSoundSelectionView(
-                            selectedSound: $stepSoundManager.soundName,
-                            setSoundName: stepSoundManager.setSoundName
+                            selectedRightStepSound: $stepSoundManager.rightStepSoundName,
+                            selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
+                            setSoundName: stepSoundManager.setRightStepSoundName
                         )) {
                             HStack {
-                                Text("Step Sound")
+                                Text("Right Step Sound")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(stepSoundManager.soundName)")
+                                Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
                             }
@@ -186,7 +187,7 @@ struct ContentView: View {
 
             bleManager.onRStepDetectionNotified = {
                 print("R step detection notified")
-                stepSoundManager.playSound()
+                stepSoundManager.playRightStepSound()
                 if spmManager.allowStepUpdate {
                     spmManager.addStepData()
                 }
@@ -194,7 +195,7 @@ struct ContentView: View {
 
             bleManager.onLStepDetectionNotified = {
                 print("L step detection notified")
-                stepSoundManager.playSound()
+                stepSoundManager.playLeftStepSound()
                 if spmManager.allowStepUpdate {
                     spmManager.addStepData()
                 }

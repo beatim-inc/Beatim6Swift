@@ -12,8 +12,10 @@ import AVFoundation
 class StepSoundManager: ObservableObject {
     static let shared = StepSoundManager()
     var audioPlayer: AVAudioPlayer?
-    @Published var soundName = "Crap" // soundName を変更可能にする
+    @Published var rightStepSoundName = "Crap" // soundName を変更可能にする
+    @Published var leftStepSoundName = "Crap"
     private var timer: Timer?
+    private var isStepSoundRight: Bool = false
     @Published var isPeriodicStepSoundActive: Bool = false
 
     init() {
@@ -29,11 +31,15 @@ class StepSoundManager: ObservableObject {
         }
     }
 
-    func setSoundName(to newSoundName: String) {
-        soundName = newSoundName
+    func setRightStepSoundName(to newSoundName: String) {
+        rightStepSoundName = newSoundName
+    }
+    
+    func setLeftStepSoundName(to newSoundName: String) {
+        leftStepSoundName = newSoundName
     }
 
-    private func playSoundOnce() {
+    private func playSoundOnce(soundName: String) {
         if let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") {
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: url)
@@ -46,8 +52,11 @@ class StepSoundManager: ObservableObject {
         }
     }
     
-    func playSound(){
-        if(!isPeriodicStepSoundActive){playSoundOnce()}
+    func playRightStepSound(){
+        if(!isPeriodicStepSoundActive){playSoundOnce(soundName:rightStepSoundName)}
+    }
+    func playLeftStepSound(){
+        if(!isPeriodicStepSoundActive){playSoundOnce(soundName: leftStepSoundName)}
     }
     
     func playSoundPeriodically(BPM: Double) {
@@ -56,7 +65,16 @@ class StepSoundManager: ObservableObject {
             timer?.invalidate()
             let interval = 60.0 / BPM
             timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-                if(self?.isPeriodicStepSoundActive == true){self?.playSoundOnce()}
+                if(self?.isPeriodicStepSoundActive == true){
+                    if(self?.isStepSoundRight == true){
+                        self?.playSoundOnce(soundName:self?.rightStepSoundName ?? "")
+                    }else{
+                        self?.playSoundOnce(soundName: self?.leftStepSoundName ?? "")
+                    }
+                    if(self?.isStepSoundRight != nil){
+                        self!.isStepSoundRight = !self!.isStepSoundRight
+                    }
+                }
             }
         }
     }
