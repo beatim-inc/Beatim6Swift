@@ -11,6 +11,8 @@ import SwiftUI
 
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     var centralManager: CBCentralManager!
+    var parameters: StepDetectionParameters
+
     @Published var isSwitchedOn = false
     @Published var peripherals = [CBPeripheral]() // 🎯 接続可能なデバイスのリスト
     @Published var connectedPeripherals = [CBPeripheral]() // 🎯 接続中のデバイスのリスト
@@ -28,15 +30,11 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     var stepCountL = 0
     var stepCountR = 0
 
-    // パラメータ定義
-    let STEP_TRIGGER: Float = 10.0  // GXの閾値
-    let DIFF_GX_THRESHOLD: Float = -50.0
-    let DEBOUNCE_TIME: TimeInterval = 300 // ミリ秒
-    
     var onLStepDetectionNotified: (() -> Void)?
     var onRStepDetectionNotified: (() -> Void)?
 
-   override init() {
+    init(parameters: StepDetectionParameters) {
+        self.parameters = parameters
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
@@ -140,10 +138,14 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
 
     private func detectStep(peripheral: String, gx: Float, currentTime: TimeInterval) {
+        let stepTrigger = parameters.stepTrigger
+        let diffGxThreshold = parameters.diffGxThreshold
+        let debounceTime = parameters.debounceTime
+        
         if peripheral == "L" {
-            if (gx - STEP_TRIGGER) * (prevGxL - STEP_TRIGGER) < 0 &&
-                gx - prevGxL < DIFF_GX_THRESHOLD &&
-                currentTime - lastStepTimeL > DEBOUNCE_TIME {
+            if (gx - stepTrigger) * (prevGxL - stepTrigger) < 0 &&
+                gx - prevGxL < diffGxThreshold &&
+                currentTime - lastStepTimeL > debounceTime {
 
                 lastStepTimeL = currentTime
                 stepCountL += 1
@@ -152,9 +154,9 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             }
             prevGxL = gx
         } else if peripheral == "R" {
-            if (gx - STEP_TRIGGER) * (prevGxR - STEP_TRIGGER) < 0 &&
-                gx - prevGxR < DIFF_GX_THRESHOLD &&
-                currentTime - lastStepTimeR > DEBOUNCE_TIME {
+            if (gx - stepTrigger) * (prevGxR - stepTrigger) < 0 &&
+                gx - prevGxR < diffGxThreshold &&
+                currentTime - lastStepTimeR > debounceTime {
 
                 lastStepTimeR = currentTime
                 stepCountR += 1
