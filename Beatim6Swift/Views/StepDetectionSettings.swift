@@ -1,8 +1,8 @@
 import SwiftUI
 
 class StepDetectionParameters: ObservableObject {
-    @Published var stepTrigger: Float = 10.0  // GXの閾値
-    @Published var diffGxThreshold: Float = -50.0 // GXの変化量
+    @Published var stepTrigger: Float = 200.0  // GXの閾値
+    @Published var diffGxThreshold: Float = -100.0 // GXの変化量
     @Published var debounceTime: TimeInterval = 300 // ミリ秒
 }
 
@@ -10,19 +10,15 @@ struct StepDetectionSettings: View {
     @ObservedObject var parameters: StepDetectionParameters
 
     var body: some View {
-        VStack {
-            Text("Step Detection Settings")
-                .font(.headline)
-                .padding()
-
+        Form {
             VStack(alignment: .leading) {
                 Text("Step Trigger (GX)")
-                Slider(value: $parameters.stepTrigger, in: 5...20, step: 0.5)
+                Slider(value: $parameters.stepTrigger, in: 0...400, step: 1)
                 Text("Current: \(parameters.stepTrigger, specifier: "%.1f")")
                     .font(.caption)
 
                 Text("Diff GX Threshold")
-                Slider(value: $parameters.diffGxThreshold, in: -100...0, step: 1)
+                Slider(value: $parameters.diffGxThreshold, in: -200...0, step: 1)
                 Text("Current: \(parameters.diffGxThreshold, specifier: "%.1f")")
                     .font(.caption)
 
@@ -32,9 +28,7 @@ struct StepDetectionSettings: View {
                     .font(.caption)
             }
             .padding()
-
-            Spacer()
         }
-        .padding()
+        .navigationTitle("Step Detect Settings")
     }
 }
