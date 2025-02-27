@@ -20,8 +20,13 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     let serviceUUID = CBUUID(string: "56bb2dcf-04b3-4923-bbbd-ea12964d4d3b")
     let stepCharacteristicUUID = CBUUID(string: "f48c7a6c-540c-4214-9e4c-f7041cfe6844")
     
+    //For NITTO
     let leftPeripheralUUID = UUID(uuidString: "721E54CA-E1BA-595E-AF97-C49D2998436A") // M5StickCP2(L)
     let rightPeripheralUUID = UUID(uuidString: "EFDABB3F-18AD-F631-846F-A58A9427D077") // M5StickCP2(R)
+    
+    //For NOMURA
+    //let leftPeripheralUUID = UUID(uuidString: "FFBD1E41-67FC-231E-0FE7-FB03A3D18DC2") // M5StickCP2(L)
+    //let rightPeripheralUUID = UUID(uuidString: "D318B40F-5AC8-5E47-00D0-A426C337A5C6") // M5StickCP2(R)
     
     var prevGxL: Float = 0.0
     var prevGxR: Float = 0.0
