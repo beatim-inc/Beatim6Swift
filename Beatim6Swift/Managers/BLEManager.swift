@@ -16,10 +16,13 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     @Published var connectedPeripherals = [CBPeripheral]() // 🎯 接続中のデバイスのリスト
     
     let serviceUUID = CBUUID(string: "56bb2dcf-04b3-4923-bbbd-ea12964d4d3b")
-    let lStepcharacteristicUUID = CBUUID(string: "f48c7a6c-540c-4214-9e4c-f7041cfe6844")
-    let rStepcharacteristicUUID = CBUUID(string: "718cf980-b71e-4e35-b3a6-b2cbe3cb6c97")
+    let stepCharacteristicUUID = CBUUID(string: "f48c7a6c-540c-4214-9e4c-f7041cfe6844")
     
-    var onStepDetectionNotified:  (() -> Void)?
+    let leftPeripheralUUID = UUID(uuidString: "721E54CA-E1BA-595E-AF97-C49D2998436A") // M5StickCP2(L)
+    let rightPeripheralUUID = UUID(uuidString: "EFDABB3F-18AD-F631-846F-A58A9427D077") // M5StickCP2(R)
+    
+    var onLStepDetectionNotified: (() -> Void)?
+    var onRStepDetectionNotified: (() -> Void)?
 
    override init() {
         super.init()
@@ -89,7 +92,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         print("enter didDiscoverService")
         guard let services = peripheral.services else { return }
         for service in services {
-            peripheral.discoverCharacteristics([lStepcharacteristicUUID,rStepcharacteristicUUID], for: service)
+            peripheral.discoverCharacteristics([stepCharacteristicUUID], for: service)
         }
     }
 
@@ -110,7 +113,15 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             // ここでデータを処理
             let decodedString = String(data: data, encoding: .utf8)
             if decodedString == "step" {
-                    onStepDetectionNotified?()
+                if peripheral.identifier == leftPeripheralUUID {
+                    print("Left step detected")
+                    onLStepDetectionNotified?()
+                } else if peripheral.identifier == rightPeripheralUUID {
+                    print("Right step detected")
+                    onRStepDetectionNotified?()
+                } else {
+                    print("Unknown step source")
+                }
             }
         }
     }

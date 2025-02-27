@@ -184,8 +184,16 @@ struct ContentView: View {
             bleManager.startScanning()
             startMusicPlaybackObserver() // 🎯 Apple Music の現在の曲情報を定期監視
 
-            bleManager.onStepDetectionNotified = {
-                print("step detection notified")
+            bleManager.onRStepDetectionNotified = {
+                print("R step detection notified")
+                stepSoundManager.playSound()
+                if spmManager.allowStepUpdate {
+                    spmManager.addStepData()
+                }
+            }
+
+            bleManager.onLStepDetectionNotified = {
+                print("L step detection notified")
                 stepSoundManager.playSound()
                 if spmManager.allowStepUpdate {
                     spmManager.addStepData()
