@@ -16,23 +16,7 @@ struct StepSoundSelectionView: View {
     
     var body: some View {
         VStack{
-            Text("Right Step Sound")
-            List(availableSounds, id: \..self) { sound in
-                HStack {
-                    Text(sound)
-                    Spacer()
-                    if sound == selectedRightStepSound {
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.blue)
-                    }
-                }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    selectedRightStepSound = sound
-                    StepSoundManager.shared.setRightStepSoundName(to: sound)
-                }
-            }
-            Text( "Left Step Sound")
+            sectionTitle("Left Step Sound")
             List(availableSounds, id: \..self) { sound in
                 HStack {
                     Text(sound)
@@ -48,7 +32,32 @@ struct StepSoundSelectionView: View {
                     StepSoundManager.shared.setLeftStepSoundName(to: sound)
                 }
             }
+            sectionTitle("Right Step Sound")
+            List(availableSounds, id: \..self) { sound in
+                HStack {
+                    Text(sound)
+                    Spacer()
+                    if sound == selectedRightStepSound {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.blue)
+                    }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectedRightStepSound = sound
+                    StepSoundManager.shared.setRightStepSoundName(to: sound)
+                }
+            }
         }
             .navigationTitle("Select Step Sound")
         }
+    
+    // カスタムタイトルビュー
+    @ViewBuilder
+    private func sectionTitle(_ title: String) -> some View {
+        Text(title)
+            .frame(maxWidth: .infinity, alignment: .leading) // 左揃え
+            .font(.headline)
+            .padding()
+    }
 }
