@@ -21,6 +21,18 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     let leftPeripheralUUID = UUID(uuidString: "721E54CA-E1BA-595E-AF97-C49D2998436A") // M5StickCP2(L)
     let rightPeripheralUUID = UUID(uuidString: "EFDABB3F-18AD-F631-846F-A58A9427D077") // M5StickCP2(R)
     
+    var prevGxL: Float = 0.0
+    var prevGxR: Float = 0.0
+    var lastStepTimeL: TimeInterval = 0
+    var lastStepTimeR: TimeInterval = 0
+    var stepCountL = 0
+    var stepCountR = 0
+
+    // パラメータ定義
+    let STEP_TRIGGER: Float = 10.0  // GXの閾値
+    let DIFF_GX_THRESHOLD: Float = -50.0
+    let DEBOUNCE_TIME: TimeInterval = 300 // ミリ秒
+    
     var onLStepDetectionNotified: (() -> Void)?
     var onRStepDetectionNotified: (() -> Void)?
 
@@ -108,21 +120,48 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        print("enter didUpdateValue")
-        if let data = characteristic.value {
-            // ここでデータを処理
-            let decodedString = String(data: data, encoding: .utf8)
-            if decodedString == "step" {
-                if peripheral.identifier == leftPeripheralUUID {
-                    print("Left step detected")
-                    onLStepDetectionNotified?()
-                } else if peripheral.identifier == rightPeripheralUUID {
-                    print("Right step detected")
-                    onRStepDetectionNotified?()
-                } else {
-                    print("Unknown step source")
-                }
+        guard let data = characteristic.value, let decodedString = String(data: data, encoding: .utf8) else { return }
+        let imuData = decodedString.split(separator: ",").compactMap { Float($0) }
+        
+        if imuData.count == 6 {
+            let ax = imuData[0], ay = imuData[1], az = imuData[2]
+            let gx = imuData[3], gy = imuData[4], gz = imuData[5]
+            
+            let currentTime = Date().timeIntervalSince1970 * 1000 // ミリ秒単位
+
+            if peripheral.identifier == leftPeripheralUUID {
+                detectStep(peripheral: "L", gx: gx, currentTime: currentTime)
+            } else if peripheral.identifier == rightPeripheralUUID {
+                detectStep(peripheral: "R", gx: gx, currentTime: currentTime)
             }
+
+            print("IMU Data: ax:\(ax), ay:\(ay), az:\(az), gx:\(gx), gy:\(gy), gz:\(gz)")
+        }
+    }
+
+    private func detectStep(peripheral: String, gx: Float, currentTime: TimeInterval) {
+        if peripheral == "L" {
+            if (gx - STEP_TRIGGER) * (prevGxL - STEP_TRIGGER) < 0 &&
+                gx - prevGxL < DIFF_GX_THRESHOLD &&
+                currentTime - lastStepTimeL > DEBOUNCE_TIME {
+
+                lastStepTimeL = currentTime
+                stepCountL += 1
+                print("✅ Left step detected! Total: \(stepCountL)")
+                onLStepDetectionNotified?()
+            }
+            prevGxL = gx
+        } else if peripheral == "R" {
+            if (gx - STEP_TRIGGER) * (prevGxR - STEP_TRIGGER) < 0 &&
+                gx - prevGxR < DIFF_GX_THRESHOLD &&
+                currentTime - lastStepTimeR > DEBOUNCE_TIME {
+
+                lastStepTimeR = currentTime
+                stepCountR += 1
+                print("✅ Right step detected! Total: \(stepCountR)")
+                onRStepDetectionNotified?()
+            }
+            prevGxR = gx
         }
     }
 }
