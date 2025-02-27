@@ -24,7 +24,6 @@ struct ContentView: View {
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
     @State private var musicDefaultBpm: Double = 120
-    @State private var selectedSound: String = StepSoundManager.shared.rightStepSoundName
     
     // Playlist 検索用の ViewModel を保持
     @StateObject var searchPlaylistVM = SearchPlaylistViewModel()
