@@ -25,7 +25,7 @@ struct ContentView: View {
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
     @State private var musicDefaultBpm: Double = 120
-    @State private var selectedSound: String = StepSoundManager.shared.soundName
+//    @State private var selectedSound: String = StepSoundManager.shared.soundName
     @State private var isNavigatingToSearchPlaylist = false
     
     @StateObject var bleManager: BLEManager
