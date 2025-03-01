@@ -48,6 +48,11 @@ struct ContentView: View {
                     //         SubscriptionInfoView()
                     //     }
                     // }
+                
+                    // MusicPlayer
+                Section {
+                    MusicPlayerView(stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm:musicDefaultBpm)
+                }
 
                     // Sensor
                     Section {
