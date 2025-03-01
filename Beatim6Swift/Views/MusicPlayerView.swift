@@ -24,16 +24,63 @@ struct MusicPlayerView: View {
 
     var body: some View {
         VStack {
-            // シーケンスバー
-            Slider(value: $playbackProgress, in: 0...songDuration)
-                .padding()
+            // 行動開始位置を示すアイコン系
+            HStack(spacing: 5) {
+                Spacer().frame(width :0)
+                //イントロ（立ち止まる）
+                VStack{
+                    Image(systemName: "figure.stand")
+                    .resizable()
+                    .frame(width: 20, height: 40)
+                    .foregroundColor(.gray)
+                    Color.gray.frame(width: 35,height: 5)
+                }
+                
+                //歌（歩く）
+                VStack{
+                    Image(systemName: "figure.walk")
+                    .resizable()
+                    .frame(width: 20, height: 40)
+                    .foregroundColor(.gray)
+                    Color.gray.frame(width: 90,height: 5)
+                }
+
+                //間奏（立ち止まる）
+                VStack{
+                    Image(systemName: "figure.stand")
+                    .resizable()
+                    .frame(width: 20, height: 40)
+                    .foregroundColor(.gray)
+                    Color.gray.frame(width: 35,height: 5)
+                }
+        
+                //試行終了（デバイスを外す）
+                /*
+                VStack{
+                    Image(systemName: "checkmark")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(.gray)
+                }
+                */
+                Spacer()
+            }
             
+            // シーケンスバー
+            VStack(alignment: .leading){
+                Slider(value: $playbackProgress, in: 0...songDuration)
+                Text(timeString(from: ApplicationMusicPlayer.shared.playbackTime))
+                      .font(.caption)
+                      .foregroundColor(.gray)
+            }
+            //再生ボタン系
             HStack (spacing: 40){
                 //頭出しボタン
                 Button(action:{
                     Task{
                         stepSoundManager.playSoundPeriodically(BPM:spmManager.spm)
-                        ApplicationMusicPlayer.shared.restartCurrentEntry()
+                        ApplicationMusicPlayer.shared.playbackTime = 0
+                        ApplicationMusicPlayer.shared.pause()
                     }
                 }
                 ) {
@@ -46,9 +93,10 @@ struct MusicPlayerView: View {
                 Button(action: togglePlayback) {
                     Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .resizable()
-                        .frame(width: 50, height: 50)
+                        .frame(width: 70, height: 70)
                         .foregroundColor(.blue)
                 }
+                Spacer().frame(width: 30)
             }
             .padding()
         }
@@ -113,5 +161,11 @@ struct MusicPlayerView: View {
                 print(error.localizedDescription)
             }
         }
+    }
+    // ⏳ "mm:ss" 形式に変換する関数
+    private func timeString(from time: TimeInterval) -> String {
+        let minutes = Int(time) / 60
+        let seconds = Int(time) % 60
+        return String(format: "%d:%02d", minutes, seconds)
     }
 }
