@@ -158,15 +158,22 @@ struct ContentView: View {
                             setSoundName: stepSoundManager.setRightStepSoundName
                         )) {
                             HStack {
-                                Text("Right Step Sound")
+                                Text("Step Sound")
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                //NOTE:StepSound名は隠すor実験者しかわからないラベルをつける
+                                /*
                                 Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
+                                */
                             }
                         }
-                        Toggle("Delayed StepSound", isOn: $stepSoundManager.isDelayedStepSoundActive)
-                        Toggle("Periodic StepSound", isOn: $stepSoundManager.isPeriodicStepSoundActive)
+                        //NOTE:ランダムな時間遅れは実験条件から除外されました
+                        //Toggle("Delayed StepSound", isOn: $stepSoundManager.isDelayedStepSoundActive)
+                        NavigationLink(destination:PeriodicStepSoundSettingView(stepSoundManager: stepSoundManager)) {
+                                Text("Periodic Sound Setting")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                        }
                         Button {
                             stepSoundManager.playSoundPeriodically(BPM: spmManager.spm)
                         } label: {
