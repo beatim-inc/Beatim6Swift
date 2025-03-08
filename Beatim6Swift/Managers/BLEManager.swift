@@ -20,11 +20,11 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     let serviceUUID = CBUUID(string: "56bb2dcf-04b3-4923-bbbd-ea12964d4d3b")
     let stepCharacteristicUUID = CBUUID(string: "f48c7a6c-540c-4214-9e4c-f7041cfe6844")
     
-    //For NITTO
+    //For NIT
     let leftPeripheralUUID = UUID(uuidString: "721E54CA-E1BA-595E-AF97-C49D2998436A") // M5StickCP2(L)
     let rightPeripheralUUID = UUID(uuidString: "EFDABB3F-18AD-F631-846F-A58A9427D077") // M5StickCP2(R)
     
-    //For NOMURA
+    //For NOM
     //let leftPeripheralUUID = UUID(uuidString: "FFBD1E41-67FC-231E-0FE7-FB03A3D18DC2") // M5StickCP2(L)
     //let rightPeripheralUUID = UUID(uuidString: "D318B40F-5AC8-5E47-00D0-A426C337A5C6") // M5StickCP2(R)
     
@@ -133,25 +133,26 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             let currentTime = Date().timeIntervalSince1970 * 1000 // ミリ秒単位
 
             if peripheral.identifier == leftPeripheralUUID {
-                detectStep(peripheral: "L", gx: gx, currentTime: currentTime)
+                detectStep(peripheral: "L", gx: gx, az: az, currentTime: currentTime)
             } else if peripheral.identifier == rightPeripheralUUID {
-                detectStep(peripheral: "R", gx: gx, currentTime: currentTime)
+                detectStep(peripheral: "R", gx: gx, az: az, currentTime: currentTime)
             }
 
             print("IMU Data: ax:\(ax), ay:\(ay), az:\(az), gx:\(gx), gy:\(gy), gz:\(gz)")
         }
     }
 
-    private func detectStep(peripheral: String, gx: Float, currentTime: TimeInterval) {
+    private func detectStep(peripheral: String, gx: Float, az: Float, currentTime: TimeInterval) {
         let stepTrigger = parameters.stepTrigger
         let diffGxThreshold = parameters.diffGxThreshold
+        let azThreshould = parameters.azThreshould
         let debounceTime = parameters.debounceTime
         
         if peripheral == "L" {
-            if (gx - stepTrigger) * (prevGxL - stepTrigger) < 0 &&
-                gx - prevGxL < diffGxThreshold &&
-                currentTime - lastStepTimeL > debounceTime {
-
+//            if (gx - stepTrigger) * (prevGxL - stepTrigger) < 0 &&
+//                gx - prevGxL < diffGxThreshold &&
+//                currentTime - lastStepTimeL > debounceTime {
+            if az < azThreshould && currentTime - lastStepTimeL > debounceTime {
                 lastStepTimeL = currentTime
                 stepCountL += 1
                 print("✅ Left step detected! Total: \(stepCountL)")
@@ -159,10 +160,10 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             }
             prevGxL = gx
         } else if peripheral == "R" {
-            if (gx - stepTrigger) * (prevGxR - stepTrigger) < 0 &&
-                gx - prevGxR < diffGxThreshold &&
-                currentTime - lastStepTimeR > debounceTime {
-
+//            if (gx - stepTrigger) * (prevGxR - stepTrigger) < 0 &&
+//                gx - prevGxR < diffGxThreshold &&
+//                currentTime - lastStepTimeR > debounceTime {
+            if az < azThreshould && currentTime - lastStepTimeR > debounceTime {
                 lastStepTimeR = currentTime
                 stepCountR += 1
                 print("✅ Right step detected! Total: \(stepCountR)")

@@ -3,6 +3,7 @@ import SwiftUI
 class StepDetectionParameters: ObservableObject {
     @Published var stepTrigger: Float = 200.0  // GXの閾値
     @Published var diffGxThreshold: Float = -100.0 // GXの変化量
+    @Published var azThreshould: Float = -0.8 // 接地時Z軸加速度の閾値
     @Published var debounceTime: TimeInterval = 300 // ミリ秒
 }
 
@@ -19,6 +20,11 @@ struct StepDetectionSettings: View {
 
                 Text("Diff GX Threshold")
                 Slider(value: $parameters.diffGxThreshold, in: -200...0, step: 1)
+                Text("Current: \(parameters.diffGxThreshold, specifier: "%.1f")")
+                    .font(.caption)
+                
+                Text("AZ Threshold")
+                Slider(value: $parameters.diffGxThreshold, in: -3...0, step: 0.1)
                 Text("Current: \(parameters.diffGxThreshold, specifier: "%.1f")")
                     .font(.caption)
 

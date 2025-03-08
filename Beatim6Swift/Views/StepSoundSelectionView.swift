@@ -12,7 +12,7 @@ struct StepSoundSelectionView: View {
     @Binding var selectedRightStepSound: String
     @Binding var selectedLeftStepSound: String
     var setSoundName: (String) -> Void
-    let availableSounds = ["None","BaseDrum", "Crap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2", "Claverotor1", "Claverotor2"]
+    let availableSounds = ["None","BaseDrum", "Clap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2", "Claverotor1", "Claverotor2"]
     
     var body: some View {
         VStack{
