@@ -143,15 +143,10 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
 
     private func detectStep(peripheral: String, gx: Float, az: Float, currentTime: TimeInterval) {
-        let stepTrigger = parameters.stepTrigger
-        let diffGxThreshold = parameters.diffGxThreshold
         let azThreshould = parameters.azThreshould
         let debounceTime = parameters.debounceTime
         
         if peripheral == "L" {
-//            if (gx - stepTrigger) * (prevGxL - stepTrigger) < 0 &&
-//                gx - prevGxL < diffGxThreshold &&
-//                currentTime - lastStepTimeL > debounceTime {
             if az < azThreshould && currentTime - lastStepTimeL > debounceTime {
                 lastStepTimeL = currentTime
                 stepCountL += 1
@@ -160,9 +155,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             }
             prevGxL = gx
         } else if peripheral == "R" {
-//            if (gx - stepTrigger) * (prevGxR - stepTrigger) < 0 &&
-//                gx - prevGxR < diffGxThreshold &&
-//                currentTime - lastStepTimeR > debounceTime {
             if az < azThreshould && currentTime - lastStepTimeR > debounceTime {
                 lastStepTimeR = currentTime
                 stepCountR += 1

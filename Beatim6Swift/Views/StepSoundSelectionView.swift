@@ -12,6 +12,7 @@ struct StepSoundSelectionView: View {
     @Binding var selectedRightStepSound: String
     @Binding var selectedLeftStepSound: String
     var setSoundName: (String) -> Void
+    @ObservedObject var stepSoundManager = StepSoundManager.shared
     let availableSounds = ["None","BaseDrum", "Clap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2", "Claverotor1", "Claverotor2"]
     
     var body: some View {
@@ -49,8 +50,8 @@ struct StepSoundSelectionView: View {
                 }
             }
         }
-            .navigationTitle("Select Step Sound")
-        }
+        .navigationTitle("Select Step Sound")
+    }
     
     // カスタムタイトルビュー
     @ViewBuilder

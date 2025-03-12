@@ -12,14 +12,15 @@ import AVFoundation
 class StepSoundManager: ObservableObject {
     static let shared = StepSoundManager()
     var audioPlayer: AVAudioPlayer?
-    @Published var rightStepSoundName = "Crap" // soundName を変更可能にする
-    @Published var leftStepSoundName = "Crap"
+    @Published var rightStepSoundName = "Clap" // soundName を変更可能にする
+    @Published var leftStepSoundName = "Clap"
     private var timer: Timer?
     private var isStepSoundRight: Bool = false
     @Published var isPeriodicStepSoundActive: Bool = false
     @Published var isDelayedStepSoundActive = false
     private let maxDelayTime = 0.7
     private let minDelayTime = 0.0
+    @Published var volume: Float = 1.0
 
     init() {
         setupAudioSession()
@@ -45,8 +46,10 @@ class StepSoundManager: ObservableObject {
     private func playSoundOnce(soundName: String) {
         if let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") {
             do {
-                audioPlayer = try AVAudioPlayer(contentsOf: url)
-                audioPlayer?.play()
+                let player = try AVAudioPlayer(contentsOf: url)
+                player.volume = volume
+                player.play()
+                audioPlayer = player  // インスタンスを保持
             } catch {
                 print("Error playing sound: \(error.localizedDescription)")
             }

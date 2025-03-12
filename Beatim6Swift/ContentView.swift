@@ -173,6 +173,9 @@ struct ContentView: View {
                                 */
                             }
                         }
+                        Slider(value: $stepSoundManager.volume, in: 0...1, step: 0.1) {
+                        }
+                        .padding()
                         //NOTE:ランダムな時間遅れは実験条件から除外されました
                         //Toggle("Delayed StepSound", isOn: $stepSoundManager.isDelayedStepSoundActive)
                         NavigationLink(destination:PeriodicStepSoundSettingView(stepSoundManager: stepSoundManager)) {
