@@ -14,7 +14,7 @@ struct ContentView: View {
     @StateObject var authManager = AuthManager()
     @StateObject var parameters = StepDetectionParameters()
     @StateObject var spmManager = SPMManager()
-    @StateObject var stepSoundManager = StepSoundManager()
+    @StateObject private var stepSoundManager = StepSoundManager()
     @StateObject var searchPlaylistVM = SearchPlaylistViewModel()
 
     @State private var musicSubscription: MusicSubscription?
@@ -161,7 +161,8 @@ struct ContentView: View {
                             selectedRightStepSound: $stepSoundManager.rightStepSoundName,
                             selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
                             setSoundName: stepSoundManager.setRightStepSoundName
-                        )) {
+                            )
+                            .environmentObject(stepSoundManager)) {
                             HStack {
                                 Text("Step Sound")
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -173,9 +174,6 @@ struct ContentView: View {
                                 */
                             }
                         }
-                        Slider(value: $stepSoundManager.volume, in: 0...1, step: 0.1) {
-                        }
-                        .padding()
                         //NOTE:ランダムな時間遅れは実験条件から除外されました
                         //Toggle("Delayed StepSound", isOn: $stepSoundManager.isDelayedStepSoundActive)
                         NavigationLink(destination:PeriodicStepSoundSettingView(stepSoundManager: stepSoundManager)) {

@@ -20,7 +20,8 @@ class StepSoundManager: ObservableObject {
     @Published var isDelayedStepSoundActive = false
     private let maxDelayTime = 0.7
     private let minDelayTime = 0.0
-    @Published var volume: Float = 1.0
+    @Published var rightStepVolume: Float = 1.0
+    @Published var leftStepVolume: Float = 1.0
 
     init() {
         setupAudioSession()
@@ -42,8 +43,16 @@ class StepSoundManager: ObservableObject {
     func setLeftStepSoundName(to newSoundName: String) {
         leftStepSoundName = newSoundName
     }
+    
+    func setRightStepVolume(_ volume: Float) {
+        rightStepVolume = max(0.0, min(volume, 1.0))  // 0.0〜1.0に制限
+    }
 
-    private func playSoundOnce(soundName: String) {
+    func setLeftStepVolume(_ volume: Float) {
+        leftStepVolume = max(0.0, min(volume, 1.0))  // 0.0〜1.0に制限
+    }
+
+    private func playSoundOnce(soundName: String, volume: Float) {
         if let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") {
             do {
                 let player = try AVAudioPlayer(contentsOf: url)
@@ -58,27 +67,27 @@ class StepSoundManager: ObservableObject {
         }
     }
     
-    private func playDelayedSoundOnce(soundName: String){
+    private func playDelayedSoundOnce(soundName: String, volume: Float){
         let delay = Double.random(in: minDelayTime...maxDelayTime)
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            self.playSoundOnce(soundName: soundName)
+            self.playSoundOnce(soundName: soundName, volume: volume)
         }
     }
     
     func playRightStepSound(){
         if(isPeriodicStepSoundActive){return}
         if(isDelayedStepSoundActive){
-            playDelayedSoundOnce(soundName: rightStepSoundName)
+            playDelayedSoundOnce(soundName: rightStepSoundName, volume: rightStepVolume)
         }else{
-            playSoundOnce(soundName:rightStepSoundName)
+            playSoundOnce(soundName:rightStepSoundName, volume: rightStepVolume)
         }
     }
     func playLeftStepSound(){
         if(isPeriodicStepSoundActive){return}
         if(isDelayedStepSoundActive){
-            playDelayedSoundOnce(soundName: leftStepSoundName)
+            playDelayedSoundOnce(soundName: leftStepSoundName, volume: leftStepVolume)
         }else{
-            playSoundOnce(soundName: leftStepSoundName)
+            playSoundOnce(soundName: leftStepSoundName, volume: leftStepVolume)
         }
     }
     
@@ -90,9 +99,9 @@ class StepSoundManager: ObservableObject {
             timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
                 if(self?.isPeriodicStepSoundActive == true){
                     if(self?.isStepSoundRight == true){
-                        self?.playSoundOnce(soundName:self?.rightStepSoundName ?? "")
+                        self?.playSoundOnce(soundName:self?.rightStepSoundName ?? "", volume: self?.rightStepVolume ?? 1.0)
                     }else{
-                        self?.playSoundOnce(soundName: self?.leftStepSoundName ?? "")
+                        self?.playSoundOnce(soundName: self?.leftStepSoundName ?? "", volume: self?.leftStepVolume ?? 1.0)
                     }
                     if(self?.isStepSoundRight != nil){
                         self!.isStepSoundRight = !self!.isStepSoundRight

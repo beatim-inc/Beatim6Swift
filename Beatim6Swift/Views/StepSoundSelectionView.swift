@@ -12,42 +12,63 @@ struct StepSoundSelectionView: View {
     @Binding var selectedRightStepSound: String
     @Binding var selectedLeftStepSound: String
     var setSoundName: (String) -> Void
-    @ObservedObject var stepSoundManager = StepSoundManager.shared
+    @EnvironmentObject var stepSoundManager: StepSoundManager
     let availableSounds = ["None","BaseDrum", "Clap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2", "Claverotor1", "Claverotor2"]
     
     var body: some View {
-        VStack{
-            sectionTitle("Left Step Sound")
-            List(availableSounds, id: \..self) { sound in
-                HStack {
-                    Text(sound)
-                    Spacer()
-                    if sound == selectedLeftStepSound {
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.blue)
+        Form{
+            Section(header: Text("Left Step Sound")) {
+                List(availableSounds, id: \..self) { sound in
+                    HStack {
+                        Text(sound)
+                        Spacer()
+                        if sound == selectedLeftStepSound {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        selectedLeftStepSound = sound
+                        StepSoundManager.shared.setLeftStepSoundName(to: sound)
                     }
                 }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    selectedLeftStepSound = sound
-                    StepSoundManager.shared.setLeftStepSoundName(to: sound)
+                VStack {
+                    Slider(value: $stepSoundManager.leftStepVolume, in: 0...1, step: 0.1)
+                    HStack {
+                        Text("Low")
+                        Spacer()
+                        Text("High")
+                    }
                 }
+                .padding(.vertical, 8)
             }
-            sectionTitle("Right Step Sound")
-            List(availableSounds, id: \..self) { sound in
-                HStack {
-                    Text(sound)
-                    Spacer()
-                    if sound == selectedRightStepSound {
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.blue)
+            
+            Section(header: Text("Right Step Sound")) {
+                List(availableSounds, id: \..self) { sound in
+                    HStack {
+                        Text(sound)
+                        Spacer()
+                        if sound == selectedRightStepSound {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        selectedRightStepSound = sound
+                        StepSoundManager.shared.setRightStepSoundName(to: sound)
                     }
                 }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    selectedRightStepSound = sound
-                    StepSoundManager.shared.setRightStepSoundName(to: sound)
+                VStack {
+                    Slider(value: $stepSoundManager.rightStepVolume, in: 0...1, step: 0.1)
+                    HStack {
+                        Text("Low")
+                        Spacer()
+                        Text("High")
+                    }
                 }
+                .padding(.vertical, 8)
             }
         }
         .navigationTitle("Select Step Sound")
