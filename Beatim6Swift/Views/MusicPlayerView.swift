@@ -24,47 +24,47 @@ struct MusicPlayerView: View {
 
     var body: some View {
         VStack {
-            // 行動開始位置を示すアイコン系
-            HStack(spacing: 5) {
-                Spacer().frame(width :0)
-                //イントロ（立ち止まる）
-                VStack{
-                    Image(systemName: "figure.stand")
-                    .resizable()
-                    .frame(width: 20, height: 40)
-                    .foregroundColor(.gray)
-                    Color.gray.frame(width: 35,height: 5)
-                }
-                
-                //歌（歩く）
-                VStack{
-                    Image(systemName: "figure.walk")
-                    .resizable()
-                    .frame(width: 20, height: 40)
-                    .foregroundColor(.gray)
-                    Color.gray.frame(width: 90,height: 5)
-                }
-
-                //間奏（立ち止まる）
-                VStack{
-                    Image(systemName: "figure.stand")
-                    .resizable()
-                    .frame(width: 20, height: 40)
-                    .foregroundColor(.gray)
-                    Color.gray.frame(width: 35,height: 5)
-                }
-        
-                //試行終了（デバイスを外す）
-                /*
-                VStack{
-                    Image(systemName: "checkmark")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(.gray)
-                }
-                */
-                Spacer()
-            }
+//            // 行動開始位置を示すアイコン系
+//            HStack(spacing: 5) {
+//                Spacer().frame(width :0)
+//                //イントロ（立ち止まる）
+//                VStack{
+//                    Image(systemName: "figure.stand")
+//                    .resizable()
+//                    .frame(width: 20, height: 40)
+//                    .foregroundColor(.gray)
+//                    Color.gray.frame(width: 35,height: 5)
+//                }
+//                
+//                //歌（歩く）
+//                VStack{
+//                    Image(systemName: "figure.walk")
+//                    .resizable()
+//                    .frame(width: 20, height: 40)
+//                    .foregroundColor(.gray)
+//                    Color.gray.frame(width: 90,height: 5)
+//                }
+//
+//                //間奏（立ち止まる）
+//                VStack{
+//                    Image(systemName: "figure.stand")
+//                    .resizable()
+//                    .frame(width: 20, height: 40)
+//                    .foregroundColor(.gray)
+//                    Color.gray.frame(width: 35,height: 5)
+//                }
+//        
+//                //試行終了（デバイスを外す）
+//                /*
+//                VStack{
+//                    Image(systemName: "checkmark")
+//                    .resizable()
+//                    .frame(width: 20, height: 20)
+//                    .foregroundColor(.gray)
+//                }
+//                */
+//                Spacer()
+//            }
             
             // シーケンスバー
             VStack(alignment: .leading){
@@ -73,6 +73,8 @@ struct MusicPlayerView: View {
                       .font(.caption)
                       .foregroundColor(.gray)
             }
+            .padding()
+            
             //再生ボタン系
             HStack (spacing: 40){
                 //頭出しボタン
@@ -91,10 +93,10 @@ struct MusicPlayerView: View {
                 }
                 // 再生・停止ボタン
                 Button(action: togglePlayback) {
-                    Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                         .resizable()
-                        .frame(width: 70, height: 70)
-                        .foregroundColor(.blue)
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(.gray)
                 }
                 Spacer().frame(width: 30)
             }
