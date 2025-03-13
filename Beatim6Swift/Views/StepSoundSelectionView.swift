@@ -47,8 +47,15 @@ struct StepSoundSelectionView: View {
                     Slider(value: $stepSoundManager.leftStepVolume, in: 0...2, step: 0.1)
                     HStack {
                         Text("Low")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Text("Volume: \(stepSoundManager.leftStepVolume, specifier: "%.1f")")
+                            .font(.caption)
                         Spacer()
                         Text("High")
+                            .font(.caption)
+                            .foregroundColor(.gray)
                     }
                 }
                 .padding(.vertical, 8)
@@ -82,14 +89,21 @@ struct StepSoundSelectionView: View {
                     Slider(value: $stepSoundManager.rightStepVolume, in: 0...2, step: 0.1)
                     HStack {
                         Text("Low")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Text("Volume: \(stepSoundManager.rightStepVolume, specifier: "%.1f")")
+                            .font(.caption)
                         Spacer()
                         Text("High")
+                            .font(.caption)
+                            .foregroundColor(.gray)
                     }
                 }
                 .padding(.vertical, 8)
             }
         }
-        .navigationTitle("Select Step Sound")
+        .navigationTitle("Step Sound")
     }
     
     // カスタムタイトルビュー

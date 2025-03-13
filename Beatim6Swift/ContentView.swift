@@ -24,7 +24,7 @@ struct ContentView: View {
     @State private var currentPlaylistTitle: String = ""
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
-    @State private var musicDefaultBpm: Double = 120
+    @State private var musicDefaultBpm: Double = 93.0
 //    @State private var selectedSound: String = StepSoundManager.shared.soundName
     @State private var isNavigatingToSearchPlaylist = false
     
@@ -50,155 +50,155 @@ struct ContentView: View {
                     // }
                 
                     // MusicPlayer
+
                 Section {
                     MusicPlayerView(stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm:musicDefaultBpm)
                 }
 
-                    // Sensor
-                    Section {
-                        NavigationLink(destination: SensorListView(bleManager: bleManager)) {
-                            HStack {
-                                Text("Connected Sensors")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(bleManager.connectedPeripherals.count)")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                            }
-                        }
-                        NavigationLink(destination: StepDetectionSettings(parameters: parameters)) {
-                            HStack {
-                                Text("Step Detection Settings")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                        NavigationLink(destination: SpmSettingView(spm: spmManager.spm, onSpmUpdate: { newSpm in
-                            spmManager.spm = newSpm
-                        })) {
-                            HStack {
-                                Text("SPM")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(String(format: "%.1f", spmManager.spm))")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                            }
-                        }
-
-                        Toggle("Auto SPM Update", isOn: $spmManager.allowStepUpdate)
-
-                        Button("add step manually"){
-                            stepSoundManager.playRightStepSound()
-                            if spmManager.allowStepUpdate {
-                                spmManager.addStepData()
-                            }
-                        }
-
-                    }
-
-                    // Music Selection
-                    Section {
-                        Button {
-                            isNavigatingToSearchPlaylist = true
-                        } label: {
-                            HStack {
-                                Text("Playlist")
-                                    .foregroundColor(.primary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Spacer()
-                                Text(currentPlaylistTitle)
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 14)) // やや小さめに設定
-                                    .foregroundColor(.secondary) // システムのセカンダリカラーを使用
-                            }
-                        }
-                        NavigationLink(destination: SearchAlbumView()) {
-                            HStack {
-                                Text("Album")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(currentAlbumTitle)
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                            }
-                        }
-                        NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm).environmentObject(stepSoundManager).environmentObject(spmManager)) {
-                            HStack {
-                                Text("Song")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(currentSongTitle)
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                            }
-                            .onChange(of: currentSongTitle) { _,_ in
-                                if spmManager.spm > 10 && spmManager.spm < 200 {
-                                    updatePlaybackRate()
-                                }
-                            }
-                        }
-                        NavigationLink(destination: BpmSettingView(bpm: musicDefaultBpm, onBpmUpdate: { newBpm in
-                            musicDefaultBpm = newBpm
-                        })) {
-                            HStack {
-                                Text("Default BPM")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(String(format: "%.1f", musicDefaultBpm))")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                            }
-                        }
+                // Sensor
+                Section(header: Text("Step Sensing")) {
+                    NavigationLink(destination: SensorListView(bleManager: bleManager)) {
                         HStack {
-                            Text("Playback Rate")
+                            Text("Step Sensors Connection")
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(String(format: "%.2f", ApplicationMusicPlayer.shared.state.playbackRate))")
+                            Text("\(bleManager.connectedPeripherals.count)")
+                                .foregroundColor(.gray)
+                                .frame(alignment: .trailing)
+                        }
+                    }
+                    NavigationLink(destination: StepDetectionSettings(parameters: parameters)) {
+                        HStack {
+                            Text("Sensitivity Settings")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    NavigationLink(destination: SpmSettingView(spm: spmManager.spm, onSpmUpdate: { newSpm in
+                        spmManager.spm = newSpm
+                    })) {
+                        HStack {
+                            Text("Step Per Minute (SPM)")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(String(format: "%.1f", spmManager.spm))")
                                 .foregroundColor(.gray)
                                 .frame(alignment: .trailing)
                         }
                     }
 
-                    // Step Sound Selection
-                    Section {
-                        NavigationLink(destination: StepSoundSelectionView(
-                            selectedRightStepSound: $stepSoundManager.rightStepSoundName,
-                            selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
-                            setSoundName: stepSoundManager.setRightStepSoundName
-                            )
-                            .environmentObject(stepSoundManager)) {
-                            HStack {
-                                Text("Step Sound")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                //NOTE:StepSound名は隠すor実験者しかわからないラベルをつける
-                                
-                                Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                                
-                            }
+                    Toggle("Auto SPM Update", isOn: $spmManager.allowStepUpdate)
+
+                    Button("Add step manually"){
+                        stepSoundManager.playRightStepSound()
+                        if spmManager.allowStepUpdate {
+                            spmManager.addStepData()
                         }
-                        //NOTE:ランダムな時間遅れは実験条件から除外されました
-                        //Toggle("Delayed StepSound", isOn: $stepSoundManager.isDelayedStepSoundActive)
-                        NavigationLink(destination:PeriodicStepSoundSettingView(stepSoundManager: stepSoundManager)) {
-                                Text("Periodic Sound Setting")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
+                    // Music Selection
+                Section(header: Text("Music")) {
+                    Button {
+                        isNavigatingToSearchPlaylist = true
+                    } label: {
+                        HStack {
+                            Text("Playlist")
+                                .foregroundColor(.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Spacer()
+                            Text(currentPlaylistTitle)
+                                .foregroundColor(.gray)
+                                .frame(alignment: .trailing)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14)) // やや小さめに設定
+                                .foregroundColor(.secondary) // システムのセカンダリカラーを使用
                         }
-                        Button {
-                            stepSoundManager.playSoundPeriodically(BPM: spmManager.spm)
-                        } label: {
-                            HStack {
-                                Text("Play StepSound Periodically")
-                                    .foregroundColor(.primary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
+                    }
+                    NavigationLink(destination: SearchAlbumView()) {
+                        HStack {
+                            Text("Album")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text(currentAlbumTitle)
+                                .foregroundColor(.gray)
+                                .frame(alignment: .trailing)
                         }
-                        Button {
-                            stepSoundManager.stopPeriodicSound()
-                        } label: {
-                            HStack {
-                                Text("Stop Periodic StepSound")
-                                    .foregroundColor(.primary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm).environmentObject(stepSoundManager).environmentObject(spmManager)) {
+                        HStack {
+                            Text("Song")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text(currentSongTitle)
+                                .foregroundColor(.gray)
+                                .frame(alignment: .trailing)
+                        }
+                        .onChange(of: currentSongTitle) { _,_ in
+                            if spmManager.spm > 10 && spmManager.spm < 200 {
+                                updatePlaybackRate()
                             }
                         }
                     }
+                    NavigationLink(destination: BpmSettingView(bpm: musicDefaultBpm, onBpmUpdate: { newBpm in
+                        musicDefaultBpm = newBpm
+                    })) {
+                        HStack {
+                            Text("Default BPM")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(String(format: "%.1f", musicDefaultBpm))")
+                                .foregroundColor(.gray)
+                                .frame(alignment: .trailing)
+                        }
+                    }
+                    HStack {
+                        Text("Playback Rate")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text("\(String(format: "%.2f", ApplicationMusicPlayer.shared.state.playbackRate))")
+                            .foregroundColor(.gray)
+                            .frame(alignment: .trailing)
+                    }
+                }
+
+                    // Step Sound Selection
+                Section(header: Text("Step Sound")) {
+                    NavigationLink(destination: StepSoundSelectionView(
+                        selectedRightStepSound: $stepSoundManager.rightStepSoundName,
+                        selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
+                        setSoundName: stepSoundManager.setRightStepSoundName
+                        )
+                        .environmentObject(stepSoundManager)) {
+                        HStack {
+                            Text("Step Sound")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            //NOTE:StepSound名は隠すor実験者しかわからないラベルをつける
+                            
+                            Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
+                                .foregroundColor(.gray)
+                                .frame(alignment: .trailing)
+                            
+                        }
+                    }
+                    //NOTE:ランダムな時間遅れは実験条件から除外されました
+                    //Toggle("Delayed StepSound", isOn: $stepSoundManager.isDelayedStepSoundActive)
+                    NavigationLink(destination:PeriodicStepSoundSettingView(stepSoundManager: stepSoundManager)) {
+                            Text("Periodic Sound Setting")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    Button {
+                        stepSoundManager.playSoundPeriodically(BPM: spmManager.spm)
+                    } label: {
+                        HStack {
+                            Text("Play StepSound Periodically")
+                                .foregroundColor(.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    Button {
+                        stepSoundManager.stopPeriodicSound()
+                    } label: {
+                        HStack {
+                            Text("Stop Periodic StepSound")
+                                .foregroundColor(.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                }
             }
             .navigationTitle("Beatim")
             .navigationDestination(isPresented: $isNavigatingToSearchPlaylist) {
