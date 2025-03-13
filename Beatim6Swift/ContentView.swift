@@ -167,11 +167,11 @@ struct ContentView: View {
                                 Text("Step Sound")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 //NOTE:StepSound名は隠すor実験者しかわからないラベルをつける
-                                /*
+                                
                                 Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
-                                */
+                                
                             }
                         }
                         //NOTE:ランダムな時間遅れは実験条件から除外されました

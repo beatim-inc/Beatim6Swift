@@ -11,6 +11,8 @@ struct StepSoundSelectionView: View {
     @Environment(\.presentationMode) var presentationMode
     @Binding var selectedRightStepSound: String
     @Binding var selectedLeftStepSound: String
+    @State private var isLeftPickerExpanded = false
+    @State private var isRightPickerExpanded = false
     var setSoundName: (String) -> Void
     @EnvironmentObject var stepSoundManager: StepSoundManager
     let availableSounds = ["None","BaseDrum", "Clap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2", "Claverotor1", "Claverotor2"]
@@ -18,23 +20,31 @@ struct StepSoundSelectionView: View {
     var body: some View {
         Form{
             Section(header: Text("Left Step Sound")) {
-                List(availableSounds, id: \..self) { sound in
-                    HStack {
-                        Text(sound)
-                        Spacer()
-                        if sound == selectedLeftStepSound {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.blue)
+                
+                DisclosureGroup(
+                    isExpanded: $isLeftPickerExpanded,
+                    content: {
+                        Picker("Select Left Sound", selection: $stepSoundManager.leftStepSoundName) {
+                            ForEach(availableSounds, id: \.self) { sound in
+                                Text(sound).tag(sound)
+                            }
+                        }
+                        .pickerStyle(WheelPickerStyle())
+                    },
+                    label: {
+                        HStack {
+                            Text("\(stepSoundManager.leftStepSoundName)")
+                            Spacer()
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            isLeftPickerExpanded.toggle()
                         }
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selectedLeftStepSound = sound
-                        StepSoundManager.shared.setLeftStepSoundName(to: sound)
-                    }
-                }
+                )
+                
                 VStack {
-                    Slider(value: $stepSoundManager.leftStepVolume, in: 0...1, step: 0.1)
+                    Slider(value: $stepSoundManager.leftStepVolume, in: 0...2, step: 0.1)
                     HStack {
                         Text("Low")
                         Spacer()
@@ -45,23 +55,31 @@ struct StepSoundSelectionView: View {
             }
             
             Section(header: Text("Right Step Sound")) {
-                List(availableSounds, id: \..self) { sound in
-                    HStack {
-                        Text(sound)
-                        Spacer()
-                        if sound == selectedRightStepSound {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.blue)
+                
+                DisclosureGroup(
+                    isExpanded: $isRightPickerExpanded,
+                    content: {
+                        Picker("Select Right Sound", selection: $stepSoundManager.rightStepSoundName) {
+                            ForEach(availableSounds, id: \.self) { sound in
+                                Text(sound).tag(sound)
+                            }
+                        }
+                        .pickerStyle(WheelPickerStyle())
+                    },
+                    label: {
+                        HStack {
+                            Text("\(stepSoundManager.rightStepSoundName)")
+                            Spacer()
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            isRightPickerExpanded.toggle()
                         }
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selectedRightStepSound = sound
-                        StepSoundManager.shared.setRightStepSoundName(to: sound)
-                    }
-                }
+                )
+                
                 VStack {
-                    Slider(value: $stepSoundManager.rightStepVolume, in: 0...1, step: 0.1)
+                    Slider(value: $stepSoundManager.rightStepVolume, in: 0...2, step: 0.1)
                     HStack {
                         Text("Low")
                         Spacer()
