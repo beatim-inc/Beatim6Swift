@@ -87,12 +87,12 @@ struct ContentView: View {
 
                         Toggle("Auto SPM Update", isOn: $spmManager.allowStepUpdate)
 
-                        Button("Add step manually"){
-                            stepSoundManager.playRightStepSound()
-                            if spmManager.allowStepUpdate {
-                                spmManager.addStepData()
-                            }
-                        }
+//                        Button("Add step manually"){
+//                            stepSoundManager.playRightStepSound()
+//                            if spmManager.allowStepUpdate {
+//                                spmManager.addStepData()
+//                            }
+//                        }
                     }
 
                         // Music Selection

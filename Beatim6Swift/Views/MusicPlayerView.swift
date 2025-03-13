@@ -118,14 +118,23 @@ struct MusicPlayerView: View {
                 let player = ApplicationMusicPlayer.shared
                 let state = player.state
 
-                if state.playbackStatus == .playing, let queueEntry = player.queue.currentEntry?.item,
-                   case .song(let nowPlayingItem) = queueEntry {
-                    await MainActor.run {
-                        self.playbackProgress = player.playbackTime
+//                if state.playbackStatus == .playing, let queueEntry = player.queue.currentEntry?.item,
+//                   case .song(let nowPlayingItem) = queueEntry {
+//                    await MainActor.run {
+//                        self.playbackProgress = player.playbackTime
+//                        self.songDuration = nowPlayingItem.duration ?? 1
+//                        self.isPlaying = state.playbackStatus == .playing
+//                    }
+//                } else {
+//                    await MainActor.run {
+//                    }
+//                }
+                await MainActor.run {
+                    self.isPlaying = state.playbackStatus == .playing
+                    self.playbackProgress = player.playbackTime
+                    if let queueEntry = player.queue.currentEntry?.item,
+                       case .song(let nowPlayingItem) = queueEntry {
                         self.songDuration = nowPlayingItem.duration ?? 1
-                    }
-                } else {
-                    await MainActor.run {
                     }
                 }
             }
@@ -159,6 +168,9 @@ struct MusicPlayerView: View {
                 Float(spmManager.spm/musicDefaultBpm) : 1.0)
                 print(player.state.playbackRate)
                 print(player.state.playbackStatus)
+                await MainActor.run {
+                    self.isPlaying = player.state.playbackStatus == .playing
+                }
             } catch {
                 print(error.localizedDescription)
             }
