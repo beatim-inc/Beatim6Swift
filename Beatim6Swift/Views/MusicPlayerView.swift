@@ -64,7 +64,6 @@ struct MusicPlayerView: View {
             }
             .padding(.horizontal, 20) // 左右の余白を維持
             .padding(.top, 20) // 上の余白を維持
-            .padding(.bottom, 0) // 下方向の padding を完全に削除
             
             //再生ボタン系
             HStack (spacing: 10){

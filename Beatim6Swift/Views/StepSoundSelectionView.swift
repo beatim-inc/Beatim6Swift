@@ -14,7 +14,7 @@ struct StepSoundSelectionView: View {
     var setSoundName: (String) -> Void
     @EnvironmentObject var stepSoundManager: StepSoundManager
     
-    let availableSounds = ["None", "BaseDrum", "Clap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2", "Claverotor1", "Claverotor2"]
+    let availableSounds = ["None", "BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk1", "Walk2", "Claverotor1", "Claverotor2"]
     
     var body: some View {
         VStack (alignment: .leading){
@@ -44,19 +44,22 @@ struct StepSoundPickerView: View {
     @Binding var volume: Float
     @State private var isPickerExpanded = false
     
-    let availableSounds = ["None", "BaseDrum", "Clap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2", "Claverotor1", "Claverotor2"]
+    let availableSounds = ["None", "BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk1", "Walk2", "Claverotor1", "Claverotor2"]
     
     var body: some View {
         VStack {
             Text(title)
                 .font(.headline)
             
+            Image("\(selectedSound)") // Placeholder for actual images
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+                .padding(.top, 20)
+            
             Picker("Select Sound", selection: $selectedSound) {
                 ForEach(availableSounds, id: \..self) { sound in
-                    HStack {
-//                                Image(systemName: "music.note") // Placeholder for actual images
-                        Text(sound)
-                    }
+                    Text(sound)
                     .tag(sound)
                 }
             }
@@ -72,7 +75,7 @@ struct StepSoundPickerView: View {
                     Text("High").font(.caption).foregroundColor(.gray)
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.bottom, 8)
         }
         .frame(maxWidth: .infinity)
         .padding()
