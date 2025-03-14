@@ -19,7 +19,19 @@ struct SongInfoView: View {
         // Music Player
         Button(action: {
             Task {
-                ApplicationMusicPlayer.shared.queue = .init(for: [songItem])
+                let player = ApplicationMusicPlayer.shared
+
+                // 🎯 キューを設定
+                player.queue = .init(for: [songItem])
+
+                // 🎯 再生 → すぐに一時停止
+                do {
+                    try await player.play()
+                    try await Task.sleep(nanoseconds: 100_000_000) // 0.1秒待機
+                    player.pause()
+                } catch {
+                    print("⚠️ エラー: \(error.localizedDescription)")
+                }
             }
         }) {
             // Song info

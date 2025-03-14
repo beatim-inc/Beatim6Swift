@@ -11,11 +11,15 @@ import MusicKit
 
 struct MusicPlayerView: View {
     @State private var playbackProgress: Double = 0
-    @State private var songDuration: Double = 1
+    @State private var songDuration: Double = 0
     @State private var playbackTimer: Timer?
     
     //NOTE:UI切り替え専用。ApplicationMusicPlayerの状態と必ずしも一致しない。
     @State private var isPlaying: Bool = false
+    @State private var artworkURL: URL? // ジャケット画像のURL
+    @State private var songTitle: String = "Not Playing"
+    @State private var artistName: String? // アーティスト名
+    @State private var albumTitle: String? // アルバム名
     
     @StateObject var stepSoundManager: StepSoundManager
     @StateObject var spmManager: SPMManager
@@ -69,14 +73,53 @@ struct MusicPlayerView: View {
             // シーケンスバー
             VStack(alignment: .leading){
                 Slider(value: $playbackProgress, in: 0...songDuration)
-                Text(timeString(from: ApplicationMusicPlayer.shared.playbackTime))
+                HStack {
+                    Text(timeString(from: ApplicationMusicPlayer.shared.playbackTime))
                       .font(.caption)
                       .foregroundColor(.gray)
+                    Spacer()
+                    Text(timeString(from: songDuration - ApplicationMusicPlayer.shared.playbackTime))
+                      .font(.caption)
+                      .foregroundColor(.gray)
+                }
             }
             .padding()
             
             //再生ボタン系
-            HStack (spacing: 40){
+            HStack (spacing: 20){
+                // 🎵 ジャケット画像
+                if let url = artworkURL {
+                    AsyncImage(url: url) { image in
+                        image.resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 50, height: 50)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } placeholder: {
+                        Image(systemName: "music.note")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.gray)
+                    }
+                }
+
+                VStack(alignment: .leading) {
+                    Text(songTitle)
+                        .font(.headline)
+                        .lineLimit(1)
+                        .foregroundColor(.primary)
+                    
+                    // 🎵 アーティスト名（曲がある場合のみ表示）
+                    if let artist = artistName {
+                        Text("\(artist)")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                    }
+                }
+                
+                Spacer()
+
                 //頭出しボタン
                 Button(action:{
                     Task{
@@ -91,6 +134,7 @@ struct MusicPlayerView: View {
                         .frame(width: 30, height: 30)
                         .foregroundColor(.gray)
                 }
+                Spacer().frame(width: 5)
                 // 再生・停止ボタン
                 Button(action: togglePlayback) {
                     Image(systemName: isPlaying ? "pause.fill" : "play.fill")
@@ -98,7 +142,7 @@ struct MusicPlayerView: View {
                         .frame(width: 30, height: 30)
                         .foregroundColor(.gray)
                 }
-                Spacer().frame(width: 30)
+                Spacer().frame(width: 5)
             }
             .padding()
         }
@@ -117,24 +161,26 @@ struct MusicPlayerView: View {
             Task {
                 let player = ApplicationMusicPlayer.shared
                 let state = player.state
+                let currentEntry = player.queue.currentEntry?.item
 
-//                if state.playbackStatus == .playing, let queueEntry = player.queue.currentEntry?.item,
-//                   case .song(let nowPlayingItem) = queueEntry {
-//                    await MainActor.run {
-//                        self.playbackProgress = player.playbackTime
-//                        self.songDuration = nowPlayingItem.duration ?? 1
-//                        self.isPlaying = state.playbackStatus == .playing
-//                    }
-//                } else {
-//                    await MainActor.run {
-//                    }
-//                }
                 await MainActor.run {
                     self.isPlaying = state.playbackStatus == .playing
                     self.playbackProgress = player.playbackTime
-                    if let queueEntry = player.queue.currentEntry?.item,
-                       case .song(let nowPlayingItem) = queueEntry {
-                        self.songDuration = nowPlayingItem.duration ?? 1
+                    print("\(player.queue.entries.count)")
+
+                    if let nowPlayingItem = currentEntry, case .song(let song) = nowPlayingItem {
+                        // 🎵 再生中なら現在の曲を取得
+                        self.songDuration = song.duration ?? 1
+                        self.songTitle = song.title
+                        self.artistName = song.artistName
+                        self.albumTitle = song.albumTitle ?? ""
+                        self.artworkURL = song.artwork?.url(width: 100, height: 100)
+                    } else {
+                        self.songTitle = "Not Playing"
+                        self.artistName = nil
+                        self.albumTitle = nil
+                        self.artworkURL = nil
+                        print("Not Playing")
                     }
                 }
             }

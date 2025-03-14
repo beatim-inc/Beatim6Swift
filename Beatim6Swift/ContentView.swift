@@ -85,7 +85,7 @@ struct ContentView: View {
                             }
                         }
 
-                        Toggle("Auto SPM Update", isOn: $spmManager.allowStepUpdate)
+                        Toggle("Update SPM every 10 steps", isOn: $spmManager.allowStepUpdate)
 
 //                        Button("Add step manually"){
 //                            stepSoundManager.playRightStepSound()
@@ -97,31 +97,31 @@ struct ContentView: View {
 
                         // Music Selection
                     Section(header: Text("Music")) {
-                        Button {
-                            isNavigatingToSearchPlaylist = true
-                        } label: {
-                            HStack {
-                                Text("Playlist")
-                                    .foregroundColor(.primary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Spacer()
-                                Text(currentPlaylistTitle)
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 14)) // やや小さめに設定
-                                    .foregroundColor(.secondary) // システムのセカンダリカラーを使用
-                            }
-                        }
-                        NavigationLink(destination: SearchAlbumView()) {
-                            HStack {
-                                Text("Album")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(currentAlbumTitle)
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                            }
-                        }
+                        // Button {
+                        //     isNavigatingToSearchPlaylist = true
+                        // } label: {
+                        //     HStack {
+                        //         Text("Playlist")
+                        //             .foregroundColor(.primary)
+                        //             .frame(maxWidth: .infinity, alignment: .leading)
+                        //         Spacer()
+                        //         Text(currentPlaylistTitle)
+                        //             .foregroundColor(.gray)
+                        //             .frame(alignment: .trailing)
+                        //         Image(systemName: "chevron.right")
+                        //             .font(.system(size: 14)) // やや小さめに設定
+                        //             .foregroundColor(.secondary) // システムのセカンダリカラーを使用
+                        //     }
+                        // }
+                        // NavigationLink(destination: SearchAlbumView()) {
+                        //     HStack {
+                        //         Text("Album")
+                        //             .frame(maxWidth: .infinity, alignment: .leading)
+                        //         Text(currentAlbumTitle)
+                        //             .foregroundColor(.gray)
+                        //             .frame(alignment: .trailing)
+                        //     }
+                        // }
                         NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm).environmentObject(stepSoundManager).environmentObject(spmManager)) {
                             HStack {
                                 Text("Song")
@@ -156,7 +156,7 @@ struct ContentView: View {
                         }
                     }
 
-                        // Step Sound Selection
+                    // Step Sound Selection
                     Section(header: Text("Step Sound")) {
                         NavigationLink(destination: StepSoundSelectionView(
                             selectedRightStepSound: $stepSoundManager.rightStepSoundName,
