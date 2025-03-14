@@ -113,8 +113,7 @@ struct AlbumDetailsView: View {
                 ForEach(tracks) { track in
                     switch track {
                     case .song(let songItem):
-                        //TODO:musicDefaultBpmをcontentviewから貰う
-                        SongInfoView(songItem: songItem,musicDefaultbpm: 120)
+                        SongInfoView(songItem: songItem)
                     case .musicVideo(_):
                         EmptyView()
                     @unknown default:

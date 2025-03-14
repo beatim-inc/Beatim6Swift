@@ -9,11 +9,7 @@ import SwiftUI
 import MusicKit
 
 struct SongInfoView: View {
-    @EnvironmentObject var stepSoundManager: StepSoundManager
-    @EnvironmentObject var spmManager: SPMManager
     var songItem: Song
-    var musicDefaultbpm: Double
-
     
     var body: some View {         
         // Music Player

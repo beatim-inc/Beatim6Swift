@@ -28,65 +28,46 @@ struct MusicPlayerView: View {
 
     var body: some View {
         VStack {
-//            // 行動開始位置を示すアイコン系
-//            HStack(spacing: 5) {
-//                Spacer().frame(width :0)
-//                //イントロ（立ち止まる）
-//                VStack{
-//                    Image(systemName: "figure.stand")
-//                    .resizable()
-//                    .frame(width: 20, height: 40)
-//                    .foregroundColor(.gray)
-//                    Color.gray.frame(width: 35,height: 5)
-//                }
-//                
-//                //歌（歩く）
-//                VStack{
-//                    Image(systemName: "figure.walk")
-//                    .resizable()
-//                    .frame(width: 20, height: 40)
-//                    .foregroundColor(.gray)
-//                    Color.gray.frame(width: 90,height: 5)
-//                }
-//
-//                //間奏（立ち止まる）
-//                VStack{
-//                    Image(systemName: "figure.stand")
-//                    .resizable()
-//                    .frame(width: 20, height: 40)
-//                    .foregroundColor(.gray)
-//                    Color.gray.frame(width: 35,height: 5)
-//                }
-//        
-//                //試行終了（デバイスを外す）
-//                /*
-//                VStack{
-//                    Image(systemName: "checkmark")
-//                    .resizable()
-//                    .frame(width: 20, height: 20)
-//                    .foregroundColor(.gray)
-//                }
-//                */
-//                Spacer()
-//            }
             
             // シーケンスバー
             VStack(alignment: .leading){
-                Slider(value: $playbackProgress, in: 0...songDuration)
+                
                 HStack {
                     Text(timeString(from: ApplicationMusicPlayer.shared.playbackTime))
                       .font(.caption)
                       .foregroundColor(.gray)
+                    Spacer()
+//                    Slider(value: $playbackProgress, in: 0...songDuration)
+//                        .accentColor(.white)
+                    GeometryReader { geometry in
+                        ZStack(alignment: .leading) {
+                            // 背景のグレーのバー
+                            Rectangle()
+                                .frame(height: 4)
+                                .foregroundColor(Color.gray.opacity(0.5))
+                                .cornerRadius(2)
+
+                            // 再生済みの部分
+                            Rectangle()
+                                .frame(width: CGFloat(playbackProgress / max(songDuration, 1)) * geometry.size.width, height: 4)
+                                .foregroundColor(.primary)
+                                .cornerRadius(2)
+                        }
+                    }
+                    .frame(height: 4)
+                    .padding(.vertical, 5)
                     Spacer()
                     Text(timeString(from: songDuration - ApplicationMusicPlayer.shared.playbackTime))
                       .font(.caption)
                       .foregroundColor(.gray)
                 }
             }
-            .padding()
+            .padding(.horizontal, 20) // 左右の余白を維持
+            .padding(.top, 20) // 上の余白を維持
+            .padding(.bottom, 0) // 下方向の padding を完全に削除
             
             //再生ボタン系
-            HStack (spacing: 20){
+            HStack (spacing: 10){
                 // 🎵 ジャケット画像
                 if let url = artworkURL {
                     AsyncImage(url: url) { image in
@@ -169,7 +150,6 @@ struct MusicPlayerView: View {
                 await MainActor.run {
                     self.isPlaying = state.playbackStatus == .playing
                     self.playbackProgress = player.playbackTime
-                    print("\(player.queue.entries.count)")
 
                     if let nowPlayingItem = currentEntry, case .song(let song) = nowPlayingItem {
                         // 🎵 再生中なら現在の曲を取得

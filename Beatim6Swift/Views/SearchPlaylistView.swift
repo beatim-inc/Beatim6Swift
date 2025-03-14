@@ -92,8 +92,7 @@ struct PlaylistDetailsView: View {
                 ForEach(tracks) { track in
                     switch track {
                     case .song(let songItem):
-                        //TODO:musicDefaultBpmをcontentviewから貰う
-                        SongInfoView(songItem: songItem, musicDefaultbpm: 120)
+                        SongInfoView(songItem: songItem)
                             .environmentObject(stepSoundManager)
                             .environmentObject(spmManager)
                     case .musicVideo(_):

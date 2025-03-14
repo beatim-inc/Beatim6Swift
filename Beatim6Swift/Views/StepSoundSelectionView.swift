@@ -102,6 +102,8 @@ struct StepSoundSelectionView: View {
                 }
                 .padding(.vertical, 8)
             }
+            
+            Section(footer: SpacerView()) {}
         }
         .navigationTitle("Step Sound")
     }
@@ -113,5 +115,12 @@ struct StepSoundSelectionView: View {
             .frame(maxWidth: .infinity, alignment: .leading) // 左揃え
             .font(.headline)
             .padding()
+    }
+    
+    struct SpacerView: View {
+        var body: some View {
+            Color.clear
+                .frame(height: 120) // 🎯 `MusicPlayerView` の高さに合わせて余白を確保
+        }
     }
 }

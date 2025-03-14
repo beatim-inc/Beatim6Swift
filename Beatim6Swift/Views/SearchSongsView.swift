@@ -42,7 +42,7 @@ struct SearchSongsView: View {
             }
             
             ForEach(self.searchResultSongs) { song in
-                SongInfoView(songItem: song, musicDefaultbpm: defaultBpm).environmentObject(stepSoundManager).environmentObject(spmManager)
+                SongInfoView(songItem: song)
             }
             
         }

@@ -142,11 +142,11 @@ struct ContentView: View {
                         // }
                         NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm).environmentObject(stepSoundManager).environmentObject(spmManager)) {
                             HStack {
-                                Text("Song")
+                                Text("Search Songs")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(currentSongTitle)
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
+//                                Text(currentSongTitle)
+//                                    .foregroundColor(.gray)
+//                                    .frame(alignment: .trailing)
                             }
                             .onChange(of: currentSongTitle) { _,_ in
                                 if spmManager.spm > 10 && spmManager.spm < 200 {
@@ -164,11 +164,16 @@ struct ContentView: View {
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
                             }
+                            .onChange(of: musicDefaultBpm) { _,_ in
+                                if spmManager.spm > 10 && spmManager.spm < 200 {
+                                    updatePlaybackRate()
+                                }
+                            }
                         }
                         HStack {
                             Text("Playback Rate")
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(String(format: "%.2f", ApplicationMusicPlayer.shared.state.playbackRate))")
+                            Text("\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
                                 .foregroundColor(.gray)
                                 .frame(alignment: .trailing)
                         }
