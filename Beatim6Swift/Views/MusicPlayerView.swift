@@ -130,19 +130,22 @@ struct MusicPlayerView: View {
                 }
                 ) {
                     Image(systemName:"backward.fill")
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(.gray)
+                        .symbolRenderingMode(.hierarchical) // 視認性向上
+                        .imageScale(.large) // アイコンのスケール調整
+                        .font(.system(size: 24)) // アイコンのサイズ
+                        .foregroundColor(.primary)
+                        .frame(width: 44, height: 44) // タップ領域の確保
                 }
-                Spacer().frame(width: 5)
+
                 // 再生・停止ボタン
                 Button(action: togglePlayback) {
                     Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(.gray)
+                        .symbolRenderingMode(.hierarchical)
+                        .imageScale(.large)
+                        .font(.system(size: 24))
+                        .foregroundColor(.primary)
+                        .frame(width: 44, height: 44)
                 }
-                Spacer().frame(width: 5)
             }
             .padding()
         }

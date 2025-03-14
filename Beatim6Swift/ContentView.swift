@@ -57,7 +57,7 @@ struct ContentView: View {
                     // }
 
                     // Sensor
-                    Section(header: Text("Step Sensing")) {
+                    Section {
                         NavigationLink(destination: SensorListView(bleManager: bleManager)) {
                             HStack {
                                 Text("Step Sensors Connection")
@@ -93,10 +93,28 @@ struct ContentView: View {
 //                                spmManager.addStepData()
 //                            }
 //                        }
+                        
+                        NavigationLink(destination: StepSoundSelectionView(
+                            selectedRightStepSound: $stepSoundManager.rightStepSoundName,
+                            selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
+                            setSoundName: stepSoundManager.setRightStepSoundName
+                            )
+                            .environmentObject(stepSoundManager)) {
+                            HStack {
+                                Text("Step Sound")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                //NOTE:StepSound名は隠すor実験者しかわからないラベルをつける
+                                
+                                Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
+                                
+                            }
+                        }
                     }
 
                         // Music Selection
-                    Section(header: Text("Music")) {
+                    Section {
                         // Button {
                         //     isNavigatingToSearchPlaylist = true
                         // } label: {
@@ -157,49 +175,33 @@ struct ContentView: View {
                     }
 
                     // Step Sound Selection
-                    Section(header: Text("Step Sound")) {
-                        NavigationLink(destination: StepSoundSelectionView(
-                            selectedRightStepSound: $stepSoundManager.rightStepSoundName,
-                            selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
-                            setSoundName: stepSoundManager.setRightStepSoundName
-                            )
-                            .environmentObject(stepSoundManager)) {
-                            HStack {
-                                Text("Step Sound")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                //NOTE:StepSound名は隠すor実験者しかわからないラベルをつける
-                                
-                                Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                                
-                            }
-                        }
+//                    Section(header: Text("Step Sound")) {
+                        
                         //NOTE:ランダムな時間遅れは実験条件から除外されました
                         //Toggle("Delayed StepSound", isOn: $stepSoundManager.isDelayedStepSoundActive)
-                        NavigationLink(destination:PeriodicStepSoundSettingView(stepSoundManager: stepSoundManager)) {
-                                Text("Periodic Sound Setting")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        Button {
-                            stepSoundManager.playSoundPeriodically(BPM: spmManager.spm)
-                        } label: {
-                            HStack {
-                                Text("Play StepSound Periodically")
-                                    .foregroundColor(.primary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                        Button {
-                            stepSoundManager.stopPeriodicSound()
-                        } label: {
-                            HStack {
-                                Text("Stop Periodic StepSound")
-                                    .foregroundColor(.primary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                    }
+//                        NavigationLink(destination:PeriodicStepSoundSettingView(stepSoundManager: stepSoundManager)) {
+//                                Text("Periodic Sound Setting")
+//                                    .frame(maxWidth: .infinity, alignment: .leading)
+//                        }
+//                        Button {
+//                            stepSoundManager.playSoundPeriodically(BPM: spmManager.spm)
+//                        } label: {
+//                            HStack {
+//                                Text("Play StepSound Periodically")
+//                                    .foregroundColor(.primary)
+//                                    .frame(maxWidth: .infinity, alignment: .leading)
+//                            }
+//                        }
+//                        Button {
+//                            stepSoundManager.stopPeriodicSound()
+//                        } label: {
+//                            HStack {
+//                                Text("Stop Periodic StepSound")
+//                                    .foregroundColor(.primary)
+//                                    .frame(maxWidth: .infinity, alignment: .leading)
+//                            }
+//                        }
+//                    }
 
                     Section(footer: SpacerView()) {}
                 }

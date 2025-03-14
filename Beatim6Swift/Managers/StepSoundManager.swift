@@ -12,7 +12,7 @@ import AVFoundation
 class StepSoundManager: ObservableObject {
     static let shared = StepSoundManager()
     var audioPlayer: AVAudioPlayer?
-    @Published var rightStepSoundName = "Clap" // soundName を変更可能にする
+    @Published var rightStepSoundName = "ElectricalBaseDrum" // soundName を変更可能にする
     @Published var leftStepSoundName = "Clap"
     private var timer: Timer?
     private var isStepSoundRight: Bool = false

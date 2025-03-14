@@ -12,7 +12,7 @@ final class SPMManager: ObservableObject {
     //インターバル
     private var intervals: [TimeInterval] = []
     //SPM
-    @Published var spm: Double = 0.0
+    @Published var spm: Double = 111.0
     @Published var lastUpdatedSPM: Double = 0.0
     @Published var allowStepUpdate: Bool = true
     //最後に足を着けた時刻
