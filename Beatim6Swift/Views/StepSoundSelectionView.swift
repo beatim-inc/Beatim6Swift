@@ -53,6 +53,8 @@ struct StepSoundPickerView: View {
             
             Image("\(selectedSound)") // Placeholder for actual images
                 .resizable()
+                .renderingMode(.template)
+                .foregroundColor(.primary)
                 .scaledToFit()
                 .frame(width: 80, height: 80)
                 .padding(.top, 20)
