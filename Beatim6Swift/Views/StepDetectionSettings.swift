@@ -37,14 +37,14 @@ struct StepDetectionSettings: View {
                 Text("Debounce Time (ms)")
                 Slider(value: $parameters.debounceTime, in: 100...1000, step: 50)
                 HStack {
-                    Text("Sensitive")
+                    Text("Short")
                         .font(.caption)
                         .foregroundColor(.gray)
                     Spacer()
                     Text("Current: \(parameters.debounceTime, specifier: "%.0f") ms")
                         .font(.caption)
                     Spacer()
-                    Text("Dull")
+                    Text("Long")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }

@@ -11,116 +11,86 @@ struct StepSoundSelectionView: View {
     @Environment(\.presentationMode) var presentationMode
     @Binding var selectedRightStepSound: String
     @Binding var selectedLeftStepSound: String
-    @State private var isLeftPickerExpanded = false
-    @State private var isRightPickerExpanded = false
     var setSoundName: (String) -> Void
     @EnvironmentObject var stepSoundManager: StepSoundManager
-    let availableSounds = ["None","BaseDrum", "Clap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2", "Claverotor1", "Claverotor2"]
+    
+    let availableSounds = ["None", "BaseDrum", "Clap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2", "Claverotor1", "Claverotor2"]
     
     var body: some View {
-        Form{
-            Section(header: Text("Left Step Sound")) {
-                
-                DisclosureGroup(
-                    isExpanded: $isLeftPickerExpanded,
-                    content: {
-                        Picker("Select Left Sound", selection: $stepSoundManager.leftStepSoundName) {
-                            ForEach(availableSounds, id: \.self) { sound in
-                                Text(sound).tag(sound)
-                            }
-                        }
-                        .pickerStyle(WheelPickerStyle())
-                    },
-                    label: {
-                        HStack {
-                            Text("\(stepSoundManager.leftStepSoundName)")
-                            Spacer()
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            isLeftPickerExpanded.toggle()
-                        }
-                    }
+        VStack (alignment: .leading){
+            HStack(alignment: .top, spacing: 20) {
+                StepSoundPickerView(
+                    title: "Left",
+                    selectedSound: $stepSoundManager.leftStepSoundName,
+                    volume: $stepSoundManager.leftStepVolume
                 )
-                
-                VStack {
-                    Slider(value: $stepSoundManager.leftStepVolume, in: 0...2, step: 0.1)
-                    HStack {
-                        Text("Low")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Spacer()
-                        Text("Volume: \(stepSoundManager.leftStepVolume, specifier: "%.1f")")
-                            .font(.caption)
-                        Spacer()
-                        Text("High")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                }
-                .padding(.vertical, 8)
-            }
-            
-            Section(header: Text("Right Step Sound")) {
-                
-                DisclosureGroup(
-                    isExpanded: $isRightPickerExpanded,
-                    content: {
-                        Picker("Select Right Sound", selection: $stepSoundManager.rightStepSoundName) {
-                            ForEach(availableSounds, id: \.self) { sound in
-                                Text(sound).tag(sound)
-                            }
-                        }
-                        .pickerStyle(WheelPickerStyle())
-                    },
-                    label: {
-                        HStack {
-                            Text("\(stepSoundManager.rightStepSoundName)")
-                            Spacer()
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            isRightPickerExpanded.toggle()
-                        }
-                    }
+                StepSoundPickerView(
+                    title: "Right",
+                    selectedSound: $stepSoundManager.rightStepSoundName,
+                    volume: $stepSoundManager.rightStepVolume
                 )
-                
-                VStack {
-                    Slider(value: $stepSoundManager.rightStepVolume, in: 0...2, step: 0.1)
-                    HStack {
-                        Text("Low")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Spacer()
-                        Text("Volume: \(stepSoundManager.rightStepVolume, specifier: "%.1f")")
-                            .font(.caption)
-                        Spacer()
-                        Text("High")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                }
-                .padding(.vertical, 8)
             }
+            .padding()
             
-            Section(footer: SpacerView()) {}
+            Spacer()
         }
         .navigationTitle("Step Sound")
     }
+}
+
+struct StepSoundPickerView: View {
+    let title: String
+    @Binding var selectedSound: String
+    @Binding var volume: Float
+    @State private var isPickerExpanded = false
     
-    // カスタムタイトルビュー
-    @ViewBuilder
-    private func sectionTitle(_ title: String) -> some View {
-        Text(title)
-            .frame(maxWidth: .infinity, alignment: .leading) // 左揃え
-            .font(.headline)
-            .padding()
+    let availableSounds = ["None", "BaseDrum", "Clap", "ElectricalBaseDrum", "SnareDrum", "WalkOnSoil1", "WalkOnSoil2", "Claverotor1", "Claverotor2"]
+    
+    var body: some View {
+        VStack {
+            Text(title)
+                .font(.headline)
+            
+            Picker("Select Sound", selection: $selectedSound) {
+                ForEach(availableSounds, id: \..self) { sound in
+                    HStack {
+//                                Image(systemName: "music.note") // Placeholder for actual images
+                        Text(sound)
+                    }
+                    .tag(sound)
+                }
+            }
+            .pickerStyle(WheelPickerStyle())
+            
+            VStack {
+                CustomSlider(value: $volume, range: 0...2, step: 0.1)
+                HStack {
+                    Text("Low").font(.caption).foregroundColor(.gray)
+                    Spacer()
+                    Text("Volume: \(volume, specifier: "%.1f")").font(.caption)
+                    Spacer()
+                    Text("High").font(.caption).foregroundColor(.gray)
+                }
+            }
+            .padding(.vertical, 8)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color(UIColor.systemGray6))
+        .cornerRadius(12)
     }
+}
+
+struct CustomSlider: View {
+    @Binding var value: Float
+    let range: ClosedRange<Float>
+    let step: Float
     
-    struct SpacerView: View {
-        var body: some View {
-            Color.clear
-                .frame(height: 120) // 🎯 `MusicPlayerView` の高さに合わせて余白を確保
+    var body: some View {
+        VStack {
+            Slider(value: $value, in: range, step: step)
+                .accentColor(.blue)
+//                .padding(.horizontal)
         }
     }
 }

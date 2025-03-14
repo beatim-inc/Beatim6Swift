@@ -210,7 +210,7 @@ struct ContentView: View {
 
                     Section(footer: SpacerView()) {}
                 }
-                .navigationTitle("Beatim")
+                .navigationTitle("Step Drummer")
                 .navigationDestination(isPresented: $isNavigatingToSearchPlaylist) {
                     SearchPlaylistView(viewModel: searchPlaylistVM)
                 }
@@ -263,6 +263,7 @@ struct ContentView: View {
                     .padding(.horizontal, 16)
                     .shadow(radius: 5)
             }
+            .padding(.vertical)
         }
         
     }
