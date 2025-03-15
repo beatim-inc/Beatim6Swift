@@ -28,8 +28,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     //let leftPeripheralUUID = UUID(uuidString: "FFBD1E41-67FC-231E-0FE7-FB03A3D18DC2") // M5StickCP2(L)
     //let rightPeripheralUUID = UUID(uuidString: "D318B40F-5AC8-5E47-00D0-A426C337A5C6") // M5StickCP2(R)
     
-    var prevGxL: Float = 0.0
-    var prevGxR: Float = 0.0
     var lastStepTimeL: TimeInterval = 0
     var lastStepTimeR: TimeInterval = 0
     var stepCountL = 0
@@ -58,6 +56,15 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             peripherals.append(peripheral) // 🎯 ここで追加
         }
     }
+    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        print("Peripheral disconnected: \(peripheral.identifier)")
+        connectedPeripherals.removeAll { $0.identifier == peripheral.identifier }
+        // 再接続を試みる
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.connectPeripheral(peripheral: peripheral)
+        }
+    }
 
     //
     //NOTE:withServiceをnilにすると、全デバイスを検索
@@ -67,8 +74,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         connectedPeripherals.removeAll() // 🎯 起動時にリセット
         centralManager.scanForPeripherals(withServices: [serviceUUID], options: nil)
 
-        // 🎯 5秒後にスキャン停止して自動接続
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+        // 🎯 1秒後にスキャン停止して自動接続
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.centralManager.stopScan()
             print("Scan completed. Found \(self.peripherals.count) devices.")
             self.autoConnectAllPeripherals()
@@ -153,7 +160,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
                 print("✅ Left step detected! Total: \(stepCountL)")
                 onLStepDetectionNotified?()
             }
-            prevGxL = gx
         } else if peripheral == "R" {
             if az < azThreshould && currentTime - lastStepTimeR > debounceTime {
                 lastStepTimeR = currentTime
@@ -161,7 +167,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
                 print("✅ Right step detected! Total: \(stepCountR)")
                 onRStepDetectionNotified?()
             }
-            prevGxR = gx
         }
     }
 }
