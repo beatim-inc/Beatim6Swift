@@ -40,6 +40,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         self.parameters = parameters
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
+        startPeriodicMonitoring()
     }
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -48,6 +49,35 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             startScanning() // 🎯 BluetoothがONになったら自動スキャン開始
         } else {
             isSwitchedOn = false
+        }
+    }
+    
+    func startPeriodicMonitoring() {
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            if self.isSwitchedOn {
+                self.checkAndReconnectPeripherals()
+            }
+        }
+    }
+
+    func checkAndReconnectPeripherals() {
+        let connectedUUIDs = connectedPeripherals.map { $0.identifier }
+        
+        if !connectedUUIDs.contains(leftPeripheralUUID!) {
+            print("Reconnecting to left peripheral...")
+            reconnectPeripheral(with: leftPeripheralUUID!)
+        }
+        if !connectedUUIDs.contains(rightPeripheralUUID!) {
+            print("Reconnecting to right peripheral...")
+            reconnectPeripheral(with: rightPeripheralUUID!)
+        }
+    }
+
+    func reconnectPeripheral(with uuid: UUID) {
+        if let peripheral = peripherals.first(where: { $0.identifier == uuid }) {
+            connectPeripheral(peripheral: peripheral)
+        } else {
+            startScanning()
         }
     }
 
@@ -66,12 +96,9 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
     }
 
-    //
     //NOTE:withServiceをnilにすると、全デバイスを検索
     func startScanning() {
         print("Scanning...")
-        peripherals.removeAll()
-        connectedPeripherals.removeAll() // 🎯 起動時にリセット
         centralManager.scanForPeripherals(withServices: [serviceUUID], options: nil)
 
         // 🎯 1秒後にスキャン停止して自動接続
