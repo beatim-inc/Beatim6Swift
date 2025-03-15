@@ -183,7 +183,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             detectStep(peripheral: "R", gx: gx, az: az, currentTime: currentTime)
         }
 
-        print("IMU Data: ax:\(ax), ay:\(ay), az:\(az), gx:\(gx), gy:\(gy), gz:\(gz)")
+//        print("IMU Data: ax:\(ax), ay:\(ay), az:\(az), gx:\(gx), gy:\(gy), gz:\(gz)")
     }
 
     private func detectStep(peripheral: String, gx: Float, az: Float, currentTime: TimeInterval) {

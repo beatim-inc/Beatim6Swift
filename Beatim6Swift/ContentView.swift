@@ -27,6 +27,7 @@ struct ContentView: View {
     @State private var musicDefaultBpm: Double = 93.0
 //    @State private var selectedSound: String = StepSoundManager.shared.soundName
     @State private var isNavigatingToSearchPlaylist = false
+    @State private var bpm: String = "Tap the button to fetch BPM"
     
     @StateObject var bleManager: BLEManager
     
@@ -177,6 +178,30 @@ struct ContentView: View {
                                 .foregroundColor(.gray)
                                 .frame(alignment: .trailing)
                         }
+
+                        HStack {
+                            Text(bpm)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+
+                        Button(action: {
+                            fetchBPM(artist: "showmore", album: "Too Close to Know", song: "1mm") { fetchedBPM in
+                                DispatchQueue.main.async {
+                                    bpm = fetchedBPM ?? "Failed to fetch BPM"
+                                    print("bpm: \(bpm)")
+                                }
+                            }
+                        }) {
+                            Text("Get BPM")
+                                .font(.title)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+
+
                     }
 
                     // Step Sound Selection
