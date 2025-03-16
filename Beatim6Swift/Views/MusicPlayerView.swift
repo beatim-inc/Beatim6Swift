@@ -162,7 +162,6 @@ struct MusicPlayerView: View {
                         self.artistName = nil
                         self.albumTitle = nil
                         self.artworkURL = nil
-                        print("Not Playing")
                     }
                 }
             }
