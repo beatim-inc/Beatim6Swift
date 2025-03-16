@@ -94,8 +94,7 @@ struct CustomSlider: View {
     var body: some View {
         VStack {
             Slider(value: $value, in: range, step: step)
-                .accentColor(.blue)
-//                .padding(.horizontal)
+                .accentColor(.primary)
         }
     }
 }

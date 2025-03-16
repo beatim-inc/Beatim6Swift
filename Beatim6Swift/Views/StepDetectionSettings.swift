@@ -19,6 +19,7 @@ struct StepDetectionSettings: View {
                     get: { -parameters.azThreshould },  // スライダー表示値 (0 から 3)
                     set: { parameters.azThreshould = -$0 } // 内部値を 0 から -3 に変換
                 ), in: 0...3, step: 0.1)
+                .accentColor(.primary)
                 HStack {
                     Text("Sensitive") // 敏感
                         .font(.caption)
@@ -35,7 +36,7 @@ struct StepDetectionSettings: View {
                 Spacer()
 
                 Text("Debounce Time (ms)")
-                Slider(value: $parameters.debounceTime, in: 100...1000, step: 50)
+                Slider(value: $parameters.debounceTime, in: 100...1000, step: 50).accentColor(.primary)
                 HStack {
                     Text("Short")
                         .font(.caption)

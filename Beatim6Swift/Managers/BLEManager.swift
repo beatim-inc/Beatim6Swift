@@ -30,8 +30,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     
     var lastStepTimeL: TimeInterval = 0
     var lastStepTimeR: TimeInterval = 0
-    var stepCountL = 0
-    var stepCountR = 0
 
     var onLStepDetectionNotified: (() -> Void)?
     var onRStepDetectionNotified: (() -> Void)?
@@ -172,36 +170,31 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             return
         }
         
-        let ax = imuData[0], ay = imuData[1], az = imuData[2]
-        let gx = imuData[3], gy = imuData[4], gz = imuData[5]
+        let az = imuData[2]
         
         let currentTime = Date().timeIntervalSince1970 * 1000 // ミリ秒単位
 
         if peripheral.identifier == leftPeripheralUUID {
-            detectStep(peripheral: "L", gx: gx, az: az, currentTime: currentTime)
+            detectStep(peripheral: "L", az: az, currentTime: currentTime)
         } else if peripheral.identifier == rightPeripheralUUID {
-            detectStep(peripheral: "R", gx: gx, az: az, currentTime: currentTime)
+            detectStep(peripheral: "R", az: az, currentTime: currentTime)
         }
-
-        print("IMU Data: ax:\(ax), ay:\(ay), az:\(az), gx:\(gx), gy:\(gy), gz:\(gz)")
     }
 
-    private func detectStep(peripheral: String, gx: Float, az: Float, currentTime: TimeInterval) {
+    private func detectStep(peripheral: String, az: Float, currentTime: TimeInterval) {
         let azThreshould = parameters.azThreshould
         let debounceTime = parameters.debounceTime
         
         if peripheral == "L" {
             if az < azThreshould && currentTime - lastStepTimeL > debounceTime {
                 lastStepTimeL = currentTime
-                stepCountL += 1
-                print("✅ Left step detected! Total: \(stepCountL)")
+                print("✅ L step detected!")
                 onLStepDetectionNotified?()
             }
         } else if peripheral == "R" {
             if az < azThreshould && currentTime - lastStepTimeR > debounceTime {
                 lastStepTimeR = currentTime
-                stepCountR += 1
-                print("✅ Right step detected! Total: \(stepCountR)")
+                print("✅ R step detected!")
                 onRStepDetectionNotified?()
             }
         }
