@@ -65,11 +65,23 @@ struct StepSoundPickerView: View {
             
             Picker("Select Sound", selection: $selectedSound) {
                 ForEach(availableSounds, id: \..self) { sound in
-                    Text(sound)
+                    HStack {
+                        Image(sound) // 各サウンドに対応するアイコン画像
+                            .resizable()
+                            .renderingMode(.template) // システムの色に合わせる場合
+                            .scaledToFit()
+                            .frame(width: 20, height: 20) // 文字サイズと同じくらいのサイズに調整
+
+                        Text(sound)
+                        Spacer()
+                    }
                     .tag(sound)
                 }
             }
             .pickerStyle(WheelPickerStyle())
+            .onChange(of: selectedSound) { _, newSound in
+                stepSoundManager.playSoundOnce(soundName: newSound, volume: volume)
+            }
             
             VStack {
                 CustomSlider(value: $volume, range: 0...2, step: 0.1)
