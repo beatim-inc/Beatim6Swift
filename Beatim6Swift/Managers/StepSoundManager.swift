@@ -52,7 +52,7 @@ class StepSoundManager: ObservableObject {
         leftStepVolume = max(0.0, min(volume, 1.0))  // 0.0〜1.0に制限
     }
 
-    private func playSoundOnce(soundName: String, volume: Float) {
+    func playSoundOnce(soundName: String, volume: Float) {
         guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else {
             print("⚠️ Error: Sound file '\(soundName).mp3' not found")
             return

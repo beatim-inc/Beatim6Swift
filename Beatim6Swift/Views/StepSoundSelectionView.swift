@@ -43,6 +43,7 @@ struct StepSoundPickerView: View {
     @Binding var selectedSound: String
     @Binding var volume: Float
     @State private var isPickerExpanded = false
+    @EnvironmentObject var stepSoundManager: StepSoundManager
     
     let availableSounds = ["None", "BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk1", "Walk2", "Claverotor1", "Claverotor2"]
     
@@ -50,14 +51,17 @@ struct StepSoundPickerView: View {
         VStack {
             Text(title)
                 .font(.headline)
+            Button(action: {stepSoundManager.playSoundOnce(soundName: selectedSound, volume: volume)}) {
+                Image("\(selectedSound)") // Placeholder for actual images
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(.primary)
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
+                    .padding(.top, 20)
+            }
+            .buttonStyle(PlainButtonStyle())
             
-            Image("\(selectedSound)") // Placeholder for actual images
-                .resizable()
-                .renderingMode(.template)
-                .foregroundColor(.primary)
-                .scaledToFit()
-                .frame(width: 80, height: 80)
-                .padding(.top, 20)
             
             Picker("Select Sound", selection: $selectedSound) {
                 ForEach(availableSounds, id: \..self) { sound in
