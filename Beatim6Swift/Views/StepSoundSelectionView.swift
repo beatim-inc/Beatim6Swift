@@ -46,42 +46,48 @@ struct StepSoundPickerView: View {
     @EnvironmentObject var stepSoundManager: StepSoundManager
     
     let availableSounds = ["None", "BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk1", "Walk2", "Claverotor1", "Claverotor2"]
+    let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 3) // 3列グリッド
     
     var body: some View {
         VStack {
             Text(title)
                 .font(.headline)
-            Button(action: {stepSoundManager.playSoundOnce(soundName: selectedSound, volume: volume)}) {
-                Image("\(selectedSound)") // Placeholder for actual images
-                    .resizable()
-                    .renderingMode(.template)
-                    .foregroundColor(.primary)
-                    .scaledToFit()
-                    .frame(width: 80, height: 80)
-                    .padding(.top, 20)
-            }
-            .buttonStyle(PlainButtonStyle())
             
+            Image("\(selectedSound)") // Placeholder for actual images
+                .resizable()
+                .renderingMode(.template)
+                .foregroundColor(.primary)
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+                .padding(.vertical, 10)
             
-            Picker("Select Sound", selection: $selectedSound) {
-                ForEach(availableSounds, id: \..self) { sound in
-                    HStack {
-                        Image(sound) // 各サウンドに対応するアイコン画像
-                            .resizable()
-                            .renderingMode(.template) // システムの色に合わせる場合
-                            .scaledToFit()
-                            .frame(width: 20, height: 20) // 文字サイズと同じくらいのサイズに調整
-
-                        Text(sound)
-                        Spacer()
+            Text("\(selectedSound)")
+                .font(.subheadline)
+                .foregroundColor(.primary)
+            
+            LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(availableSounds, id: \.self) { sound in
+                    Button(action: {
+                        selectedSound = sound
+                        stepSoundManager.playSoundOnce(soundName: sound, volume: volume) // サウンド再生関数を呼び出し
+                    }) {
+                        VStack {
+                            Image(sound) // 各サウンドに対応するアイコン画像
+                                .resizable()
+                                .renderingMode(.template)
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
+                                .foregroundColor(selectedSound == sound ? Color(UIColor.systemBackground) : .primary) // 選択状態で色を変更
+                        }
+                        .padding()
+                        .frame(width: 40, height: 40)
+                        .background(selectedSound == sound ? Color.primary : Color(uiColor: .systemGray5))
+                        .cornerRadius(10)
                     }
-                    .tag(sound)
+                    .buttonStyle(PlainButtonStyle()) // デフォルトのボタンスタイルを無効化
                 }
             }
-            .pickerStyle(WheelPickerStyle())
-            .onChange(of: selectedSound) { _, newSound in
-                stepSoundManager.playSoundOnce(soundName: newSound, volume: volume)
-            }
+            .padding(.vertical, 8)
             
             VStack {
                 CustomSlider(value: $volume, range: 0...2, step: 0.1)
