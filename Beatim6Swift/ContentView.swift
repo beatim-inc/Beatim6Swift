@@ -136,14 +136,13 @@ struct ContentView: View {
                         }
 
                         Button(action: {
-                            fetchTrackID(songName: "Uptown Funk", artistName: "Bruno Mars") { trackID in
-                                guard let trackID = trackID else {
-                                    print("🚨 トラック ID の取得に失敗")
-                                    return
-                                }
-
-                                fetchBPM(trackID: trackID) { bpm in
-                                    print("🎵 BPM: \(bpm ?? -1)")
+                            // 🎵 SwiftからBPMを取得
+                            let fetcher = BPMFetcher()
+                            fetcher.fetchBPM(song: "1mm", artist: "showmore") { bpm in
+                                if let bpm = bpm {
+                                    print("BPM: \(bpm)")
+                                } else {
+                                    print("Failed to fetch BPM")
                                 }
                             }
                         }) {
