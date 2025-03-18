@@ -144,15 +144,19 @@ struct ContentView: View {
                             let fetcher = BPMFetcher()
                             let artist = currentArtistName ?? "Unknown Artist" // artistNameがnilの場合のデフォルト値
 
-                            fetcher.fetchBPM(song: currentSongTitle, artist: artist) { bpm in
-                                if let bpm = bpm {
-                                    print("BPM: \(bpm)")
-                                } else {
-                                    print("Failed to fetch BPM")
+                            fetcher.fetchBPM(song: currentSongTitle, artist: artist) { bpmValue in
+                                DispatchQueue.main.async {
+                                    if let bpmValue = bpmValue, let bpmDouble = Double(bpmValue) {
+                                        musicDefaultBpm = bpmDouble  // ✅ musicDefaultBpmを更新
+                                        updatePlaybackRate()        // ✅ BPM更新後に再生速度を変更
+                                        bpm = "BPM: \(bpmValue)"
+                                    } else {
+                                        bpm = "Failed to fetch BPM"
+                                    }
                                 }
                             }
                         }) {
-                            Text(bpm)
+                            Text(musicDefaultBpm == 0 ? "Fetch BPM" : "Update BPM")
                                 .padding()
                                 .frame(maxWidth: .infinity)
                                 .cornerRadius(10)
@@ -190,6 +194,11 @@ struct ContentView: View {
             }
             .onChange(of: spmManager.spm) { oldSPM, newSPM in
                 if newSPM > 10 && newSPM < 200 {
+                    updatePlaybackRate()
+                }
+            }
+            .onChange(of: musicDefaultBpm) { _, _ in
+                if spmManager.spm > 10 && spmManager.spm < 200 {
                     updatePlaybackRate()
                 }
             }
