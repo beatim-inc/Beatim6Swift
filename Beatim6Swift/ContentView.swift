@@ -15,7 +15,6 @@ struct ContentView: View {
     @StateObject var parameters = StepDetectionParameters()
     @StateObject var spmManager = SPMManager()
     @StateObject private var stepSoundManager = StepSoundManager()
-    @StateObject var searchPlaylistVM = SearchPlaylistViewModel()
 
     @State private var musicSubscription: MusicSubscription?
     @State private var selectedPeripheral: CBPeripheral?

@@ -152,12 +152,10 @@ struct MusicPlayerView: View {
                         // 🎵 再生中なら現在の曲を取得
                         self.songDuration = song.duration ?? 1
                         self.songTitle = song.title
-//                        self.artistName = song.artistName
                         self.albumTitle = song.albumTitle ?? ""
                         self.artworkURL = song.artwork?.url(width: 100, height: 100)
                     } else {
                         self.songTitle = "Not Playing"
-//                        self.artistName = nil
                         self.albumTitle = nil
                         self.artworkURL = nil
                     }
@@ -165,6 +163,9 @@ struct MusicPlayerView: View {
             }
         }
     }
+
+
+
 
     /// タイマー停止
     private func stopPlaybackObserver() {
