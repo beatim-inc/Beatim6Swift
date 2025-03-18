@@ -22,10 +22,10 @@ struct ContentView: View {
     @State private var playbackTimer: Timer?
     
     @State private var currentPlaylistTitle: String = ""
+    @State private var currentArtistName: String? = nil
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
     @State private var musicDefaultBpm: Double = 93.0
-//    @State private var selectedSound: String = StepSoundManager.shared.soundName
     @State private var isNavigatingToSearchPlaylist = false
     @State private var bpm: String = "Tap the button to fetch BPM"
     
@@ -136,9 +136,15 @@ struct ContentView: View {
                         }
 
                         Button(action: {
-                            // 🎵 SwiftからBPMを取得
+                            guard !currentSongTitle.isEmpty else {
+                                print("No song is currently playing.")
+                                return
+                            }
+
                             let fetcher = BPMFetcher()
-                            fetcher.fetchBPM(song: "1mm", artist: "showmore") { bpm in
+                            let artist = currentArtistName ?? "Unknown Artist" // artistNameがnilの場合のデフォルト値
+
+                            fetcher.fetchBPM(song: currentSongTitle, artist: artist) { bpm in
                                 if let bpm = bpm {
                                     print("BPM: \(bpm)")
                                 } else {
@@ -151,8 +157,6 @@ struct ContentView: View {
                                 .frame(maxWidth: .infinity)
                                 .cornerRadius(10)
                         }
-
-
                     }
 
                     Section(footer: SpacerView()) {}
@@ -197,7 +201,7 @@ struct ContentView: View {
 
             VStack {
                 Spacer()
-                MusicPlayerView(stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm: musicDefaultBpm)
+                MusicPlayerView(songTitle: $currentSongTitle, artistName: $currentArtistName, stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm: musicDefaultBpm)
                     .frame(maxWidth: .infinity)
                     .background(.ultraThinMaterial) // iOS 標準の半透明背景
                     .clipShape(RoundedRectangle(cornerRadius: 16))

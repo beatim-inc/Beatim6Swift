@@ -17,8 +17,8 @@ struct MusicPlayerView: View {
     //NOTE:UI切り替え専用。ApplicationMusicPlayerの状態と必ずしも一致しない。
     @State private var isPlaying: Bool = false
     @State private var artworkURL: URL? // ジャケット画像のURL
-    @State private var songTitle: String = "Not Playing"
-    @State private var artistName: String? // アーティスト名
+    @Binding var songTitle: String
+    @Binding var artistName: String? // アーティスト名
     @State private var albumTitle: String? // アルバム名
     
     @StateObject var stepSoundManager: StepSoundManager
