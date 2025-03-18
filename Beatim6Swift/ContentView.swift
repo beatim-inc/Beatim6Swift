@@ -71,13 +71,6 @@ struct ContentView: View {
                         }
 
                         Toggle("Update SPM every 10 steps", isOn: $spmManager.allowStepUpdate)
-
-//                        Button("Add step manually"){
-//                            stepSoundManager.playRightStepSound()
-//                            if spmManager.allowStepUpdate {
-//                                spmManager.addStepData()
-//                            }
-//                        }
                         
                         NavigationLink(destination: StepSoundSelectionView(
                             selectedRightStepSound: $stepSoundManager.rightStepSoundName,
@@ -121,11 +114,6 @@ struct ContentView: View {
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
                             }
-                            .onChange(of: musicDefaultBpm) { _,_ in
-                                if spmManager.spm > 10 && spmManager.spm < 200 {
-                                    updatePlaybackRate()
-                                }
-                            }
                         }
                         HStack {
                             Text("Playback Rate")
@@ -134,15 +122,6 @@ struct ContentView: View {
                                 .foregroundColor(.gray)
                                 .frame(alignment: .trailing)
                         }
-//
-//                        Button(action: {
-//                            
-//                        }) {
-//                            Text(musicDefaultBpm == 0 ? "Fetch BPM" : "Update BPM")
-//                                .padding()
-//                                .frame(maxWidth: .infinity)
-//                                .cornerRadius(10)
-//                        }
                     }
 
                     Section(footer: SpacerView()) {}
