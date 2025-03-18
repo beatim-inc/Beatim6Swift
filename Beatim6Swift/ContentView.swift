@@ -134,33 +134,15 @@ struct ContentView: View {
                                 .foregroundColor(.gray)
                                 .frame(alignment: .trailing)
                         }
-
-                        Button(action: {
-                            guard !currentSongTitle.isEmpty else {
-                                print("No song is currently playing.")
-                                return
-                            }
-
-                            let fetcher = BPMFetcher()
-                            let artist = currentArtistName ?? "Unknown Artist" // artistNameがnilの場合のデフォルト値
-
-                            fetcher.fetchBPM(song: currentSongTitle, artist: artist) { bpmValue in
-                                DispatchQueue.main.async {
-                                    if let bpmValue = bpmValue, let bpmDouble = Double(bpmValue) {
-                                        musicDefaultBpm = bpmDouble  // ✅ musicDefaultBpmを更新
-                                        updatePlaybackRate()        // ✅ BPM更新後に再生速度を変更
-                                        bpm = "BPM: \(bpmValue)"
-                                    } else {
-                                        bpm = "Failed to fetch BPM"
-                                    }
-                                }
-                            }
-                        }) {
-                            Text(musicDefaultBpm == 0 ? "Fetch BPM" : "Update BPM")
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .cornerRadius(10)
-                        }
+//
+//                        Button(action: {
+//                            
+//                        }) {
+//                            Text(musicDefaultBpm == 0 ? "Fetch BPM" : "Update BPM")
+//                                .padding()
+//                                .frame(maxWidth: .infinity)
+//                                .cornerRadius(10)
+//                        }
                     }
 
                     Section(footer: SpacerView()) {}
@@ -200,6 +182,30 @@ struct ContentView: View {
             .onChange(of: musicDefaultBpm) { _, _ in
                 if spmManager.spm > 10 && spmManager.spm < 200 {
                     updatePlaybackRate()
+                }
+            }
+            .onChange(of: currentSongTitle) { _, _ in
+                guard !currentSongTitle.isEmpty else {
+                    print("No song is currently playing.")
+                    return
+                }
+
+                let fetcher = BPMFetcher()
+                let artist = currentArtistName ?? "Unknown Artist" // artistNameがnilの場合のデフォルト値
+                
+                print("song: \(currentSongTitle), artist: \(artist)")
+
+                fetcher.fetchBPM(song: currentSongTitle, artist: artist) { bpmValue in
+                    DispatchQueue.main.async {
+                        if let bpmValue = bpmValue, let bpmDouble = Double(bpmValue) {
+                            musicDefaultBpm = bpmDouble  // ✅ musicDefaultBpmを更新
+                            updatePlaybackRate()        // ✅ BPM更新後に再生速度を変更
+                            bpm = "BPM: \(bpmValue)"
+                        } else {
+                            bpm = "Failed to fetch BPM"
+                        }
+                        print(bpm)
+                    }
                 }
             }
             .task {
