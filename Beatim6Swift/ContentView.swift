@@ -100,7 +100,7 @@ struct ContentView: View {
 
                     // Music Selection
                     Section {
-                        NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm).environmentObject(stepSoundManager).environmentObject(spmManager)) {
+                        NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm, currentArtistName: $currentArtistName).environmentObject(stepSoundManager).environmentObject(spmManager)) {
                             HStack {
                                 Text("Search Songs")
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -148,9 +148,6 @@ struct ContentView: View {
                     Section(footer: SpacerView()) {}
                 }
                 .navigationTitle("Step Drummer")
-                .navigationDestination(isPresented: $isNavigatingToSearchPlaylist) {
-                    SearchPlaylistView(viewModel: searchPlaylistVM)
-                }
             }
             .onAppear{
                 authManager.requestMusicAuthorization()
