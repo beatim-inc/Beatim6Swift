@@ -182,28 +182,10 @@ struct ContentView: View {
                 }
             }
             .onChange(of: currentSongTitle) { _, _ in
-                guard !currentSongTitle.isEmpty else {
-                    print("No song is currently playing.")
-                    return
-                }
-
-                let fetcher = BPMFetcher()
-                let artist = currentArtistName ?? "Unknown Artist" // artistNameがnilの場合のデフォルト値
-                
-                print("song: \(currentSongTitle), artist: \(artist)")
-
-                fetcher.fetchBPM(song: currentSongTitle, artist: artist) { bpmValue in
-                    DispatchQueue.main.async {
-                        if let bpmValue = bpmValue, let bpmDouble = Double(bpmValue) {
-                            musicDefaultBpm = bpmDouble  // ✅ musicDefaultBpmを更新
-                            updatePlaybackRate()        // ✅ BPM更新後に再生速度を変更
-                            bpm = "BPM: \(bpmValue)"
-                        } else {
-                            bpm = "Failed to fetch BPM"
-                        }
-                        print(bpm)
-                    }
-                }
+                fetchBPMForCurrentSong()
+            }
+            .onChange(of: currentArtistName) { _, _ in
+                fetchBPMForCurrentSong()
             }
             .task {
                 for await subscription in MusicSubscription.subscriptionUpdates {
@@ -240,6 +222,33 @@ struct ContentView: View {
             player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
         }
     }
+    
+    /// 現在の曲名からBPMを取得
+    private func fetchBPMForCurrentSong() {
+        guard !currentSongTitle.isEmpty else {
+            print("No song is currently playing.")
+            return
+        }
+
+        let fetcher = BPMFetcher()
+        let artist = currentArtistName ?? "Unknown Artist" // artistNameがnilの場合のデフォルト値
+
+        print("song: \(currentSongTitle), artist: \(artist)")
+
+        fetcher.fetchBPM(song: currentSongTitle, artist: artist) { bpmValue in
+            DispatchQueue.main.async {
+                if let bpmValue = bpmValue, let bpmDouble = Double(bpmValue) {
+                    musicDefaultBpm = bpmDouble  // ✅ musicDefaultBpmを更新
+                    updatePlaybackRate()        // ✅ BPM更新後に再生速度を変更
+                    bpm = "BPM: \(bpmValue)"
+                } else {
+                    bpm = "Failed to fetch BPM"
+                }
+                print(bpm)
+            }
+        }
+    }
+
 }
 
 #Preview {
