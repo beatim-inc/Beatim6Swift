@@ -10,13 +10,16 @@ import MusicKit
 
 struct SongInfoView: View {
     var songItem: Song
+    @Binding var currentArtistName: String?
     
     var body: some View {         
         // Music Player
         Button(action: {
             Task {
                 let player = ApplicationMusicPlayer.shared
-
+                await MainActor.run {
+                    self.currentArtistName = songItem.artistName
+                }
                 // 🎯 キューを設定
                 player.queue = .init(for: [songItem])
 

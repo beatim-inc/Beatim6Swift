@@ -17,8 +17,8 @@ struct MusicPlayerView: View {
     //NOTE:UI切り替え専用。ApplicationMusicPlayerの状態と必ずしも一致しない。
     @State private var isPlaying: Bool = false
     @State private var artworkURL: URL? // ジャケット画像のURL
-    @State private var songTitle: String = "Not Playing"
-    @State private var artistName: String? // アーティスト名
+    @Binding var songTitle: String
+    @Binding var artistName: String? // アーティスト名
     @State private var albumTitle: String? // アルバム名
     
     @StateObject var stepSoundManager: StepSoundManager
@@ -37,8 +37,6 @@ struct MusicPlayerView: View {
                       .font(.caption)
                       .foregroundColor(.gray)
                     Spacer()
-//                    Slider(value: $playbackProgress, in: 0...songDuration)
-//                        .accentColor(.white)
                     GeometryReader { geometry in
                         ZStack(alignment: .leading) {
                             // 背景のグレーのバー
@@ -154,12 +152,12 @@ struct MusicPlayerView: View {
                         // 🎵 再生中なら現在の曲を取得
                         self.songDuration = song.duration ?? 1
                         self.songTitle = song.title
-                        self.artistName = song.artistName
+//                        self.artistName = song.artistName
                         self.albumTitle = song.albumTitle ?? ""
                         self.artworkURL = song.artwork?.url(width: 100, height: 100)
                     } else {
                         self.songTitle = "Not Playing"
-                        self.artistName = nil
+//                        self.artistName = nil
                         self.albumTitle = nil
                         self.artworkURL = nil
                     }

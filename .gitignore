@@ -51,4 +51,6 @@ GoogleService-Info.plist
 *.mode2v3
 *.perspectivev3
 
+#APIキー
+APIKey.swift
 config.json

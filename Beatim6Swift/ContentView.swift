@@ -22,10 +22,12 @@ struct ContentView: View {
     @State private var playbackTimer: Timer?
     
     @State private var currentPlaylistTitle: String = ""
+    @State private var currentArtistName: String? = nil
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
     @State private var musicDefaultBpm: Double = 93.0
     @State private var isNavigatingToSearchPlaylist = false
+    @State private var bpm: String = "Tap the button to fetch BPM"
     
     @StateObject var bleManager: BLEManager
     
@@ -82,7 +84,7 @@ struct ContentView: View {
 
                     // Music Selection
                     Section {
-                        NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm).environmentObject(stepSoundManager).environmentObject(spmManager)) {
+                        NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm, currentArtistName: $currentArtistName).environmentObject(stepSoundManager).environmentObject(spmManager)) {
                             HStack {
                                 Image(systemName: "magnifyingglass")
                                 Text("Search Songs")
@@ -109,11 +111,6 @@ struct ContentView: View {
                                 Text("\(String(format: "%.1f", musicDefaultBpm))")
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
-                            }
-                            .onChange(of: musicDefaultBpm) { _,_ in
-                                if spmManager.spm > 10 && spmManager.spm < 200 {
-                                    updatePlaybackRate()
-                                }
                             }
                         }
                         HStack {
@@ -158,9 +155,6 @@ struct ContentView: View {
                     Section(footer: SpacerView()) {}
                 }
                 .navigationTitle("Step Drummer")
-                .navigationDestination(isPresented: $isNavigatingToSearchPlaylist) {
-                    SearchPlaylistView(viewModel: searchPlaylistVM)
-                }
             }
             .onAppear{
                 authManager.requestMusicAuthorization()
@@ -189,6 +183,17 @@ struct ContentView: View {
                     updatePlaybackRate()
                 }
             }
+            .onChange(of: musicDefaultBpm) { _, _ in
+                if spmManager.spm > 10 && spmManager.spm < 200 {
+                    updatePlaybackRate()
+                }
+            }
+            .onChange(of: currentSongTitle) { _, _ in
+                fetchBPMForCurrentSong()
+            }
+            .onChange(of: currentArtistName) { _, _ in
+                fetchBPMForCurrentSong()
+            }
             .task {
                 for await subscription in MusicSubscription.subscriptionUpdates {
                     self.musicSubscription = subscription
@@ -198,7 +203,7 @@ struct ContentView: View {
             
             VStack {
                 Spacer()
-                MusicPlayerView(stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm: musicDefaultBpm)
+                MusicPlayerView(songTitle: $currentSongTitle, artistName: $currentArtistName, stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm: musicDefaultBpm)
                     .frame(maxWidth: .infinity)
                     .background(.ultraThinMaterial) // iOS 標準の半透明背景
                     .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -225,6 +230,33 @@ struct ContentView: View {
             player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
         }
     }
+    
+    /// 現在の曲名からBPMを取得
+    private func fetchBPMForCurrentSong() {
+        guard !currentSongTitle.isEmpty else {
+            print("No song is currently playing.")
+            return
+        }
+
+        let fetcher = BPMFetcher()
+        let artist = currentArtistName ?? "Unknown Artist" // artistNameがnilの場合のデフォルト値
+
+        print("song: \(currentSongTitle), artist: \(artist)")
+
+        fetcher.fetchBPM(song: currentSongTitle, artist: artist) { bpmValue in
+            DispatchQueue.main.async {
+                if let bpmValue = bpmValue, let bpmDouble = Double(bpmValue) {
+                    musicDefaultBpm = bpmDouble  // ✅ musicDefaultBpmを更新
+                    updatePlaybackRate()        // ✅ BPM更新後に再生速度を変更
+                    bpm = "BPM: \(bpmValue)"
+                } else {
+                    bpm = "Failed to fetch BPM"
+                }
+                print(bpm)
+            }
+        }
+    }
+
 }
 
 #Preview {

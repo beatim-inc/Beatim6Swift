@@ -14,6 +14,7 @@ struct SearchSongsView: View {
     @State private var searchResultSongs: MusicItemCollection<Song> = []
     @State private var isPerformingSearch: Bool = false
     @State private var musicSubscription: MusicSubscription?
+    @Binding var currentArtistName: String?
     @EnvironmentObject var stepSoundManager: StepSoundManager
     @EnvironmentObject var spmManager: SPMManager
     var defaultBpm : Double
@@ -21,8 +22,9 @@ struct SearchSongsView: View {
 
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     
-    init(musicDefaultBpm: Double){
+    init(musicDefaultBpm: Double, currentArtistName: Binding<String?>){
         defaultBpm = musicDefaultBpm
+        self._currentArtistName = currentArtistName
     }
     
     var body: some View {
@@ -42,7 +44,7 @@ struct SearchSongsView: View {
             }
             
             ForEach(self.searchResultSongs) { song in
-                SongInfoView(songItem: song)
+                SongInfoView(songItem: song, currentArtistName: $currentArtistName)
             }
             
         }
