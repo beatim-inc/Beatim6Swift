@@ -34,7 +34,7 @@ struct StepSoundSelectionView: View {
             
             Spacer()
         }
-        .navigationTitle("Step Sound")
+        .navigationTitle("Step Instruments")
     }
 }
 

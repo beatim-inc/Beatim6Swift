@@ -29,7 +29,7 @@ struct BpmSettingView: View {
                     }
             }
         }
-        .navigationTitle("BPM Setting")
+        .navigationTitle("Original BPM")
     }
 
     private func saveBpm() {

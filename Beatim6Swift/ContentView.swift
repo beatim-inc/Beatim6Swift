@@ -78,30 +78,6 @@ struct ContentView: View {
                             Image(systemName: "arrow.triangle.2.circlepath")
                             Toggle("Update SPM every 10 steps", isOn: $spmManager.allowStepUpdate)
                         }
-                        
-                        NavigationLink(destination: StepSoundSelectionView(
-                            selectedRightStepSound: $stepSoundManager.rightStepSoundName,
-                            selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
-                            setSoundName: stepSoundManager.setRightStepSoundName
-                            )
-                            .environmentObject(stepSoundManager)) {
-                            HStack {
-                                Image("Drums")
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .foregroundColor(.primary)
-                                    .scaledToFit()
-                                    .frame(width: 20, height: 20)
-                                Text("Step Sound")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                //NOTE:StepSound名は隠すor実験者しかわからないラベルをつける
-                                
-                                Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                                
-                            }
-                        }
                     }
 
                     // Music Selection
@@ -154,6 +130,30 @@ struct ContentView: View {
                                 .frame(alignment: .trailing)
                         }
                     }
+                    Section {
+                        NavigationLink(destination: StepSoundSelectionView(
+                            selectedRightStepSound: $stepSoundManager.rightStepSoundName,
+                            selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
+                            setSoundName: stepSoundManager.setRightStepSoundName
+                            )
+                            .environmentObject(stepSoundManager)) {
+                            HStack {
+                                Image("Drums")
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .foregroundColor(.primary)
+                                    .scaledToFit()
+                                    .frame(width: 20, height: 20)
+                                Text("Step Instruments")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
+                                
+                            }
+                        }
+                    }
 
                     Section(footer: SpacerView()) {}
                 }
@@ -194,7 +194,8 @@ struct ContentView: View {
                     self.musicSubscription = subscription
                 }
             }
-
+            
+            
             VStack {
                 Spacer()
                 MusicPlayerView(stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm: musicDefaultBpm)
