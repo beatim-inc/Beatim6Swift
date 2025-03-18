@@ -52,18 +52,23 @@ class StepSoundManager: ObservableObject {
         leftStepVolume = max(0.0, min(volume, 1.0))  // 0.0〜1.0に制限
     }
 
-    private func playSoundOnce(soundName: String, volume: Float) {
-        if let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") {
-            do {
-                let player = try AVAudioPlayer(contentsOf: url)
-                player.volume = volume
-                player.play()
-                audioPlayer = player  // インスタンスを保持
-            } catch {
-                print("Error playing sound: \(error.localizedDescription)")
-            }
-        } else {
-            print("Error finding sound file")
+    func playSoundOnce(soundName: String, volume: Float) {
+        guard let url = Bundle.main.url(forResource: soundName, withExtension: "mp3") else {
+            print("⚠️ Error: Sound file '\(soundName).mp3' not found")
+            return
+        }
+        
+        do {
+            let player = try AVAudioPlayer(contentsOf: url)
+            player.volume = volume
+            player.prepareToPlay()
+            player.play()
+            
+            // メモリ管理のため、直前のインスタンスを解放してから新しいインスタンスを保持
+            audioPlayer?.stop()
+            audioPlayer = player
+        } catch {
+            print("⚠️ Error playing sound '\(soundName)': \(error.localizedDescription)")
         }
     }
     
@@ -74,20 +79,27 @@ class StepSoundManager: ObservableObject {
         }
     }
     
-    func playRightStepSound(){
-        if(isPeriodicStepSoundActive){return}
-        if(isDelayedStepSoundActive){
-            playDelayedSoundOnce(soundName: rightStepSoundName, volume: rightStepVolume)
-        }else{
-            playSoundOnce(soundName:rightStepSoundName, volume: rightStepVolume)
+    func playRightStepSound() {
+        guard !isPeriodicStepSoundActive else { return }
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            if self.isDelayedStepSoundActive {
+                self.playDelayedSoundOnce(soundName: self.rightStepSoundName, volume: self.rightStepVolume)
+            } else {
+                self.playSoundOnce(soundName: self.rightStepSoundName, volume: self.rightStepVolume)
+            }
         }
     }
-    func playLeftStepSound(){
-        if(isPeriodicStepSoundActive){return}
-        if(isDelayedStepSoundActive){
-            playDelayedSoundOnce(soundName: leftStepSoundName, volume: leftStepVolume)
-        }else{
-            playSoundOnce(soundName: leftStepSoundName, volume: leftStepVolume)
+
+    func playLeftStepSound() {
+        guard !isPeriodicStepSoundActive else { return }
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            if self.isDelayedStepSoundActive {
+                self.playDelayedSoundOnce(soundName: self.leftStepSoundName, volume: self.leftStepVolume)
+            } else {
+                self.playSoundOnce(soundName: self.leftStepSoundName, volume: self.leftStepVolume)
+            }
         }
     }
     

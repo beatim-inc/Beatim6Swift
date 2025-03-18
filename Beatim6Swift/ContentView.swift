@@ -45,7 +45,9 @@ struct ContentView: View {
                     Section {
                         NavigationLink(destination: SensorListView(bleManager: bleManager)) {
                             HStack {
-                                Text("Step Sensors Connection")
+                                Image(systemName: "sensor.fill")
+                                    .frame(width:20, height: 20)
+                                Text("Sensors Connection")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Text("\(bleManager.connectedPeripherals.count)")
                                     .foregroundColor(.gray)
@@ -54,6 +56,8 @@ struct ContentView: View {
                         }
                         NavigationLink(destination: StepDetectionSettings(parameters: parameters)) {
                             HStack {
+                                Image(systemName: "light.beacon.max.fill")
+                                    .frame(width:20, height: 20)
                                 Text("Sensitivity Settings")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
@@ -62,6 +66,8 @@ struct ContentView: View {
                             spmManager.spm = newSpm
                         })) {
                             HStack {
+                                Image(systemName: "figure.walk")
+                                    .frame(width:20, height: 20)
                                 Text("Step Per Minute (SPM)")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Text("\(String(format: "%.1f", spmManager.spm))")
@@ -70,24 +76,9 @@ struct ContentView: View {
                             }
                         }
 
-                        Toggle("Update SPM every 10 steps", isOn: $spmManager.allowStepUpdate)
-                        
-                        NavigationLink(destination: StepSoundSelectionView(
-                            selectedRightStepSound: $stepSoundManager.rightStepSoundName,
-                            selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
-                            setSoundName: stepSoundManager.setRightStepSoundName
-                            )
-                            .environmentObject(stepSoundManager)) {
-                            HStack {
-                                Text("Step Sound")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                //NOTE:StepSound名は隠すor実験者しかわからないラベルをつける
-                                
-                                Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                                
-                            }
+                        HStack {
+                            Image(systemName: "arrow.triangle.2.circlepath")
+                            Toggle("Update SPM every 10 steps", isOn: $spmManager.allowStepUpdate)
                         }
                     }
 
@@ -95,6 +86,7 @@ struct ContentView: View {
                     Section {
                         NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm, currentArtistName: $currentArtistName).environmentObject(stepSoundManager).environmentObject(spmManager)) {
                             HStack {
+                                Image(systemName: "magnifyingglass")
                                 Text("Search Songs")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
@@ -108,7 +100,13 @@ struct ContentView: View {
                             musicDefaultBpm = newBpm
                         })) {
                             HStack {
-                                Text("Default BPM")
+                                Image("Bpm")
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .foregroundColor(.primary)
+                                    .scaledToFit()
+                                    .frame(width: 20, height: 20)
+                                Text("Original BPM")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Text("\(String(format: "%.1f", musicDefaultBpm))")
                                     .foregroundColor(.gray)
@@ -116,11 +114,41 @@ struct ContentView: View {
                             }
                         }
                         HStack {
+                            Image("PlaybackRate")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(.primary)
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
                             Text("Playback Rate")
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Text("\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
                                 .foregroundColor(.gray)
                                 .frame(alignment: .trailing)
+                        }
+                    }
+                    Section {
+                        NavigationLink(destination: StepSoundSelectionView(
+                            selectedRightStepSound: $stepSoundManager.rightStepSoundName,
+                            selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
+                            setSoundName: stepSoundManager.setRightStepSoundName
+                            )
+                            .environmentObject(stepSoundManager)) {
+                            HStack {
+                                Image("Drums")
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .foregroundColor(.primary)
+                                    .scaledToFit()
+                                    .frame(width: 20, height: 20)
+                                Text("Step Instruments")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
+                                    .foregroundColor(.gray)
+                                    .frame(alignment: .trailing)
+                                
+                            }
                         }
                     }
 
@@ -171,7 +199,8 @@ struct ContentView: View {
                     self.musicSubscription = subscription
                 }
             }
-
+            
+            
             VStack {
                 Spacer()
                 MusicPlayerView(songTitle: $currentSongTitle, artistName: $currentArtistName, stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm: musicDefaultBpm)

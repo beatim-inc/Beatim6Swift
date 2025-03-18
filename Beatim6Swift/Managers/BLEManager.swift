@@ -30,8 +30,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     
     var lastStepTimeL: TimeInterval = 0
     var lastStepTimeR: TimeInterval = 0
-    var stepCountL = 0
-    var stepCountR = 0
 
     var onLStepDetectionNotified: (() -> Void)?
     var onRStepDetectionNotified: (() -> Void)?
@@ -181,7 +179,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         } else if peripheral.identifier == rightPeripheralUUID {
             detectStep(peripheral: "R", az: az, currentTime: currentTime)
         }
-
     }
 
     private func detectStep(peripheral: String, az: Float, currentTime: TimeInterval) {
@@ -191,15 +188,13 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         if peripheral == "L" {
             if az < azThreshould && currentTime - lastStepTimeL > debounceTime {
                 lastStepTimeL = currentTime
-                stepCountL += 1
-                print("✅ Left step detected! Total: \(stepCountL)")
+                print("✅ L step detected!")
                 onLStepDetectionNotified?()
             }
         } else if peripheral == "R" {
             if az < azThreshould && currentTime - lastStepTimeR > debounceTime {
                 lastStepTimeR = currentTime
-                stepCountR += 1
-                print("✅ Right step detected! Total: \(stepCountR)")
+                print("✅ R step detected!")
                 onRStepDetectionNotified?()
             }
         }

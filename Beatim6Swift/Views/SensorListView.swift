@@ -32,6 +32,6 @@ struct SensorListView: View {
             }
             }
         }
-        .navigationTitle("Sensor List")
+        .navigationTitle("Sensors Connection")
     }
 }

@@ -1,9 +1,6 @@
 import MusicKit
 import SwiftUI
 
-import MusicKit
-import SwiftUI
-
 @MainActor // 🎯 UI スレッドで動作するように明示
 class AuthManager: ObservableObject {
     @Published var currentAuthStatus: MusicAuthorization.Status = MusicAuthorization.currentStatus

@@ -22,7 +22,7 @@ struct SpmSettingView: View {
                     }
             }
         }
-        .navigationTitle("SPM Setting")
+        .navigationTitle("Step Per Minute")
     }
 
     private func saveSpm() {

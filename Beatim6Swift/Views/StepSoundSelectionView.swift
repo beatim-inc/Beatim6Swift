@@ -34,7 +34,7 @@ struct StepSoundSelectionView: View {
             
             Spacer()
         }
-        .navigationTitle("Step Sound")
+        .navigationTitle("Step Instruments")
     }
 }
 
@@ -43,8 +43,10 @@ struct StepSoundPickerView: View {
     @Binding var selectedSound: String
     @Binding var volume: Float
     @State private var isPickerExpanded = false
+    @EnvironmentObject var stepSoundManager: StepSoundManager
     
     let availableSounds = ["None", "BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk1", "Walk2", "Claverotor1", "Claverotor2"]
+    let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 3) // 3列グリッド
     
     var body: some View {
         VStack {
@@ -57,15 +59,35 @@ struct StepSoundPickerView: View {
                 .foregroundColor(.primary)
                 .scaledToFit()
                 .frame(width: 80, height: 80)
-                .padding(.top, 20)
+                .padding(.vertical, 10)
             
-            Picker("Select Sound", selection: $selectedSound) {
-                ForEach(availableSounds, id: \..self) { sound in
-                    Text(sound)
-                    .tag(sound)
+            Text("\(selectedSound)")
+                .font(.subheadline)
+                .foregroundColor(.primary)
+            
+            LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(availableSounds, id: \.self) { sound in
+                    Button(action: {
+                        selectedSound = sound
+                        stepSoundManager.playSoundOnce(soundName: sound, volume: volume) // サウンド再生関数を呼び出し
+                    }) {
+                        VStack {
+                            Image(sound) // 各サウンドに対応するアイコン画像
+                                .resizable()
+                                .renderingMode(.template)
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
+                                .foregroundColor(selectedSound == sound ? Color(UIColor.systemBackground) : .primary) // 選択状態で色を変更
+                        }
+                        .padding()
+                        .frame(width: 40, height: 40)
+                        .background(selectedSound == sound ? Color.primary : Color(uiColor: .systemGray5))
+                        .cornerRadius(10)
+                    }
+                    .buttonStyle(PlainButtonStyle()) // デフォルトのボタンスタイルを無効化
                 }
             }
-            .pickerStyle(WheelPickerStyle())
+            .padding(.vertical, 8)
             
             VStack {
                 CustomSlider(value: $volume, range: 0...2, step: 0.1)
@@ -94,8 +116,7 @@ struct CustomSlider: View {
     var body: some View {
         VStack {
             Slider(value: $value, in: range, step: step)
-                .accentColor(.blue)
-//                .padding(.horizontal)
+                .accentColor(.primary)
         }
     }
 }
