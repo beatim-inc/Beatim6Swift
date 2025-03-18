@@ -13,13 +13,12 @@ struct MusicPlayerView: View {
     @State private var playbackProgress: Double = 0
     @State private var songDuration: Double = 0
     @State private var playbackTimer: Timer?
-    
-    //NOTE:UI切り替え専用。ApplicationMusicPlayerの状態と必ずしも一致しない。
     @State private var isPlaying: Bool = false
     @State private var artworkURL: URL? // ジャケット画像のURL
     @Binding var songTitle: String
     @Binding var artistName: String? // アーティスト名
     @State private var albumTitle: String? // アルバム名
+    @Binding var trackId: String? // id
     
     @StateObject var stepSoundManager: StepSoundManager
     @StateObject var spmManager: SPMManager
@@ -154,10 +153,12 @@ struct MusicPlayerView: View {
                         self.songTitle = song.title
                         self.albumTitle = song.albumTitle ?? ""
                         self.artworkURL = song.artwork?.url(width: 100, height: 100)
+                        self.trackId = song.id.rawValue
                     } else {
                         self.songTitle = "Not Playing"
                         self.albumTitle = nil
                         self.artworkURL = nil
+                        self.trackId = nil
                     }
                 }
             }

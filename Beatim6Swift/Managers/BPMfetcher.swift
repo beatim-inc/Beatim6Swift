@@ -9,8 +9,8 @@ import Foundation
 import SwiftSoup
 
 class BPMFetcher {
-    let apiKey = "AIzaSyBwOToI654CDXv2DiIhjyxov3vAK46IcKQ" // ✅ Google Custom Search APIキーをセット
-    let cx = "65fd42fbc42c84efb" // ✅ Google CSE IDをセット
+    let apiKey = "AIzaSyDu4RUh1JARrsU27LVcKdCHStJRSdJBdXY" // ✅ Google Custom Search APIキーをセット
+    let cx = "675fbfdc2a9d5446e" // ✅ Google CSE IDをセット
 
     /// Google Custom Search API を使ってSongBPMのURLを取得
     func searchSongBPM(song: String, artist: String, completion: @escaping (String?) -> Void) {

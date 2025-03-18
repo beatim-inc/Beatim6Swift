@@ -24,6 +24,7 @@ struct ContentView: View {
     @State private var currentArtistName: String? = nil
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
+    @State private var trackId: String? = nil
     @State private var musicDefaultBpm: Double = 93.0
     @State private var isNavigatingToSearchPlaylist = false
     @State private var bpm: String = "Tap the button to fetch BPM"
@@ -187,10 +188,7 @@ struct ContentView: View {
                     updatePlaybackRate()
                 }
             }
-            .onChange(of: currentSongTitle) { _, _ in
-                fetchBPMForCurrentSong()
-            }
-            .onChange(of: currentArtistName) { _, _ in
+            .onChange(of: trackId) { _, _ in
                 fetchBPMForCurrentSong()
             }
             .task {
@@ -202,7 +200,7 @@ struct ContentView: View {
             
             VStack {
                 Spacer()
-                MusicPlayerView(songTitle: $currentSongTitle, artistName: $currentArtistName, stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm: musicDefaultBpm)
+                MusicPlayerView(songTitle: $currentSongTitle, artistName: $currentArtistName, trackId: $trackId, stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm: musicDefaultBpm)
                     .frame(maxWidth: .infinity)
                     .background(.ultraThinMaterial) // iOS 標準の半透明背景
                     .clipShape(RoundedRectangle(cornerRadius: 16))
