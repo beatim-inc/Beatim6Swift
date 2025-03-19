@@ -30,7 +30,8 @@ struct StepSoundSelectionView: View {
                     volume: $stepSoundManager.rightStepVolume
                 )
             }
-            .padding()
+            .padding(.bottom, 20)
+            .padding(.horizontal, 20)
             
             Spacer()
         }
@@ -65,7 +66,7 @@ struct StepSoundPickerView: View {
                 .font(.subheadline)
                 .foregroundColor(.primary)
             
-            LazyVGrid(columns: columns, spacing: 20) {
+            LazyVGrid(columns: columns, spacing: 6) {
                 ForEach(availableSounds, id: \.self) { sound in
                     Button(action: {
                         selectedSound = sound
@@ -99,7 +100,6 @@ struct StepSoundPickerView: View {
                     Text("High").font(.caption).foregroundColor(.gray)
                 }
             }
-            .padding(.bottom, 8)
         }
         .frame(maxWidth: .infinity)
         .padding()

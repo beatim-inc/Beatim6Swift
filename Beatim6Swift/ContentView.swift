@@ -30,9 +30,7 @@ struct ContentView: View {
     @State private var bpmErrorMessage: String = ""
     
     @StateObject var bleManager: BLEManager
-    @State private var showSensorList = false
-    @State private var showStepSettings = false
-    @State private var navigateToSearchSongs = false
+    @State private var selectedTab = 2
     
     init() {
         let params = StepDetectionParameters()
@@ -41,111 +39,118 @@ struct ContentView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            TabView {
-                SensorListView(bleManager: bleManager)
-                    .tabItem {
-                        Image(systemName: "sensor.fill")
-                            .foregroundColor(.primary)
-                        Text("\(bleManager.connectedPeripherals.count) Sensors")
-                            .font(.caption)
-                            .foregroundColor(.primary)
-                    }
-                
-                StepDetectionSettings(parameters: parameters)
-                    .tabItem {
-                        Image(systemName: "light.beacon.max.fill")
-                            .foregroundColor(.primary)
-                        Text("Sensitivity")
-                            .font(.caption)
-                            .foregroundColor(.primary)
-                    }
-                
-                StepSoundSelectionView(
-                    selectedRightStepSound: $stepSoundManager.rightStepSoundName,
-                    selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
-                    setSoundName: stepSoundManager.setRightStepSoundName
-                )
-                .environmentObject(stepSoundManager)
-                .tabItem {
-                    Image("Drums")
-                        .renderingMode(.template)
-                        .foregroundColor(.primary)
-                    Text("Instruments")
-                }
+        NavigationStack {
+            ZStack(alignment: .bottom) {
+                TabView (selection: $selectedTab) {
+                    SensorListView(bleManager: bleManager)
+                        .tabItem {
+                            Image(systemName: "sensor.fill")
+                                .foregroundColor(.primary)
+                            Text("\(bleManager.connectedPeripherals.count) Sensors")
+                                .font(.caption)
+                                .foregroundColor(.primary)
+                        }
+                        .tag(0)
                     
-                SearchSongsView(
-                    musicDefaultBpm: musicDefaultBpm,
-                    currentArtistName: $currentArtistName
-                )
-                .environmentObject(stepSoundManager)
-                .environmentObject(spmManager)
-                .tabItem {
-                    Image(systemName: "magnifyingglass")
-                    Text("Search")
-                }
-            }
-            .onAppear{
-                authManager.requestMusicAuthorization()
-                bleManager.startScanning()
-
-                bleManager.onRStepDetectionNotified = {
-                    stepSoundManager.playRightStepSound()
-                    if spmManager.allowStepUpdate {
-                        spmManager.addStepData()
+                    StepDetectionSettings(parameters: parameters)
+                        .tabItem {
+                            Image(systemName: "light.beacon.max.fill")
+                                .foregroundColor(.primary)
+                            Text("Sensitivity")
+                                .font(.caption)
+                                .foregroundColor(.primary)
+                        }
+                        .tag(1)
+                    
+                    StepSoundSelectionView(
+                        selectedRightStepSound: $stepSoundManager.rightStepSoundName,
+                        selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
+                        setSoundName: stepSoundManager.setRightStepSoundName
+                    )
+                    .environmentObject(stepSoundManager)
+                    .tabItem {
+                        Image("Drums")
+                            .renderingMode(.template)
+                            .foregroundColor(.primary)
+                        Text("Instruments")
                     }
-                }
-
-                bleManager.onLStepDetectionNotified = {
-                    stepSoundManager.playLeftStepSound()
-                    if spmManager.allowStepUpdate {
-                        spmManager.addStepData()
+                    .tag(2)
+                    
+                    SearchSongsView(
+                        musicDefaultBpm: musicDefaultBpm,
+                        currentArtistName: $currentArtistName
+                    )
+                    .environmentObject(stepSoundManager)
+                    .environmentObject(spmManager)
+                    .tabItem {
+                        Image(systemName: "magnifyingglass")
+                        Text("Search")
                     }
+                    .tag(3)
                 }
-                //TODO:見つかるまでスキャンを繰り返す
-                for _ in 0..<10 {
+                .navigationTitle(tabTitle()) // タブごとにタイトルを変更
+                .onAppear{
+                    authManager.requestMusicAuthorization()
                     bleManager.startScanning()
+                    
+                    bleManager.onRStepDetectionNotified = {
+                        stepSoundManager.playRightStepSound()
+                        if spmManager.allowStepUpdate {
+                            spmManager.addStepData()
+                        }
+                    }
+                    
+                    bleManager.onLStepDetectionNotified = {
+                        stepSoundManager.playLeftStepSound()
+                        if spmManager.allowStepUpdate {
+                            spmManager.addStepData()
+                        }
+                    }
+                    //TODO:見つかるまでスキャンを繰り返す
+                    for _ in 0..<10 {
+                        bleManager.startScanning()
+                    }
                 }
-            }
-            .onChange(of: spmManager.spm) { oldSPM, newSPM in
-                if newSPM > 10 && newSPM < 200 {
-                    updatePlaybackRate()
+                .onChange(of: spmManager.spm) { oldSPM, newSPM in
+                    if newSPM > 10 && newSPM < 200 {
+                        updatePlaybackRate()
+                    }
                 }
-            }
-            .onChange(of: musicDefaultBpm) { _, _ in
-                if spmManager.spm > 10 && spmManager.spm < 200 {
-                    updatePlaybackRate()
+                .onChange(of: musicDefaultBpm) { _, _ in
+                    if spmManager.spm > 10 && spmManager.spm < 200 {
+                        updatePlaybackRate()
+                    }
                 }
-            }
-            .onChange(of: trackId) { _, _ in
-                fetchBPMForCurrentSong()
-            }
-            .task {
-                for await subscription in MusicSubscription.subscriptionUpdates {
-                    self.musicSubscription = subscription
+                .onChange(of: trackId) { _, _ in
+                    fetchBPMForCurrentSong()
                 }
-            }
-            
-            
-            VStack {
-                Spacer()
-                MusicPlayerView(
-                    songTitle: $currentSongTitle,
-                    artistName: $currentArtistName,
-                    trackId: $trackId,
-                    bpmErrorMessage: $bpmErrorMessage,
-                    stepSoundManager: stepSoundManager,
-                    spmManager: spmManager,
-                    musicDefaultBpm: $musicDefaultBpm
-                )
+                .task {
+                    for await subscription in MusicSubscription.subscriptionUpdates {
+                        self.musicSubscription = subscription
+                    }
+                }
+                
+                
+                VStack {
+                    Spacer()
+                    MusicPlayerView(
+                        songTitle: $currentSongTitle,
+                        artistName: $currentArtistName,
+                        trackId: $trackId,
+                        bpmErrorMessage: $bpmErrorMessage,
+                        stepSoundManager: stepSoundManager,
+                        spmManager: spmManager,
+                        musicDefaultBpm: $musicDefaultBpm
+                    )
                     .frame(maxWidth: .infinity)
                     .background(.ultraThinMaterial) // iOS 標準の半透明背景
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .padding(.horizontal, 16)
                     .shadow(radius: 5)
+                }
+                .padding(.top, 20)
+                .padding(.bottom, 64)
             }
-            .padding(.top, 20)
-            .padding(.bottom, 64)
         }
     }
     
@@ -184,6 +189,17 @@ struct ContentView: View {
             }
         }
     }
+    
+    /// タブのタイトルを管理
+    private func tabTitle() -> String {
+            switch selectedTab {
+                case 0: return "Sensor Connection"
+                case 1: return "Sensitivity Settings"
+                case 2: return "Step Instruments"
+                case 3: return "Search Songs"
+                default: return ""
+            }
+        }
 
 }
 

@@ -27,9 +27,9 @@ struct SensorListView: View {
                 Button("Scan Sensors") {
                 bleManager.startScanning()
             }
-            Button("Connect All") {
-                bleManager.autoConnectAllPeripherals()
-            }
+                Button("Connect All") {
+                    bleManager.autoConnectAllPeripherals()
+                }
             }
         }
         .navigationTitle("Sensors Connection")
