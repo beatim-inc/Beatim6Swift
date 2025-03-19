@@ -32,11 +32,19 @@ struct SearchSongsView: View {
         Form {
             
             Section {
-                TextField("Search term", text: $searchTerm)
-                    .focused($isSearchFieldFocused) // 🎯 フォーカス適用
-                    .onSubmit { // 🎯 Enter キーで検索実行
-                        performSearch()
+                HStack {
+                    TextField("Search term", text: $searchTerm)
+                        .focused($isSearchFieldFocused) // 🎯 フォーカス適用
+                        .onSubmit { // 🎯 Enter キーで検索実行
+                            performSearch()
+                        }
+                    if isSearchFieldFocused {
+                        Button("キャンセル") {
+                            isSearchFieldFocused = false
+                        }
+                        .foregroundColor(.blue)
                     }
+                }
             }
             
             if isPerformingSearch {
