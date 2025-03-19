@@ -193,7 +193,7 @@ struct ContentView: View {
     /// タブのタイトルを管理
     private func tabTitle() -> String {
             switch selectedTab {
-                case 0: return "Sensor Connection"
+                case 0: return "Sensors Connection"
                 case 1: return "Sensitivity Settings"
                 case 2: return "Step Instruments"
                 case 3: return "Search Songs"

@@ -31,15 +31,20 @@ struct MusicPlayerView: View {
     var body: some View {
         VStack {
             HStack {
-                HStack (spacing: 8) {
-                    Image("Bpm")
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(.primary)
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
-                    Text("\(String(format: "%.1f", musicDefaultBpm)) \(bpmErrorMessage)")
-                        .foregroundColor(.primary)
+                VStack {
+                    HStack (spacing: 8) {
+                        Image("Bpm")
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundColor(.primary)
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                        Text("\(String(format: "%.1f", musicDefaultBpm)) \(bpmErrorMessage)")
+                            .foregroundColor(.primary)
+                    }
+                    Text("BPM")
+                        .foregroundColor(.secondary)
+                        .font(.caption)
                 }
                 .contentShape(Rectangle()) // ✅ タップ可能にする
                 .onTapGesture {
@@ -56,25 +61,35 @@ struct MusicPlayerView: View {
                 
                 Spacer()
                 
-                HStack (spacing: 8) {
-                    Image("PlaybackRate")
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(.primary)
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
-                    Text("×\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
-                        .foregroundColor(.primary)
+                VStack {
+                    HStack (spacing: 8) {
+                        Image("PlaybackRate")
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundColor(.primary)
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                        Text("×\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
+                            .foregroundColor(.primary)
+                    }
+                    Text("Playback Rate")
+                        .foregroundColor(.secondary)
+                        .font(.caption)
                 }
                 
                 Spacer()
                 
-                HStack (spacing: 4) {
-                    Image(systemName: "figure.walk")
-                        .frame(width:20, height: 20)
-                    Text("\(String(format: "%.1f", spmManager.spm))")
-                        .foregroundColor(.primary)
-                        .frame(alignment: .trailing)
+                VStack {
+                    HStack (spacing: 4) {
+                        Image(systemName: "figure.walk")
+                            .frame(width:20, height: 20)
+                        Text("\(String(format: "%.1f", spmManager.spm))")
+                            .foregroundColor(.primary)
+                            .frame(alignment: .trailing)
+                    }
+                    Text("SPM")
+                        .foregroundColor(.secondary)
+                        .font(.caption)
                 }
                 .contentShape(Rectangle()) // ✅ タップ可能にする
                 .onTapGesture {
@@ -90,8 +105,13 @@ struct MusicPlayerView: View {
                 
                 Spacer()
                 
-                Toggle(isOn: $spmManager.allowStepUpdate) {}
-                    .toggleStyle(ImageToggleStyle(onImage: "Update", offImage: "Update"))
+                VStack {
+                    Toggle(isOn: $spmManager.allowStepUpdate) {}
+                        .toggleStyle(ImageToggleStyle(onImage: "Update", offImage: "Update"))
+                    Text("SPM Update")
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 16)
