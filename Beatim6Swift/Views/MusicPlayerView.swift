@@ -107,10 +107,10 @@ struct MusicPlayerView: View {
                 
                 VStack {
                     Toggle(isOn: $spmManager.allowStepUpdate) {}
-                        .toggleStyle(ImageToggleStyle(onImage: "Update", offImage: "Update"))
-                    Text("SPM Update")
-                        .foregroundStyle(.secondary)
-                        .font(.caption)
+                        .toggleStyle(ImageToggleStyle(text: "SPM Update", onImage: "Update", offImage: "Update"))
+//                    Text("SPM Update")
+//                        .foregroundStyle(.secondary)
+//                        .font(.caption)
                 }
             }
             .padding(.horizontal, 16)
@@ -301,11 +301,12 @@ struct MusicPlayerView: View {
     }
     
     struct ImageToggleStyle: ToggleStyle {
+        let text: String
         let onImage: String
         let offImage: String
 
         func makeBody(configuration: Configuration) -> some View {
-            HStack {
+            VStack {
                 if configuration.isOn {
                     Image(onImage)
                         .resizable()
@@ -321,6 +322,9 @@ struct MusicPlayerView: View {
                         .scaledToFit()
                         .frame(width: 20, height: 20)
                 }
+                Text(text)
+                    .foregroundStyle(.white)
+                    .font(.caption)
                 
                 configuration.label
                     .foregroundColor(.white) // ✅ `isOn` に応じて文字色も変更

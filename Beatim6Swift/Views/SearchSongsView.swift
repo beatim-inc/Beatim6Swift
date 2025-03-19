@@ -55,6 +55,8 @@ struct SearchSongsView: View {
                 SongInfoView(songItem: song, currentArtistName: $currentArtistName)
             }
             
+            Section(footer: SpacerView()) {}
+            
         }
         .navigationTitle("Search Songs")
         .onAppear {
@@ -81,6 +83,13 @@ struct SearchSongsView: View {
             } catch {
                 print("Error: \(error.localizedDescription)")
             }
+        }
+    }
+    
+    struct SpacerView: View {
+        var body: some View {
+            Color.clear
+                .frame(height: 150) // 🎯 `MusicPlayerView` の高さに合わせて余白を確保
         }
     }
     

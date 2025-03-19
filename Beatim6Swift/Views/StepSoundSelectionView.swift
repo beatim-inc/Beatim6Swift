@@ -65,7 +65,7 @@ struct StepSoundPickerView: View {
                 .font(.subheadline)
                 .foregroundColor(.primary)
             
-            LazyVGrid(columns: columns, spacing: 6) {
+            LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(availableSounds, id: \.self) { sound in
                     Button(action: {
                         selectedSound = sound
