@@ -24,11 +24,20 @@ struct BpmSettingView: View {
     var body: some View {
         Form {
             Section {
-                AutoFocusTextField(text: $bpmValue, onCommit: saveBpm)
-                    .keyboardType(.decimalPad)
-                    .onChange(of: bpmValue) { oldValue, newValue in
-                        bpmValue = filterNumericInput(newValue) // 🎯 入力バリデーション
-                    }
+                HStack {
+                    Image("Bpm")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(.primary)
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                    Text("BPM")
+                    AutoFocusTextField(text: $bpmValue, onCommit: saveBpm)
+                        .keyboardType(.decimalPad)
+                        .onChange(of: bpmValue) { oldValue, newValue in
+                            bpmValue = filterNumericInput(newValue) // 🎯 入力バリデーション
+                        } 
+                }
             }
         }
         .navigationTitle("Original BPM")

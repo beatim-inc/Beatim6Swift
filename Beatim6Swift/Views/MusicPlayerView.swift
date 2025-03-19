@@ -19,14 +19,53 @@ struct MusicPlayerView: View {
     @Binding var artistName: String? // アーティスト名
     @State private var albumTitle: String? // アルバム名
     @Binding var trackId: String? // id
+    @Binding var bpmErrorMessage: String
     
     @StateObject var stepSoundManager: StepSoundManager
     @StateObject var spmManager: SPMManager
-    var musicDefaultBpm: Double 
+    @Binding var musicDefaultBpm: Double 
     @State private var songItem: MusicItem? // 再生する曲情報
+    @State private var showBpmSetting = false
 
     var body: some View {
         VStack {
+            HStack {
+                HStack {
+                    Image("Bpm")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(.primary)
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                    Text("\(String(format: "%.1f", musicDefaultBpm)) \(bpmErrorMessage)")
+                        .foregroundColor(.primary)
+                }
+                .contentShape(Rectangle()) // ✅ タップ可能にする
+                .onTapGesture {
+                    showBpmSetting = true // ✅ タップ時にシートを開く
+                }
+                .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
+                    BpmSettingView(
+                        bpm: musicDefaultBpm,
+                        bpmErrorMessage: $bpmErrorMessage,
+                        onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
+                    )
+                    .presentationDetents([.height(80)])
+                }
+                
+                HStack {
+                    Image("PlaybackRate")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(.primary)
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                    Text("×\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
+                        .foregroundColor(.primary)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
             
             // シーケンスバー
             VStack(alignment: .leading){
@@ -60,7 +99,7 @@ struct MusicPlayerView: View {
                 }
             }
             .padding(.horizontal, 20) // 左右の余白を維持
-            .padding(.top, 20) // 上の余白を維持
+            .padding(.top, 10) // 上の余白を維持
             
             //再生ボタン系
             HStack (spacing: 10){
@@ -124,7 +163,8 @@ struct MusicPlayerView: View {
                         .frame(width: 44, height: 44)
                 }
             }
-            .padding()
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
         }
         .onAppear {
             startPlaybackObserver()

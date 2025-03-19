@@ -96,38 +96,38 @@ struct ContentView: View {
                                 }
                             }
                         }
-                        NavigationLink(destination: BpmSettingView(
-                            bpm: musicDefaultBpm,
-                            bpmErrorMessage: $bpmErrorMessage,
-                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm}
-                        )) {
-                            HStack {
-                                Image("Bpm")
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .foregroundColor(.primary)
-                                    .scaledToFit()
-                                    .frame(width: 20, height: 20)
-                                Text("Original BPM")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(String(format: "%.1f", musicDefaultBpm)) \(bpmErrorMessage)")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                            }
-                        }
-                        HStack {
-                            Image("PlaybackRate")
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundColor(.primary)
-                                .scaledToFit()
-                                .frame(width: 20, height: 20)
-                            Text("Playback Rate")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
-                                .foregroundColor(.gray)
-                                .frame(alignment: .trailing)
-                        }
+//                        NavigationLink(destination: BpmSettingView(
+//                            bpm: musicDefaultBpm,
+//                            bpmErrorMessage: $bpmErrorMessage,
+//                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm}
+//                        )) {
+//                            HStack {
+//                                Image("Bpm")
+//                                    .resizable()
+//                                    .renderingMode(.template)
+//                                    .foregroundColor(.primary)
+//                                    .scaledToFit()
+//                                    .frame(width: 20, height: 20)
+//                                Text("Original BPM")
+//                                    .frame(maxWidth: .infinity, alignment: .leading)
+//                                Text("\(String(format: "%.1f", musicDefaultBpm)) \(bpmErrorMessage)")
+//                                    .foregroundColor(.gray)
+//                                    .frame(alignment: .trailing)
+//                            }
+//                        }
+//                        HStack {
+//                            Image("PlaybackRate")
+//                                .resizable()
+//                                .renderingMode(.template)
+//                                .foregroundColor(.primary)
+//                                .scaledToFit()
+//                                .frame(width: 20, height: 20)
+//                            Text("Playback Rate")
+//                                .frame(maxWidth: .infinity, alignment: .leading)
+//                            Text("\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
+//                                .foregroundColor(.gray)
+//                                .frame(alignment: .trailing)
+//                        }
                     }
                     Section {
                         NavigationLink(destination: StepSoundSelectionView(
@@ -206,9 +206,10 @@ struct ContentView: View {
                     songTitle: $currentSongTitle,
                     artistName: $currentArtistName,
                     trackId: $trackId,
+                    bpmErrorMessage: $bpmErrorMessage,
                     stepSoundManager: stepSoundManager,
                     spmManager: spmManager,
-                    musicDefaultBpm: musicDefaultBpm
+                    musicDefaultBpm: $musicDefaultBpm
                 )
                     .frame(maxWidth: .infinity)
                     .background(.ultraThinMaterial) // iOS 標準の半透明背景

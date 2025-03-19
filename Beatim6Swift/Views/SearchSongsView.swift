@@ -69,6 +69,7 @@ struct SearchSongsView: View {
                 let response = try await request.response()
                 self.isPerformingSearch = false
                 self.searchResultSongs = response.songs
+                print("searchResultSongs: \(self.searchResultSongs)")
             } catch {
                 print("Error: \(error.localizedDescription)")
             }
