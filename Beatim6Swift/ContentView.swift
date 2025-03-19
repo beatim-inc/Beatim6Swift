@@ -30,6 +30,8 @@ struct ContentView: View {
     @State private var bpmErrorMessage: String = ""
     
     @StateObject var bleManager: BLEManager
+    @State private var showSensorList = false
+    @State private var showStepSettings = false
     
     init() {
         let params = StepDetectionParameters()
@@ -41,29 +43,6 @@ struct ContentView: View {
         ZStack(alignment: .bottom) {
             NavigationStack {
                 Form {
-                    // Sensor
-                    Section {
-                        NavigationLink(destination: SensorListView(bleManager: bleManager)) {
-                            HStack {
-                                Image(systemName: "sensor.fill")
-                                    .frame(width:20, height: 20)
-                                Text("Sensors Connection")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(bleManager.connectedPeripherals.count)")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                            }
-                        }
-                        NavigationLink(destination: StepDetectionSettings(parameters: parameters)) {
-                            HStack {
-                                Image(systemName: "light.beacon.max.fill")
-                                    .frame(width:20, height: 20)
-                                Text("Sensitivity Settings")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                    }
-
                     // Music Selection
                     Section {
                         NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm, currentArtistName: $currentArtistName).environmentObject(stepSoundManager).environmentObject(spmManager)) {
@@ -103,8 +82,6 @@ struct ContentView: View {
                             }
                         }
                     }
-
-                    Section(footer: SpacerView()) {}
                 }
             }
             .onAppear{
@@ -168,7 +145,45 @@ struct ContentView: View {
             }
             .padding(.vertical)
         }
-        
+        .toolbar {
+            ToolbarItemGroup(placement: .bottomBar) {
+                HStack {
+                    Button(action: { showSensorList = true }) {
+                        VStack {
+                            Image(systemName: "sensor.fill")
+                                .foregroundColor(.primary)
+                            Text("\(bleManager.connectedPeripherals.count) Sensors")
+                                .font(.caption)
+                                .foregroundColor(.primary)
+                            
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                    }
+                    .sheet(isPresented: $showSensorList) {
+                        SensorListView(bleManager: bleManager)
+                            .presentationDetents([.medium])
+                    }
+                    
+                    Button(action: { showStepSettings = true }) {
+                        VStack {
+                            Image(systemName: "light.beacon.max.fill")
+                                .foregroundColor(.primary)
+                            Text("Sensitivity")
+                                .font(.caption)
+                                .foregroundColor(.primary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                    }
+                    .sheet(isPresented: $showStepSettings) {
+                        StepDetectionSettings(parameters: parameters)
+                            .presentationDetents([.medium])
+                    }
+                }
+                .padding()
+            }
+        }
     }
     
     struct SpacerView: View {
