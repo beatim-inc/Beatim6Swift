@@ -87,7 +87,8 @@ struct MusicPlayerView: View {
                     )
                     .presentationDetents([.height(80)])
                 }
-                .padding(.trailing, 2)
+                
+                Spacer()
                 
                 Toggle(isOn: $spmManager.allowStepUpdate) {}
                     .toggleStyle(ImageToggleStyle(onImage: "Update", offImage: "Update"))

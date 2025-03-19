@@ -32,6 +32,7 @@ struct ContentView: View {
     @StateObject var bleManager: BLEManager
     @State private var showSensorList = false
     @State private var showStepSettings = false
+    @State private var navigateToSearchSongs = false
     
     init() {
         let params = StepDetectionParameters()
@@ -41,47 +42,47 @@ struct ContentView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            NavigationStack {
-                Form {
-                    // Music Selection
-                    Section {
-                        NavigationLink(destination: SearchSongsView(musicDefaultBpm: musicDefaultBpm, currentArtistName: $currentArtistName).environmentObject(stepSoundManager).environmentObject(spmManager)) {
-                            HStack {
-                                Image(systemName: "magnifyingglass")
-                                Text("Search Songs")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            .onChange(of: currentSongTitle) { _,_ in
-                                if spmManager.spm > 10 && spmManager.spm < 200 {
-                                    updatePlaybackRate()
-                                }
-                            }
-                        }
+            TabView {
+                SensorListView(bleManager: bleManager)
+                    .tabItem {
+                        Image(systemName: "sensor.fill")
+                            .foregroundColor(.primary)
+                        Text("\(bleManager.connectedPeripherals.count) Sensors")
+                            .font(.caption)
+                            .foregroundColor(.primary)
                     }
-                    Section {
-                        NavigationLink(destination: StepSoundSelectionView(
-                            selectedRightStepSound: $stepSoundManager.rightStepSoundName,
-                            selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
-                            setSoundName: stepSoundManager.setRightStepSoundName
-                            )
-                            .environmentObject(stepSoundManager)) {
-                            HStack {
-                                Image("Drums")
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .foregroundColor(.primary)
-                                    .scaledToFit()
-                                    .frame(width: 20, height: 20)
-                                Text("Step Instruments")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                                Text("\(stepSoundManager.leftStepSoundName) / \(stepSoundManager.rightStepSoundName)")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                                
-                            }
-                        }
+                
+                StepDetectionSettings(parameters: parameters)
+                    .tabItem {
+                        Image(systemName: "light.beacon.max.fill")
+                            .foregroundColor(.primary)
+                        Text("Sensitivity")
+                            .font(.caption)
+                            .foregroundColor(.primary)
                     }
+                
+                StepSoundSelectionView(
+                    selectedRightStepSound: $stepSoundManager.rightStepSoundName,
+                    selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
+                    setSoundName: stepSoundManager.setRightStepSoundName
+                )
+                .environmentObject(stepSoundManager)
+                .tabItem {
+                    Image("Drums")
+                        .renderingMode(.template)
+                        .foregroundColor(.primary)
+                    Text("Instruments")
+                }
+                    
+                SearchSongsView(
+                    musicDefaultBpm: musicDefaultBpm,
+                    currentArtistName: $currentArtistName
+                )
+                .environmentObject(stepSoundManager)
+                .environmentObject(spmManager)
+                .tabItem {
+                    Image(systemName: "magnifyingglass")
+                    Text("Search")
                 }
             }
             .onAppear{
@@ -143,56 +144,11 @@ struct ContentView: View {
                     .padding(.horizontal, 16)
                     .shadow(radius: 5)
             }
-            .padding(.vertical)
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .bottomBar) {
-                HStack {
-                    Button(action: { showSensorList = true }) {
-                        VStack {
-                            Image(systemName: "sensor.fill")
-                                .foregroundColor(.primary)
-                            Text("\(bleManager.connectedPeripherals.count) Sensors")
-                                .font(.caption)
-                                .foregroundColor(.primary)
-                            
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                    }
-                    .sheet(isPresented: $showSensorList) {
-                        SensorListView(bleManager: bleManager)
-                            .presentationDetents([.medium])
-                    }
-                    
-                    Button(action: { showStepSettings = true }) {
-                        VStack {
-                            Image(systemName: "light.beacon.max.fill")
-                                .foregroundColor(.primary)
-                            Text("Sensitivity")
-                                .font(.caption)
-                                .foregroundColor(.primary)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                    }
-                    .sheet(isPresented: $showStepSettings) {
-                        StepDetectionSettings(parameters: parameters)
-                            .presentationDetents([.medium])
-                    }
-                }
-                .padding()
-            }
+            .padding(.top, 20)
+            .padding(.bottom, 64)
         }
     }
     
-    struct SpacerView: View {
-        var body: some View {
-            Color.clear
-                .frame(height: 120) // 🎯 `MusicPlayerView` の高さに合わせて余白を確保
-        }
-    }
-
     /// 再生速度の更新
     private func updatePlaybackRate() {
         let player = ApplicationMusicPlayer.shared
