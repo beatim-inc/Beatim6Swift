@@ -31,7 +31,7 @@ struct MusicPlayerView: View {
     var body: some View {
         VStack {
             HStack {
-                HStack {
+                HStack (spacing: 8) {
                     Image("Bpm")
                         .resizable()
                         .renderingMode(.template)
@@ -56,7 +56,7 @@ struct MusicPlayerView: View {
                 
                 Spacer()
                 
-                HStack {
+                HStack (spacing: 8) {
                     Image("PlaybackRate")
                         .resizable()
                         .renderingMode(.template)
@@ -69,7 +69,7 @@ struct MusicPlayerView: View {
                 
                 Spacer()
                 
-                HStack {
+                HStack (spacing: 4) {
                     Image(systemName: "figure.walk")
                         .frame(width:20, height: 20)
                     Text("\(String(format: "%.1f", spmManager.spm))")
@@ -87,9 +87,13 @@ struct MusicPlayerView: View {
                     )
                     .presentationDetents([.height(80)])
                 }
+                .padding(.trailing, 2)
+                
+                Toggle(isOn: $spmManager.allowStepUpdate) {}
+                    .toggleStyle(ImageToggleStyle(onImage: "Update", offImage: "Update"))
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
             
             // シーケンスバー
             VStack(alignment: .leading){
@@ -122,8 +126,8 @@ struct MusicPlayerView: View {
                       .foregroundColor(.gray)
                 }
             }
-            .padding(.horizontal, 20) // 左右の余白を維持
-            .padding(.top, 10) // 上の余白を維持
+            .padding(.horizontal, 16) // 左右の余白を維持
+            .padding(.top, 8) // 上の余白を維持
             
             //再生ボタン系
             HStack (spacing: 10){
@@ -187,9 +191,9 @@ struct MusicPlayerView: View {
                         .frame(width: 44, height: 44)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 10)
-            .padding(.bottom, 20)
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 16)
         }
         .onAppear {
             startPlaybackObserver()
@@ -273,5 +277,43 @@ struct MusicPlayerView: View {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
         return String(format: "%d:%02d", minutes, seconds)
+    }
+    
+    struct ImageToggleStyle: ToggleStyle {
+        let onImage: String
+        let offImage: String
+
+        func makeBody(configuration: Configuration) -> some View {
+            HStack {
+                if configuration.isOn {
+                    Image(onImage)
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(.white) // ✅ 白にしてコントラストを確保
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                } else {
+                    Image(offImage)
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(.white)
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                }
+                
+                configuration.label
+                    .foregroundColor(.white) // ✅ `isOn` に応じて文字色も変更
+                    .font(.system(size: 15, weight: .heavy))
+            }
+            .padding(6) // ✅ 内側の余白
+
+            .background(
+                RoundedRectangle(cornerRadius: 8) // ✅ 角丸の四角形
+                    .fill(configuration.isOn ? Color.green : Color.gray.opacity(0.3)) // ✅ ON のとき緑、OFF のときグレー
+            )
+            .onTapGesture {
+                configuration.isOn.toggle() // ✅ 画像 or 背景をタップするとトグルが切り替わる
+            }
+        }
     }
 }

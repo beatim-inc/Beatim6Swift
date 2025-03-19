@@ -25,7 +25,7 @@ struct ContentView: View {
     @State private var currentAlbumTitle: String = ""
     @State private var currentSongTitle: String = "Not Playing"
     @State private var trackId: String? = nil
-    @State private var musicDefaultBpm: Double = 93.0
+    @State private var musicDefaultBpm: Double = 0
     @State private var isNavigatingToSearchPlaylist = false
     @State private var bpmErrorMessage: String = ""
     
@@ -61,11 +61,6 @@ struct ContentView: View {
                                 Text("Sensitivity Settings")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                        }
-
-                        HStack {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                            Toggle("Update SPM every 10 steps", isOn: $spmManager.allowStepUpdate)
                         }
                     }
 
@@ -111,7 +106,6 @@ struct ContentView: View {
 
                     Section(footer: SpacerView()) {}
                 }
-                .navigationTitle("Step Drummer")
             }
             .onAppear{
                 authManager.requestMusicAuthorization()
