@@ -30,8 +30,7 @@ struct StepSoundSelectionView: View {
                     volume: $stepSoundManager.rightStepVolume
                 )
             }
-            .padding(.bottom, 20)
-            .padding(.horizontal, 20)
+            .padding()
             
             Spacer()
         }

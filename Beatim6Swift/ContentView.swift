@@ -88,7 +88,15 @@ struct ContentView: View {
                     }
                     .tag(3)
                 }
-                .navigationTitle(tabTitle()) // タブごとにタイトルを変更
+                .toolbar {
+                    ToolbarItem(placement: .navigation) {
+                        VStack{
+                            Text(tabTitle())
+                                .font(.largeTitle)
+                                .bold()                        }
+                    }
+                }
+                .toolbarBackground(Color(.systemBackground), for: .navigationBar) // 🔥 これでダークモード対応
                 .onAppear{
                     authManager.requestMusicAuthorization()
                     bleManager.startScanning()
