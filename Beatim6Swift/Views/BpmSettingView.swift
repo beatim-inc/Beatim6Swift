@@ -13,9 +13,11 @@ struct BpmSettingView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var bpmValue: String
     var onBpmUpdate: (Double) -> Void
+    @Binding var bpmErrorMessage: String
 
-    init(bpm: Double, onBpmUpdate: @escaping (Double) -> Void) {
+    init(bpm: Double, bpmErrorMessage: Binding<String>, onBpmUpdate: @escaping (Double) -> Void) {
         _bpmValue = State(initialValue: String(format: "%.1f", bpm))
+        self._bpmErrorMessage = bpmErrorMessage
         self.onBpmUpdate = onBpmUpdate
     }
 
@@ -35,6 +37,7 @@ struct BpmSettingView: View {
     private func saveBpm() {
         if let newBpm = Double(bpmValue) {
             onBpmUpdate(newBpm)
+            bpmErrorMessage = ""
         } else {
             print("無効な BPM 値")
         }

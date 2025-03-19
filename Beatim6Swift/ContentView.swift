@@ -27,7 +27,7 @@ struct ContentView: View {
     @State private var trackId: String? = nil
     @State private var musicDefaultBpm: Double = 93.0
     @State private var isNavigatingToSearchPlaylist = false
-    @State private var bpm: String = "Tap the button to fetch BPM"
+    @State private var bpmErrorMessage: String = ""
     
     @StateObject var bleManager: BLEManager
     
@@ -96,9 +96,11 @@ struct ContentView: View {
                                 }
                             }
                         }
-                        NavigationLink(destination: BpmSettingView(bpm: musicDefaultBpm, onBpmUpdate: { newBpm in
-                            musicDefaultBpm = newBpm
-                        })) {
+                        NavigationLink(destination: BpmSettingView(
+                            bpm: musicDefaultBpm,
+                            bpmErrorMessage: $bpmErrorMessage,
+                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm}
+                        )) {
                             HStack {
                                 Image("Bpm")
                                     .resizable()
@@ -108,7 +110,7 @@ struct ContentView: View {
                                     .frame(width: 20, height: 20)
                                 Text("Original BPM")
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(String(format: "%.1f", musicDefaultBpm))")
+                                Text("\(String(format: "%.1f", musicDefaultBpm)) \(bpmErrorMessage)")
                                     .foregroundColor(.gray)
                                     .frame(alignment: .trailing)
                             }
@@ -200,7 +202,14 @@ struct ContentView: View {
             
             VStack {
                 Spacer()
-                MusicPlayerView(songTitle: $currentSongTitle, artistName: $currentArtistName, trackId: $trackId, stepSoundManager: stepSoundManager, spmManager: spmManager, musicDefaultBpm: musicDefaultBpm)
+                MusicPlayerView(
+                    songTitle: $currentSongTitle,
+                    artistName: $currentArtistName,
+                    trackId: $trackId,
+                    stepSoundManager: stepSoundManager,
+                    spmManager: spmManager,
+                    musicDefaultBpm: musicDefaultBpm
+                )
                     .frame(maxWidth: .infinity)
                     .background(.ultraThinMaterial) // iOS 標準の半透明背景
                     .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -230,7 +239,7 @@ struct ContentView: View {
     
     /// 現在の曲名からBPMを取得
     private func fetchBPMForCurrentSong() {
-        guard !currentSongTitle.isEmpty else {
+        guard currentSongTitle != "Not Playing" else {
             print("No song is currently playing.")
             return
         }
@@ -245,11 +254,12 @@ struct ContentView: View {
                 if let bpmValue = bpmValue, let bpmDouble = Double(bpmValue) {
                     musicDefaultBpm = bpmDouble  // ✅ musicDefaultBpmを更新
                     updatePlaybackRate()        // ✅ BPM更新後に再生速度を変更
-                    bpm = "BPM: \(bpmValue)"
+                    print("Updated BPM: \(bpmDouble)")
+                    bpmErrorMessage = ""
                 } else {
-                    bpm = "Failed to fetch BPM"
+                    print("Failed to fetch BPM")
+                    bpmErrorMessage = "\n⚠️ Failed to fetch BPM"
                 }
-                print(bpm)
             }
         }
     }
