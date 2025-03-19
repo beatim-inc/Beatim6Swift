@@ -15,11 +15,16 @@ struct SpmSettingView: View {
     var body: some View {
         Form {
             Section {
-                AutoFocusTextField(text: $spmValue, onCommit: saveSpm)
-                    .keyboardType(.decimalPad)
-                    .onChange(of: spmValue) { oldValue, newValue in
-                        spmValue = filterNumericInput(newValue) // 🎯 入力バリデーション
-                    }
+                HStack {
+                    Image(systemName: "figure.walk")
+                        .frame(width:20, height: 20)
+                    Text("SPM (Cadence)")
+                    AutoFocusTextField(text: $spmValue, onCommit: saveSpm)
+                        .keyboardType(.decimalPad)
+                        .onChange(of: spmValue) { oldValue, newValue in
+                            spmValue = filterNumericInput(newValue) // 🎯 入力バリデーション
+                        }
+                }
             }
         }
         .navigationTitle("Step Per Minute")

@@ -62,19 +62,6 @@ struct ContentView: View {
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
-                        NavigationLink(destination: SpmSettingView(spm: spmManager.spm, onSpmUpdate: { newSpm in
-                            spmManager.spm = newSpm
-                        })) {
-                            HStack {
-                                Image(systemName: "figure.walk")
-                                    .frame(width:20, height: 20)
-                                Text("Step Per Minute (SPM)")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(String(format: "%.1f", spmManager.spm))")
-                                    .foregroundColor(.gray)
-                                    .frame(alignment: .trailing)
-                            }
-                        }
 
                         HStack {
                             Image(systemName: "arrow.triangle.2.circlepath")
@@ -96,38 +83,6 @@ struct ContentView: View {
                                 }
                             }
                         }
-//                        NavigationLink(destination: BpmSettingView(
-//                            bpm: musicDefaultBpm,
-//                            bpmErrorMessage: $bpmErrorMessage,
-//                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm}
-//                        )) {
-//                            HStack {
-//                                Image("Bpm")
-//                                    .resizable()
-//                                    .renderingMode(.template)
-//                                    .foregroundColor(.primary)
-//                                    .scaledToFit()
-//                                    .frame(width: 20, height: 20)
-//                                Text("Original BPM")
-//                                    .frame(maxWidth: .infinity, alignment: .leading)
-//                                Text("\(String(format: "%.1f", musicDefaultBpm)) \(bpmErrorMessage)")
-//                                    .foregroundColor(.gray)
-//                                    .frame(alignment: .trailing)
-//                            }
-//                        }
-//                        HStack {
-//                            Image("PlaybackRate")
-//                                .resizable()
-//                                .renderingMode(.template)
-//                                .foregroundColor(.primary)
-//                                .scaledToFit()
-//                                .frame(width: 20, height: 20)
-//                            Text("Playback Rate")
-//                                .frame(maxWidth: .infinity, alignment: .leading)
-//                            Text("\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
-//                                .foregroundColor(.gray)
-//                                .frame(alignment: .trailing)
-//                        }
                     }
                     Section {
                         NavigationLink(destination: StepSoundSelectionView(

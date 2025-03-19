@@ -31,7 +31,7 @@ struct BpmSettingView: View {
                         .foregroundColor(.primary)
                         .scaledToFit()
                         .frame(width: 20, height: 20)
-                    Text("BPM")
+                    Text("Original BPM")
                     AutoFocusTextField(text: $bpmValue, onCommit: saveBpm)
                         .keyboardType(.decimalPad)
                         .onChange(of: bpmValue) { oldValue, newValue in

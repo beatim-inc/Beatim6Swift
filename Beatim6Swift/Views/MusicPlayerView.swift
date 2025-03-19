@@ -26,6 +26,7 @@ struct MusicPlayerView: View {
     @Binding var musicDefaultBpm: Double 
     @State private var songItem: MusicItem? // 再生する曲情報
     @State private var showBpmSetting = false
+    @State private var showSpmSetting = false
 
     var body: some View {
         VStack {
@@ -53,6 +54,8 @@ struct MusicPlayerView: View {
                     .presentationDetents([.height(80)])
                 }
                 
+                Spacer()
+                
                 HStack {
                     Image("PlaybackRate")
                         .resizable()
@@ -62,6 +65,27 @@ struct MusicPlayerView: View {
                         .frame(width: 20, height: 20)
                     Text("×\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
                         .foregroundColor(.primary)
+                }
+                
+                Spacer()
+                
+                HStack {
+                    Image(systemName: "figure.walk")
+                        .frame(width:20, height: 20)
+                    Text("\(String(format: "%.1f", spmManager.spm))")
+                        .foregroundColor(.primary)
+                        .frame(alignment: .trailing)
+                }
+                .contentShape(Rectangle()) // ✅ タップ可能にする
+                .onTapGesture {
+                    showSpmSetting = true // ✅ タップ時にシートを開く
+                }
+                .sheet(isPresented: $showSpmSetting) { // ✅ `sheet` を使ってモーダル遷移
+                    SpmSettingView(
+                        spm: spmManager.spm,
+                        onSpmUpdate: { newSpm in spmManager.spm = newSpm }
+                    )
+                    .presentationDetents([.height(80)])
                 }
             }
             .padding(.horizontal, 20)
@@ -164,7 +188,8 @@ struct MusicPlayerView: View {
                 }
             }
             .padding(.horizontal, 20)
-            .padding(.vertical, 10)
+            .padding(.top, 10)
+            .padding(.bottom, 20)
         }
         .onAppear {
             startPlaybackObserver()
