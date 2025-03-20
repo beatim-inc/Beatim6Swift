@@ -104,7 +104,7 @@ struct SearchSongsView: View {
                     List {
                         Section(
                             header: HStack {
-                                Text("Play History")
+                                Text("Recommended Songs")
                                 Spacer()
                                 Button(action: {
                                     songHistoryManager.clearHistory() // ✅ 履歴削除
@@ -115,7 +115,11 @@ struct SearchSongsView: View {
                                 }
                             }
                         ) {
-                            ForEach(songHistoryManager.playedSongs.reversed(), id: \.id) { song in
+                            let sortedSongs = songHistoryManager.playedSongs.sorted {
+                                evaluateFunction(for: $0) > evaluateFunction(for: $1)
+                            }
+                            
+                            ForEach(sortedSongs, id: \.id) { song in
                                 SongHistoryRowView(songID: song.id, currentArtistName: $currentArtistName)
                             }
                             .onDelete(perform: songHistoryManager.deleteSong) // 🔥 スワイプ削除を有効化
@@ -171,5 +175,22 @@ struct SearchSongsView: View {
         }
     }
     
+    // 🎵 SPM / BPM を計算し、非対称関数に適用
+    private func evaluateFunction(for song: PlayedSong) -> Double {
+        let bpm = song.bpm
+        let spm = spmManager.spm
+        let ratio = spm / bpm
+
+        return asymmetricGaussian(ratio)
+    }
+
+    // 🎼 非対称関数（右緩やか・左急激）
+    private func asymmetricGaussian(_ x: Double) -> Double {
+        let x0 = 1.0
+        let sigmaLeft = 0.042
+        let sigmaRight = 0.127
+        let sigma = x < x0 ? sigmaLeft : sigmaRight
+        return exp(-((x - x0) * (x - x0)) / (2 * sigma * sigma))
+    }
 }
 
