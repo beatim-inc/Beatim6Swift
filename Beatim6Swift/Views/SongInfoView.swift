@@ -26,8 +26,8 @@ struct SongInfoView: View {
                 // 🎯 再生 → すぐに一時停止
                 do {
                     try await player.play()
-                    try await Task.sleep(nanoseconds: 100_000_000) // 0.1秒待機
-                    player.pause()
+//                    try await Task.sleep(nanoseconds: 100_000_000) // 0.1秒待機
+//                    player.pause()
                 } catch {
                     print("⚠️ エラー: \(error.localizedDescription)")
                 }

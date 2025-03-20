@@ -27,6 +27,7 @@ struct MusicPlayerView: View {
     @State private var songItem: MusicItem? // 再生する曲情報
     @State private var showBpmSetting = false
     @State private var showSpmSetting = false
+    @EnvironmentObject var songHistoryManager: SongHistoryManager
 
     var body: some View {
         VStack {
@@ -58,10 +59,12 @@ struct MusicPlayerView: View {
                 .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
                     BpmSettingView(
                         bpm: musicDefaultBpm,
+                        trackId: trackId ?? "Unknown",
                         bpmErrorMessage: $bpmErrorMessage,
                         onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
                     )
                     .presentationDetents([.height(80)])
+                    .environmentObject(songHistoryManager)
                 }
                 .padding(6) // ✅ 内側の余白
                 .background(

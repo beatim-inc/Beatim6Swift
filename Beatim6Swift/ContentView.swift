@@ -158,6 +158,7 @@ struct ContentView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .padding(.horizontal, 16)
                     .shadow(radius: 5)
+                    .environmentObject(songHistoryManager)
                 }
                 .padding(.top, 20)
                 .padding(.bottom, 64)

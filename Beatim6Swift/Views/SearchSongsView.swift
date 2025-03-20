@@ -102,14 +102,8 @@ struct SearchSongsView: View {
                 else {
                     List {
                         Section(header: Text("Play History")) {
-                            ForEach(songHistoryManager.playedSongs, id: \.id) { song in
+                            ForEach(songHistoryManager.playedSongs.reversed(), id: \.id) { song in
                                 SongHistoryRowView(songID: song.id, currentArtistName: $currentArtistName)
-//                                HStack {
-//                                    Text("🎵 \(song.id)")
-//                                    Spacer()
-//                                    Text("BPM: \(song.bpm)")
-//                                        .foregroundColor(.gray)
-//                                }
                             }
                             .onDelete(perform: songHistoryManager.deleteSong) // 🔥 スワイプ削除を有効化
                         }

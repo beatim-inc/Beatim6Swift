@@ -11,14 +11,17 @@ import UIKit
 
 struct BpmSettingView: View {
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var songHistoryManager: SongHistoryManager
     @State private var bpmValue: String
     var onBpmUpdate: (Double) -> Void
     @Binding var bpmErrorMessage: String
+    var trackId: String
 
-    init(bpm: Double, bpmErrorMessage: Binding<String>, onBpmUpdate: @escaping (Double) -> Void) {
+    init(bpm: Double, trackId: String, bpmErrorMessage: Binding<String>, onBpmUpdate: @escaping (Double) -> Void) {
         _bpmValue = State(initialValue: String(format: "%.1f", bpm))
         self._bpmErrorMessage = bpmErrorMessage
         self.onBpmUpdate = onBpmUpdate
+        self.trackId = trackId
     }
 
     var body: some View {
@@ -47,6 +50,10 @@ struct BpmSettingView: View {
         if let newBpm = Double(bpmValue) {
             onBpmUpdate(newBpm)
             bpmErrorMessage = ""
+            
+            DispatchQueue.main.async {
+                songHistoryManager.addSong(id: trackId, bpm: newBpm)
+            }
         } else {
             print("無効な BPM 値")
         }
