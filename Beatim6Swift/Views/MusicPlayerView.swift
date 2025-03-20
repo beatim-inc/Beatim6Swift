@@ -86,11 +86,11 @@ struct MusicPlayerView: View {
                         .foregroundColor(.primary)
                         .font(.caption)
                 }
-                .padding(6) // ✅ 内側の余白
-                .background(
-                    RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
-                        .fill(Color.gray.opacity(0.1))
-                )
+//                .padding(6) // ✅ 内側の余白
+//                .background(
+//                    RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
+//                        .fill(Color.gray.opacity(0.1))
+//                )
                 
                 Spacer()
                 
