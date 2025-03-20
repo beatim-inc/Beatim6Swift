@@ -14,6 +14,7 @@ struct SearchSongsView: View {
     @State private var searchResultSongs: MusicItemCollection<Song> = []
     @State private var isPerformingSearch: Bool = false
     @State private var musicSubscription: MusicSubscription?
+    @State private var showDeleteAlert = false
     @Binding var currentArtistName: String?
     @EnvironmentObject var stepSoundManager: StepSoundManager
     @EnvironmentObject var spmManager: SPMManager
@@ -107,11 +108,21 @@ struct SearchSongsView: View {
                                 Text("Recommended Songs")
                                 Spacer()
                                 Button(action: {
-                                    songHistoryManager.clearHistory() // ✅ 履歴削除
+                                    showDeleteAlert = true // ✅ ポップアップを表示
                                 }) {
                                     Text("delete all")
                                         .foregroundColor(.red)
                                         .font(.subheadline)
+                                }
+                                .alert(isPresented: $showDeleteAlert) { // ✅ 削除確認ポップアップ
+                                    Alert(
+                                        title: Text("履歴を削除"),
+                                        message: Text("本当に全ての履歴を削除しますか？"),
+                                        primaryButton: .destructive(Text("削除")) {
+                                            songHistoryManager.clearHistory() // ✅ 履歴削除
+                                        },
+                                        secondaryButton: .cancel()
+                                    )
                                 }
                             }
                         ) {
