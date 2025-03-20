@@ -95,4 +95,22 @@ class SongHistoryManager: ObservableObject {
         let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         return documentDirectory.appendingPathComponent(fileName)
     }
+    
+    func clearHistory() {
+        DispatchQueue.main.async {
+            self.playedSongs.removeAll()
+            self.deleteHistoryFile()
+            print("✅ 再生履歴を削除しました")
+        }
+    }
+    
+    private func deleteHistoryFile() {
+        let url = getFileURL()
+        do {
+            try FileManager.default.removeItem(at: url)
+            print("✅ ローカルの履歴ファイルを削除しました")
+        } catch {
+            print("⚠️ 履歴ファイルの削除に失敗: \(error.localizedDescription)")
+        }
+    }
 }

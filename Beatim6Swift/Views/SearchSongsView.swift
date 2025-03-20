@@ -38,7 +38,7 @@ struct SearchSongsView: View {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.gray)
-                        TextField("アーティスト、曲、歌詞...", text: $searchTerm, onEditingChanged: { isEditing in
+                        TextField("Song, Artist, Album...", text: $searchTerm, onEditingChanged: { isEditing in
                             showCancelButton = true
                         }, onCommit: {
                             performSearch()
@@ -67,7 +67,7 @@ struct SearchSongsView: View {
                     }
                     
                     if showCancelButton {
-                        Button("キャンセル") {
+                        Button("Cancel") {
                             searchTerm = ""
                             isSearchFieldFocused = false
                             
@@ -88,6 +88,7 @@ struct SearchSongsView: View {
                         .padding()
                 }
                 
+                
                 // 🎵 検索結果リスト
                 if !searchResultSongs.isEmpty {
                     List {
@@ -101,7 +102,19 @@ struct SearchSongsView: View {
                 }
                 else {
                     List {
-                        Section(header: Text("Play History")) {
+                        Section(
+                            header: HStack {
+                                Text("Play History")
+                                Spacer()
+                                Button(action: {
+                                    songHistoryManager.clearHistory() // ✅ 履歴削除
+                                }) {
+                                    Text("履歴を削除")
+                                        .foregroundColor(.red)
+                                        .font(.subheadline)
+                                }
+                            }
+                        ) {
                             ForEach(songHistoryManager.playedSongs.reversed(), id: \.id) { song in
                                 SongHistoryRowView(songID: song.id, currentArtistName: $currentArtistName)
                             }
