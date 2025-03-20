@@ -22,6 +22,7 @@ struct SearchSongsView: View {
 
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     @State private var showCancelButton: Bool = false
+    @EnvironmentObject var tabManager: TabSelectionManager // 🌟 タブ管理
     
     init(musicDefaultBpm: Double, currentArtistName: Binding<String?>){
         defaultBpm = musicDefaultBpm
@@ -58,6 +59,11 @@ struct SearchSongsView: View {
                     .padding(8)
                     .background(Color(.systemGray6))
                     .cornerRadius(10)
+                    .onAppear {
+                        if tabManager.lastSelectedTab == "search" {
+                            isSearchFieldFocused = true // 🌟 2回目のタップでフォーカス
+                        }
+                    }
                     
                     if showCancelButton {
                         Button("キャンセル") {
@@ -97,6 +103,18 @@ struct SearchSongsView: View {
                 for await subscription in MusicSubscription.subscriptionUpdates {
                     self.musicSubscription = subscription
                 }
+            }
+            .onAppear {
+                print("🟢 onAppear: lastSelectedTab = \(tabManager.lastSelectedTab ?? "nil")")
+                tabManager.lastSelectedTab = tabManager.selectedTab // 🌟 選択履歴を更新
+            }
+            .onChange(of: tabManager.selectedTab) { _, newValue in
+                print("🔄 タブ変更: selectedTab = \(newValue), lastSelectedTab = \(tabManager.lastSelectedTab ?? "nil")")
+                if newValue == "search" && tabManager.lastSelectedTab == "search" {
+                    print("🔹 2回押されたのでフォーカスを設定")
+                    isSearchFieldFocused = true // 🌟 2回目のタップでフォーカス
+                }
+                tabManager.lastSelectedTab = newValue
             }
         }
         

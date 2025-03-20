@@ -15,6 +15,7 @@ struct ContentView: View {
     @StateObject var parameters = StepDetectionParameters()
     @StateObject var spmManager = SPMManager()
     @StateObject private var stepSoundManager = StepSoundManager()
+    @StateObject private var tabManager = TabSelectionManager()
 
     @State private var musicSubscription: MusicSubscription?
     @State private var selectedPeripheral: CBPeripheral?
@@ -30,7 +31,6 @@ struct ContentView: View {
     @State private var bpmErrorMessage: String = ""
     
     @StateObject var bleManager: BLEManager
-    @State private var selectedTab = 2
     
     init() {
         let params = StepDetectionParameters()
@@ -41,7 +41,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
-                TabView (selection: $selectedTab) {
+                TabView (selection: $tabManager.selectedTab) {
                     SensorListView(bleManager: bleManager)
                         .tabItem {
                             Image(systemName: "sensor.fill")
@@ -50,7 +50,7 @@ struct ContentView: View {
                                 .font(.caption)
                                 .foregroundColor(.primary)
                         }
-                        .tag(0)
+                        .tag("Sensor")
                     
                     StepDetectionSettings(parameters: parameters)
                         .tabItem {
@@ -60,7 +60,7 @@ struct ContentView: View {
                                 .font(.caption)
                                 .foregroundColor(.primary)
                         }
-                        .tag(1)
+                        .tag("Sensitivity")
                     
                     StepSoundSelectionView(
                         selectedRightStepSound: $stepSoundManager.rightStepSoundName,
@@ -74,7 +74,7 @@ struct ContentView: View {
                             .foregroundColor(.primary)
                         Text("Instruments")
                     }
-                    .tag(2)
+                    .tag("Instruments")
                     
                     SearchSongsView(
                         musicDefaultBpm: musicDefaultBpm,
@@ -86,7 +86,7 @@ struct ContentView: View {
                         Image(systemName: "magnifyingglass")
                         Text("Search")
                     }
-                    .tag(3)
+                    .tag("Search")
                 }
                 .toolbar {
                     ToolbarItem(placement: .navigation) {
@@ -137,6 +137,7 @@ struct ContentView: View {
                         self.musicSubscription = subscription
                     }
                 }
+                .environmentObject(tabManager)
                 
                 
                 VStack {
@@ -201,15 +202,14 @@ struct ContentView: View {
     
     /// タブのタイトルを管理
     private func tabTitle() -> String {
-            switch selectedTab {
-                case 0: return "Sensors Connection"
-                case 1: return "Sensitivity Settings"
-                case 2: return "Step Instruments"
-                case 3: return "Search Songs"
-                default: return ""
-            }
+        switch tabManager.selectedTab {
+            case "Sensor": return "Sensors Connection"
+            case "Sensitivity": return "Sensitivity Settings"
+            case "Instruments": return "Step Instruments"
+            case "Search": return "Search Songs"
+            default: return ""
         }
-
+    }
 }
 
 #Preview {
