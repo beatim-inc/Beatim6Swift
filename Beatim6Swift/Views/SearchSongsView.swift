@@ -21,6 +21,7 @@ struct SearchSongsView: View {
     private var resultLimit: Int = 5
 
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
+    @State private var showCancelButton: Bool = false
     
     init(musicDefaultBpm: Double, currentArtistName: Binding<String?>){
         defaultBpm = musicDefaultBpm
@@ -28,43 +29,74 @@ struct SearchSongsView: View {
     }
     
     var body: some View {
-        
-        Form {
-            
-            Section {
+        NavigationView {
+            VStack {
+                // 🔍 検索バー
                 HStack {
-                    TextField("Search term", text: $searchTerm)
-                        .focused($isSearchFieldFocused) // 🎯 フォーカス適用
-                        .onSubmit { // 🎯 Enter キーで検索実行
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.gray)
+                        TextField("アーティスト、曲、歌詞...", text: $searchTerm, onEditingChanged: { isEditing in
+                            showCancelButton = true
+                        }, onCommit: {
                             performSearch()
+                        })
+                        .focused($isSearchFieldFocused)
+                        .foregroundColor(.primary)
+                        .submitLabel(.search)
+                        
+                        if !searchTerm.isEmpty {
+                            Button(action: {
+                                searchTerm = ""
+                                searchResultSongs = []
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.gray)
+                            }
                         }
-                    if isSearchFieldFocused {
+                    }
+                    .padding(8)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    
+                    if showCancelButton {
                         Button("キャンセル") {
+                            searchTerm = ""
                             isSearchFieldFocused = false
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                                showCancelButton = false // フォーカス解除後にボタンを非表示にする
+                            }
                         }
-                        .foregroundColor(.blue)
+                        .foregroundColor(.red)
                     }
                 }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                
+                // 🔄 検索中インジケーター
+                if isPerformingSearch {
+                    ProgressView()
+                        .padding()
+                }
+                
+                // 🎵 検索結果リスト
+                List {
+                    if !searchResultSongs.isEmpty {
+                        Section(header: Text("検索結果")) {
+                            ForEach(searchResultSongs) { song in
+                                SongInfoView(songItem: song, currentArtistName: $currentArtistName)
+                            }
+                        }
+                    }
+                }
+                .listStyle(PlainListStyle())
             }
-            
-            if isPerformingSearch {
-                ProgressView()
-            }
-            
-            ForEach(self.searchResultSongs) { song in
-                SongInfoView(songItem: song, currentArtistName: $currentArtistName)
-            }
-            
-            Section(footer: SpacerView()) {}
-            
-        }
-        .navigationTitle("Search Songs")
-        .onAppear {
-            isSearchFieldFocused = true // 🎯 画面表示時に自動フォーカス
-        }
-        .task {
-            for await subscription in MusicSubscription.subscriptionUpdates {
-                self.musicSubscription = subscription
+            .navigationBarHidden(true)
+            .task {
+                for await subscription in MusicSubscription.subscriptionUpdates {
+                    self.musicSubscription = subscription
+                }
             }
         }
         
