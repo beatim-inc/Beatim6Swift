@@ -132,6 +132,7 @@ struct ContentView: View {
                 }
                 .onChange(of: trackId) { _, _ in
                     fetchBPMForCurrentSong()
+                    updatePlaybackRate()
                 }
                 .task {
                     for await subscription in MusicSubscription.subscriptionUpdates {
