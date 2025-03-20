@@ -56,20 +56,40 @@ struct SongHistoryRowView: View {
     var songID: String
     @Binding var currentArtistName: String?
     @State private var songItem: Song?
+    @State private var isLoading: Bool = true
+    @EnvironmentObject var songHistoryManager: SongHistoryManager
 
     var body: some View {
-        if let songItem = songItem {
-            // ✅ `SongInfoView` を活用
-            SongInfoView(songItem: songItem, currentArtistName: $currentArtistName)
-        } else {
-            // 🎯 Apple Music からデータ取得中のプレースホルダー
-            HStack {
-                ProgressView() // 🔄 読み込み中インジケーター
-                Text("Loading...")
+        HStack {
+            if let songItem = songItem {
+                SongInfoView(songItem: songItem, currentArtistName: $currentArtistName)
+                
+                Spacer()
+                
+                // 🎼 BPM情報を追加
+                if let bpm = songHistoryManager.getBPM(for: songID) {
+                    Text("\(bpm, specifier: "%.1f") BPM")
+                        .foregroundColor(.secondary)
+                        .font(.subheadline)
+                } else {
+                    Text("BPM 未設定")
+                        .foregroundColor(.gray)
+                        .font(.subheadline)
+                }
+            } else if isLoading {
+                HStack {
+                    ProgressView()
+                    Text("Loading...")
+                        .foregroundColor(.gray)
+                }
+                .onAppear {
+                    Task {
+                        await loadSongItem()
+                    }
+                }
+            } else {
+                Text("❌ 曲情報取得失敗")
                     .foregroundColor(.gray)
-            }
-            .task {
-                await loadSongItem()
             }
         }
     }

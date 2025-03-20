@@ -109,7 +109,7 @@ struct SearchSongsView: View {
                                 Button(action: {
                                     songHistoryManager.clearHistory() // ✅ 履歴削除
                                 }) {
-                                    Text("履歴を削除")
+                                    Text("delete all")
                                         .foregroundColor(.red)
                                         .font(.subheadline)
                                 }
@@ -120,6 +120,8 @@ struct SearchSongsView: View {
                             }
                             .onDelete(perform: songHistoryManager.deleteSong) // 🔥 スワイプ削除を有効化
                         }
+                        
+                        Section(footer: SpacerView()) {}
                     }
                     .listStyle(PlainListStyle())
                 }
@@ -165,7 +167,7 @@ struct SearchSongsView: View {
     struct SpacerView: View {
         var body: some View {
             Color.clear
-                .frame(height: 150) // 🎯 `MusicPlayerView` の高さに合わせて余白を確保
+                .frame(height: 200) // 🎯 `MusicPlayerView` の高さに合わせて余白を確保
         }
     }
     
