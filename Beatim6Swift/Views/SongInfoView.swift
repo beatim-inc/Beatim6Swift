@@ -51,3 +51,34 @@ struct SongInfoView: View {
     }
     
 }
+
+struct SongHistoryRowView: View {
+    var songID: String
+    @Binding var currentArtistName: String?
+    @State private var songItem: Song?
+
+    var body: some View {
+        if let songItem = songItem {
+            // ✅ `SongInfoView` を活用
+            SongInfoView(songItem: songItem, currentArtistName: $currentArtistName)
+        } else {
+            // 🎯 Apple Music からデータ取得中のプレースホルダー
+            HStack {
+                ProgressView() // 🔄 読み込み中インジケーター
+                Text("Loading...")
+                    .foregroundColor(.gray)
+            }
+            .task {
+                await loadSongItem()
+            }
+        }
+    }
+
+    // Apple Music から `SongItem` を取得
+    private func loadSongItem() async {
+        let song = await SongHistoryManager().fetchSongItem(for: songID)
+        DispatchQueue.main.async {
+            self.songItem = song
+        }
+    }
+}

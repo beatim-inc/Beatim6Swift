@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MusicKit
 
 struct PlayedSong: Codable, Identifiable {
     var id: String  // 曲のID
@@ -18,6 +19,18 @@ class SongHistoryManager: ObservableObject {
     
     init() {
         loadHistory()
+    }
+    
+    // 📌 Apple Music から `SongItem` を取得
+    func fetchSongItem(for songID: String) async -> Song? {
+        do {
+            let request = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(songID))
+            let response = try await request.response()
+            return response.items.first // 🎯 最初の曲を返す
+        } catch {
+            print("❌ Apple Music から曲情報の取得に失敗: \(error.localizedDescription)")
+            return nil
+        }
     }
 
     // 📌 履歴に曲を追加し、保存

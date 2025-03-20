@@ -91,7 +91,7 @@ struct SearchSongsView: View {
                 // 🎵 検索結果リスト
                 if !searchResultSongs.isEmpty {
                     List {
-                        Section(header: Text("検索結果")) {
+                        Section(header: Text("Search Results")) {
                             ForEach(searchResultSongs) { song in
                                 SongInfoView(songItem: song, currentArtistName: $currentArtistName)
                             }
@@ -101,14 +101,15 @@ struct SearchSongsView: View {
                 }
                 else {
                     List {
-                        Section(header: Text("再生履歴")) {
+                        Section(header: Text("Play History")) {
                             ForEach(songHistoryManager.playedSongs, id: \.id) { song in
-                                HStack {
-                                    Text("🎵 \(song.id)")
-                                    Spacer()
-                                    Text("BPM: \(song.bpm)")
-                                        .foregroundColor(.gray)
-                                }
+                                SongHistoryRowView(songID: song.id, currentArtistName: $currentArtistName)
+//                                HStack {
+//                                    Text("🎵 \(song.id)")
+//                                    Spacer()
+//                                    Text("BPM: \(song.bpm)")
+//                                        .foregroundColor(.gray)
+//                                }
                             }
                             .onDelete(perform: songHistoryManager.deleteSong) // 🔥 スワイプ削除を有効化
                         }
