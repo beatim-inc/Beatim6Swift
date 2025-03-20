@@ -129,21 +129,6 @@ struct ContentView: View {
                     if spmManager.spm > 10 && spmManager.spm < 200 {
                         updatePlaybackRate()
                     }
-                    
-                    guard let trackId = trackId else {
-                        print("⚠️ trackId が nil なので履歴に追加できません")
-                        return
-                    }
-                    
-                    if musicDefaultBpm == 0.0 {
-                        print("⚠️ BPM が 0 なので履歴に追加できません")
-                        return
-                    } else {
-                        songHistoryManager.addSong(
-                            id: trackId,
-                            bpm: musicDefaultBpm
-                        )
-                    }
                 }
                 .onChange(of: trackId) { _, _ in
                     fetchBPMForCurrentSong()
@@ -197,14 +182,18 @@ struct ContentView: View {
             return
         }
 
-        let fetcher = BPMFetcher()
+        let fetcher = BPMFetcher(historyManager: songHistoryManager)
         let artist = currentArtistName ?? "Unknown Artist" // artistNameがnilの場合のデフォルト値
+        guard let trackId = trackId else {
+            print("Failed to fetch track ID.")
+            return
+        }
 
         print("song: \(currentSongTitle), artist: \(artist)")
 
-        fetcher.fetchBPM(song: currentSongTitle, artist: artist) { bpmValue in
+        fetcher.fetchBPM(song: currentSongTitle, artist: artist, id: trackId) { bpmValue in
             DispatchQueue.main.async {
-                if let bpmValue = bpmValue, let bpmDouble = Double(bpmValue) {
+                if let bpmDouble = bpmValue {
                     musicDefaultBpm = bpmDouble  // ✅ musicDefaultBpmを更新
                     updatePlaybackRate()        // ✅ BPM更新後に再生速度を変更
                     print("Updated BPM: \(bpmDouble)")

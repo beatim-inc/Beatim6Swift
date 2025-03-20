@@ -11,6 +11,11 @@ import SwiftSoup
 class BPMFetcher {
     let apiKey = "AIzaSyDu4RUh1JARrsU27LVcKdCHStJRSdJBdXY" // ✅ Google Custom Search APIキーをセット
     let cx = "675fbfdc2a9d5446e" // ✅ Google CSE IDをセット
+    var historyManager: SongHistoryManager
+    
+    init(historyManager: SongHistoryManager) {
+        self.historyManager = historyManager
+    }
 
     /// Google Custom Search API を使ってSongBPMのURLを取得
     func searchSongBPM(song: String, artist: String, completion: @escaping (String?) -> Void) {
@@ -77,13 +82,31 @@ class BPMFetcher {
     }
 
     /// BPMを取得するメイン関数
-    func fetchBPM(song: String, artist: String, completion: @escaping (String?) -> Void) {
+    func fetchBPM(song: String, artist: String, id: String, completion: @escaping (Double?) -> Void) {
+        // ✅ 既存の BPM を履歴から探す
+        if let existingBPM = historyManager.getBPM(for: id) {
+            print("✅ 履歴に BPM \(existingBPM) が見つかりました (ID: \(id))")
+            completion(existingBPM) // 🎯 `Double?` をそのまま返す
+            return
+        }
+
+        // 🛜 履歴にない場合、Web 検索を実行
         searchSongBPM(song: song, artist: artist) { songURL in
             guard let songURL = songURL else {
                 completion(nil)
                 return
             }
-            self.getBPM(from: songURL, completion: completion)
+            self.getBPM(from: songURL) { fetchedBPM in
+                if let bpmString = fetchedBPM, let bpmDouble = Double(bpmString) {
+                    // ✅ 履歴に追加 (⚠️ ここがバックグラウンドスレッドの可能性あり)
+                    DispatchQueue.main.async {
+                        self.historyManager.addSong(id: id, bpm: bpmDouble) // ⚠️ ここをメインスレッドで実行
+                    }
+                    completion(bpmDouble)
+                } else {
+                    completion(nil)
+                }
+            }
         }
     }
 }

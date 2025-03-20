@@ -21,7 +21,12 @@ class SongHistoryManager: ObservableObject {
         loadHistory()
     }
     
-    // 📌 Apple Music から `SongItem` を取得
+    /// ✅ `id` に対応する `BPM` を取得
+    func getBPM(for id: String) -> Double? {
+        return playedSongs.first(where: { $0.id == id })?.bpm
+    }
+    
+    /// 📌 Apple Music から `SongItem` を取得
     func fetchSongItem(for songID: String) async -> Song? {
         do {
             let request = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(songID))
