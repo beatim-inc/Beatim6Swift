@@ -13,6 +13,8 @@ struct StepSoundSelectionView: View {
     @Binding var selectedLeftStepSound: String
     var setSoundName: (String) -> Void
     @EnvironmentObject var stepSoundManager: StepSoundManager
+    // 高さを格納するための @State 変数
+    @State private var stepSoundViewHeight: CGFloat = 0
     
     let availableSounds = ["None", "BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk1", "Walk2", "Claverotor1", "Claverotor2"]
     
@@ -24,6 +26,17 @@ struct StepSoundSelectionView: View {
                     selectedSound: $stepSoundManager.leftStepSoundName,
                     volume: $stepSoundManager.leftStepVolume
                 )
+                .background(GeometryReader { geo in
+                    Color.clear
+                        .onAppear {
+                            stepSoundViewHeight = geo.size.height
+                        }
+                        .onChange(of: geo.size.height) { _, newHeight in
+                            stepSoundViewHeight = newHeight
+                        }
+                })
+                Divider()
+                    .frame(height: stepSoundViewHeight)
                 StepSoundPickerView(
                     title: "Right",
                     selectedSound: $stepSoundManager.rightStepSoundName,
@@ -35,6 +48,14 @@ struct StepSoundSelectionView: View {
             Spacer()
         }
         .navigationTitle("Step Instruments")
+    }
+    
+    // 高さを取得するための PreferenceKey
+    struct ViewHeightKey: PreferenceKey {
+        static var defaultValue: CGFloat = 0
+        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+            value = nextValue()
+        }
     }
 }
 
@@ -76,12 +97,12 @@ struct StepSoundPickerView: View {
                                 .resizable()
                                 .renderingMode(.template)
                                 .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 30, height: 30)
                                 .foregroundColor(selectedSound == sound ? Color(UIColor.systemBackground) : .primary) // 選択状態で色を変更
                         }
                         .padding()
-                        .frame(width: 40, height: 40)
-                        .background(selectedSound == sound ? Color.primary : Color(uiColor: .systemGray5))
+                        .frame(width: 45, height: 45)
+                        .background(selectedSound == sound ? Color.primary : Color(uiColor: .systemGray6))
                         .cornerRadius(10)
                     }
                     .buttonStyle(PlainButtonStyle()) // デフォルトのボタンスタイルを無効化
@@ -100,10 +121,6 @@ struct StepSoundPickerView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color(UIColor.systemGray6))
-        .cornerRadius(12)
     }
 }
 

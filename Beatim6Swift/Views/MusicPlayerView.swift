@@ -39,11 +39,16 @@ struct MusicPlayerView: View {
                             .foregroundColor(.primary)
                             .scaledToFit()
                             .frame(width: 20, height: 20)
-                        Text("\(String(format: "%.1f", musicDefaultBpm)) \(bpmErrorMessage)")
-                            .foregroundColor(.primary)
+                        if bpmErrorMessage == "" {
+                            Text("\(String(format: "%.1f", musicDefaultBpm))")
+                                .foregroundColor(.primary)
+                        } else {
+                            Text(bpmErrorMessage)
+                                .foregroundColor(.primary)
+                        }
                     }
                     Text("BPM")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                         .font(.caption)
                 }
                 .contentShape(Rectangle()) // ✅ タップ可能にする
@@ -58,6 +63,11 @@ struct MusicPlayerView: View {
                     )
                     .presentationDetents([.height(80)])
                 }
+                .padding(6) // ✅ 内側の余白
+                .background(
+                    RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
+                        .fill(Color.gray.opacity(0.1))
+                )
                 
                 Spacer()
                 
@@ -72,10 +82,15 @@ struct MusicPlayerView: View {
                         Text("×\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
                             .foregroundColor(.primary)
                     }
-                    Text("Playback Rate")
-                        .foregroundColor(.secondary)
+                    Text("Speed")
+                        .foregroundColor(.primary)
                         .font(.caption)
                 }
+                .padding(6) // ✅ 内側の余白
+                .background(
+                    RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
+                        .fill(Color.gray.opacity(0.1))
+                )
                 
                 Spacer()
                 
@@ -88,7 +103,7 @@ struct MusicPlayerView: View {
                             .frame(alignment: .trailing)
                     }
                     Text("SPM")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                         .font(.caption)
                 }
                 .contentShape(Rectangle()) // ✅ タップ可能にする
@@ -102,15 +117,17 @@ struct MusicPlayerView: View {
                     )
                     .presentationDetents([.height(80)])
                 }
+                .padding(6) // ✅ 内側の余白
+                .background(
+                    RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
+                        .fill(Color.gray.opacity(0.1))
+                )
                 
                 Spacer()
                 
                 VStack {
                     Toggle(isOn: $spmManager.allowStepUpdate) {}
-                        .toggleStyle(ImageToggleStyle(text: "SPM Update", onImage: "Update", offImage: "Update"))
-//                    Text("SPM Update")
-//                        .foregroundStyle(.secondary)
-//                        .font(.caption)
+                        .toggleStyle(ImageToggleStyle(text: "Update", onImage: "Update", offImage: "Update"))
                 }
             }
             .padding(.horizontal, 16)
@@ -314,17 +331,21 @@ struct MusicPlayerView: View {
                         .foregroundColor(.white) // ✅ 白にしてコントラストを確保
                         .scaledToFit()
                         .frame(width: 20, height: 20)
+                    Text(text)
+                        .foregroundStyle(.white)
+                        .font(.caption)
                 } else {
                     Image(offImage)
                         .resizable()
                         .renderingMode(.template)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                         .scaledToFit()
                         .frame(width: 20, height: 20)
+                    Text(text)
+                        .foregroundStyle(.primary)
+                        .font(.caption)
                 }
-                Text(text)
-                    .foregroundStyle(.white)
-                    .font(.caption)
+                
                 
                 configuration.label
                     .foregroundColor(.white) // ✅ `isOn` に応じて文字色も変更
@@ -333,8 +354,8 @@ struct MusicPlayerView: View {
             .padding(6) // ✅ 内側の余白
 
             .background(
-                RoundedRectangle(cornerRadius: 8) // ✅ 角丸の四角形
-                    .fill(configuration.isOn ? Color.green : Color.gray.opacity(0.3)) // ✅ ON のとき緑、OFF のときグレー
+                RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
+                    .fill(configuration.isOn ? Color.green : Color.gray.opacity(0.1)) // ✅ ON のとき緑、OFF のときグレー
             )
             .onTapGesture {
                 configuration.isOn.toggle() // ✅ 画像 or 背景をタップするとトグルが切り替わる

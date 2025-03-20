@@ -192,7 +192,7 @@ struct ContentView: View {
                     bpmErrorMessage = ""
                 } else {
                     print("Failed to fetch BPM")
-                    bpmErrorMessage = "\n⚠️ Failed to fetch BPM"
+                    bpmErrorMessage = "⚠️"
                 }
             }
         }
