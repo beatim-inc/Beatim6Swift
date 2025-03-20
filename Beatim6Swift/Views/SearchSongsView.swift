@@ -17,6 +17,7 @@ struct SearchSongsView: View {
     @Binding var currentArtistName: String?
     @EnvironmentObject var stepSoundManager: StepSoundManager
     @EnvironmentObject var spmManager: SPMManager
+    @EnvironmentObject var songHistoryManager: SongHistoryManager
     var defaultBpm : Double
     private var resultLimit: Int = 5
 
@@ -72,6 +73,7 @@ struct SearchSongsView: View {
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
                                 showCancelButton = false // フォーカス解除後にボタンを非表示にする
+                                searchResultSongs = []
                             }
                         }
                         .foregroundColor(.red)
@@ -87,16 +89,32 @@ struct SearchSongsView: View {
                 }
                 
                 // 🎵 検索結果リスト
-                List {
-                    if !searchResultSongs.isEmpty {
+                if !searchResultSongs.isEmpty {
+                    List {
                         Section(header: Text("検索結果")) {
                             ForEach(searchResultSongs) { song in
                                 SongInfoView(songItem: song, currentArtistName: $currentArtistName)
                             }
                         }
                     }
+                    .listStyle(PlainListStyle())
                 }
-                .listStyle(PlainListStyle())
+                else {
+                    List {
+                        Section(header: Text("再生履歴")) {
+                            ForEach(songHistoryManager.playedSongs, id: \.id) { song in
+                                HStack {
+                                    Text("🎵 \(song.id)")
+                                    Spacer()
+                                    Text("BPM: \(song.bpm)")
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                            .onDelete(perform: songHistoryManager.deleteSong) // 🔥 スワイプ削除を有効化
+                        }
+                    }
+                    .listStyle(PlainListStyle())
+                }
             }
             .navigationBarHidden(true)
             .task {

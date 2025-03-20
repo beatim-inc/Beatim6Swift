@@ -16,6 +16,7 @@ struct ContentView: View {
     @StateObject var spmManager = SPMManager()
     @StateObject private var stepSoundManager = StepSoundManager()
     @StateObject private var tabManager = TabSelectionManager()
+    @StateObject private var songHistoryManager = SongHistoryManager()
 
     @State private var musicSubscription: MusicSubscription?
     @State private var selectedPeripheral: CBPeripheral?
@@ -128,6 +129,21 @@ struct ContentView: View {
                     if spmManager.spm > 10 && spmManager.spm < 200 {
                         updatePlaybackRate()
                     }
+                    
+                    guard let trackId = trackId else {
+                        print("⚠️ trackId が nil なので履歴に追加できません")
+                        return
+                    }
+                    
+                    if musicDefaultBpm == 0.0 {
+                        print("⚠️ BPM が 0 なので履歴に追加できません")
+                        return
+                    } else {
+                        songHistoryManager.addSong(
+                            id: trackId,
+                            bpm: musicDefaultBpm
+                        )
+                    }
                 }
                 .onChange(of: trackId) { _, _ in
                     fetchBPMForCurrentSong()
@@ -138,6 +154,7 @@ struct ContentView: View {
                     }
                 }
                 .environmentObject(tabManager)
+                .environmentObject(songHistoryManager)
                 
                 
                 VStack {
