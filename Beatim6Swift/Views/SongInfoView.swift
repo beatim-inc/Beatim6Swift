@@ -64,18 +64,18 @@ struct SongHistoryRowView: View {
             if let songItem = songItem {
                 SongInfoView(songItem: songItem, currentArtistName: $currentArtistName)
                 
-                Spacer()
-                
-                // 🎼 BPM情報を追加
-                if let bpm = songHistoryManager.getBPM(for: songID) {
-                    Text("\(bpm, specifier: "%.1f") BPM")
-                        .foregroundColor(.secondary)
-                        .font(.subheadline)
-                } else {
-                    Text("BPM 未設定")
-                        .foregroundColor(.gray)
-                        .font(.subheadline)
-                }
+//                Spacer()
+//                
+//                // 🎼 BPM情報を追加
+//                if let bpm = songHistoryManager.getBPM(for: songID) {
+//                    Text("\(bpm, specifier: "%.1f") BPM")
+//                        .foregroundColor(.secondary)
+//                        .font(.subheadline)
+//                } else {
+//                    Text("BPM 未設定")
+//                        .foregroundColor(.gray)
+//                        .font(.subheadline)
+//                }
             } else if isLoading {
                 HStack {
                     ProgressView()

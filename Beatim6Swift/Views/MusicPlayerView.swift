@@ -69,7 +69,7 @@ struct MusicPlayerView: View {
                             .labelsHidden()
                     }
                     .frame(width: 150, height: 32)
-                    Text("Auto Update Tempo")
+                    Text("Auto Tempo Update")
                         .foregroundColor(.primary)
                         .font(.caption)
                 }
@@ -116,96 +116,96 @@ struct MusicPlayerView: View {
             //再生ボタン系
             
                 
-                HStack (spacing: 10){
-                    // 🎵 ジャケット画像
-                    if let url = artworkURL {
-                        AsyncImage(url: url) { image in
-                            image.resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 50, height: 50)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        } placeholder: {
-                            Image(systemName: "music.note")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.gray)
-                        }
-                    }
-                    
-                    VStack(alignment: .leading) {
-                        Text(songTitle)
-                            .font(.headline)
-                            .lineLimit(1)
-                            .foregroundColor(.primary)
-                        
-                        // 🎵 アーティスト名（曲がある場合のみ表示）
-                        if let artist = artistName {
-                            Text("\(artist)")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                                .lineLimit(1)
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    if (bpmErrorMessage == "") {
-                        //頭出しボタン
-                        Button(action:{
-                            Task{
-                                stepSoundManager.playSoundPeriodically(BPM:spmManager.spm)
-                                ApplicationMusicPlayer.shared.playbackTime = 0
-                                ApplicationMusicPlayer.shared.pause()
-                            }
-                        }
-                        ) {
-                            Image(systemName:"backward.fill")
-                                .symbolRenderingMode(.hierarchical) // 視認性向上
-                                .imageScale(.large) // アイコンのスケール調整
-                                .font(.system(size: 24)) // アイコンのサイズ
-                                .foregroundColor(.primary)
-                                .frame(width: 44, height: 44) // タップ領域の確保
-                        }
-                        
-                        // 再生・停止ボタン
-                        Button(action: togglePlayback) {
-                            Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                                .symbolRenderingMode(.hierarchical)
-                                .imageScale(.large)
-                                .font(.system(size: 24))
-                                .foregroundColor(.primary)
-                                .frame(width: 44, height: 44)
-                        }
-                    }
-                    else {
-                        HStack {
-                            Text("⚠️ Tap here to set BPM manually")
-                        }
-                        .contentShape(Rectangle()) // ✅ タップ可能にする
-                        .onTapGesture {
-                            showBpmSetting = true // ✅ タップ時にシートを開く
-                        }
-                        .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
-                            BpmSettingView(
-                                bpm: musicDefaultBpm,
-                                trackId: trackId ?? "Unknown",
-                                bpmErrorMessage: $bpmErrorMessage,
-                                onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
-                            )
-                            .presentationDetents([.height(80)])
-                            .environmentObject(songHistoryManager)
-                        }
-                        .padding(6)
-                        .background(
-                            RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
-                                .fill(Color.gray.opacity(0.1))
-                        )
+            HStack (spacing: 10){
+                // 🎵 ジャケット画像
+                if let url = artworkURL {
+                    AsyncImage(url: url) { image in
+                        image.resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 50, height: 50)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } placeholder: {
+                        Image(systemName: "music.note")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.gray)
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 16)
+                
+                VStack(alignment: .leading) {
+                    Text(songTitle)
+                        .font(.headline)
+                        .lineLimit(1)
+                        .foregroundColor(.primary)
+                    
+                    // 🎵 アーティスト名（曲がある場合のみ表示）
+                    if let artist = artistName {
+                        Text("\(artist)")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                    }
+                }
+                
+                Spacer()
+                
+                if (bpmErrorMessage == "") {
+                    //頭出しボタン
+                    Button(action:{
+                        Task{
+                            stepSoundManager.playSoundPeriodically(BPM:spmManager.spm)
+                            ApplicationMusicPlayer.shared.playbackTime = 0
+                            ApplicationMusicPlayer.shared.pause()
+                        }
+                    }
+                    ) {
+                        Image(systemName:"backward.fill")
+                            .symbolRenderingMode(.hierarchical) // 視認性向上
+                            .imageScale(.large) // アイコンのスケール調整
+                            .font(.system(size: 24)) // アイコンのサイズ
+                            .foregroundColor(.primary)
+                            .frame(width: 44, height: 44) // タップ領域の確保
+                    }
+                    
+                    // 再生・停止ボタン
+                    Button(action: togglePlayback) {
+                        Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                            .symbolRenderingMode(.hierarchical)
+                            .imageScale(.large)
+                            .font(.system(size: 24))
+                            .foregroundColor(.primary)
+                            .frame(width: 44, height: 44)
+                    }
+                }
+                else {
+                    HStack {
+                        Text("⚠️ Tap here to set BPM manually")
+                    }
+                    .contentShape(Rectangle()) // ✅ タップ可能にする
+                    .onTapGesture {
+                        showBpmSetting = true // ✅ タップ時にシートを開く
+                    }
+                    .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
+                        BpmSettingView(
+                            bpm: musicDefaultBpm,
+                            trackId: trackId ?? "Unknown",
+                            bpmErrorMessage: $bpmErrorMessage,
+                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
+                        )
+                        .presentationDetents([.height(80)])
+                        .environmentObject(songHistoryManager)
+                    }
+                    .padding(6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
+                            .fill(Color.gray.opacity(0.1))
+                    )
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 16)
         }
         .onAppear {
             startPlaybackObserver()
