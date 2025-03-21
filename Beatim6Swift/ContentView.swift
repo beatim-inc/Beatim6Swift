@@ -32,6 +32,7 @@ struct ContentView: View {
     @State private var bpmErrorMessage: String = ""
     
     @StateObject var bleManager: BLEManager
+    @State var showSettings: Bool = false
     
     init() {
         let params = StepDetectionParameters()
@@ -43,25 +44,6 @@ struct ContentView: View {
         NavigationStack {
             ZStack(alignment: .bottom) {
                 TabView (selection: $tabManager.selectedTab) {
-                    SensorListView(bleManager: bleManager)
-                        .tabItem {
-                            Image(systemName: "sensor.fill")
-                                .foregroundColor(.primary)
-                            Text("\(bleManager.connectedPeripherals.count) Sensors")
-                                .font(.caption)
-                                .foregroundColor(.primary)
-                        }
-                        .tag("Sensor")
-                    
-                    StepDetectionSettings(parameters: parameters)
-                        .tabItem {
-                            Image(systemName: "light.beacon.max.fill")
-                                .foregroundColor(.primary)
-                            Text("Sensitivity")
-                                .font(.caption)
-                                .foregroundColor(.primary)
-                        }
-                        .tag("Sensitivity")
                     
                     StepSoundSelectionView(
                         selectedRightStepSound: $stepSoundManager.rightStepSoundName,
@@ -91,10 +73,22 @@ struct ContentView: View {
                 }
                 .toolbar {
                     ToolbarItem(placement: .navigation) {
-                        VStack{
-                            Text(tabTitle())
-                                .font(.largeTitle)
-                                .bold()                        }
+                        Text(tabTitle())
+                            .font(.largeTitle)
+                            .bold()
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        HStack (spacing: 8) {
+                            Image(systemName: "gear")
+                        }
+                        .contentShape(Rectangle()) // ✅ タップ可能にする
+                        .onTapGesture {
+                            showSettings = true // ✅ タップ時にシートを開く
+                        }
+                        .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
+                            SettingView(bleManager: bleManager, parameters: parameters)
+                                .presentationDetents([.large])
+                        }
                     }
                 }
                 .toolbarBackground(Color(.systemBackground), for: .navigationBar) // 🔥 これでダークモード対応
@@ -209,8 +203,6 @@ struct ContentView: View {
     /// タブのタイトルを管理
     private func tabTitle() -> String {
         switch tabManager.selectedTab {
-            case "Sensor": return "Sensors"
-            case "Sensitivity": return "Sensitivity"
             case "Instruments": return "Instruments"
             case "Search": return "Search"
             default: return ""
