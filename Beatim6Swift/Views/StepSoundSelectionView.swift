@@ -16,7 +16,7 @@ struct StepSoundSelectionView: View {
     // 高さを格納するための @State 変数
     @State private var stepSoundViewHeight: CGFloat = 0
     
-    let availableSounds = ["None", "BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk1", "Walk2", "Claverotor1", "Claverotor2"]
+    let availableSounds = ["BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk", "Claverotor"]
     
     var body: some View {
         VStack (alignment: .leading){
@@ -66,59 +66,50 @@ struct StepSoundPickerView: View {
     @State private var isPickerExpanded = false
     @EnvironmentObject var stepSoundManager: StepSoundManager
     
-    let availableSounds = ["None", "BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk1", "Walk2", "Claverotor1", "Claverotor2"]
-    let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 3) // 3列グリッド
+    let availableSounds = ["BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk", "Claverotor"]
+    let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2) // 3列グリッド
     
     var body: some View {
         VStack {
             Text(title)
                 .font(.headline)
             
-            Image("\(selectedSound)") // Placeholder for actual images
-                .resizable()
-                .renderingMode(.template)
-                .foregroundColor(.primary)
-                .scaledToFit()
-                .frame(width: 80, height: 80)
-                .padding(.vertical, 10)
-            
-            Text("\(selectedSound)")
-                .font(.subheadline)
-                .foregroundColor(.primary)
-            
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(availableSounds, id: \.self) { sound in
-                    Button(action: {
-                        selectedSound = sound
-                        stepSoundManager.playSoundOnce(soundName: sound, volume: volume) // サウンド再生関数を呼び出し
-                    }) {
-                        VStack {
-                            Image(sound) // 各サウンドに対応するアイコン画像
-                                .resizable()
-                                .renderingMode(.template)
-                                .scaledToFit()
-                                .frame(width: 30, height: 30)
-                                .foregroundColor(selectedSound == sound ? Color(UIColor.systemBackground) : .primary) // 選択状態で色を変更
+                    VStack {
+                        Button(action: {
+                            selectedSound = sound
+                            stepSoundManager.playSoundOnce(soundName: sound, volume: volume) // サウンド再生関数を呼び出し
+                        }) {
+                            VStack {
+                                Image(sound) // 各サウンドに対応するアイコン画像
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .scaledToFit()
+                                    .frame(width: 45, height: 45)
+                                    .foregroundColor(selectedSound == sound ? Color(UIColor.systemBackground) : .primary) // 選択状態で色を変更
+                            }
+                            .padding()
+                            .frame(width: 60, height: 60)
+                            .background(selectedSound == sound ? Color.primary : Color(uiColor: .systemGray6))
+                            .cornerRadius(10)
                         }
-                        .padding()
-                        .frame(width: 45, height: 45)
-                        .background(selectedSound == sound ? Color.primary : Color(uiColor: .systemGray6))
-                        .cornerRadius(10)
+                        .buttonStyle(PlainButtonStyle()) // デフォルトのボタンスタイルを無効化
+                        
+                        Text(sound)
+                            .font(.subheadline)
+                            .foregroundColor(selectedSound == sound ? .primary : .secondary)
                     }
-                    .buttonStyle(PlainButtonStyle()) // デフォルトのボタンスタイルを無効化
                 }
             }
             .padding(.vertical, 8)
             
-            VStack {
+            HStack {
+                Image(systemName: "speaker.slash.fill").foregroundColor(.gray)
+                Spacer()
                 CustomSlider(value: $volume, range: 0...2, step: 0.1)
-                HStack {
-                    Text("Low").font(.caption).foregroundColor(.gray)
-                    Spacer()
-                    Text("Volume: \(volume, specifier: "%.1f")").font(.caption)
-                    Spacer()
-                    Text("High").font(.caption).foregroundColor(.gray)
-                }
+                Spacer()
+                Image(systemName: "speaker.wave.3.fill").foregroundColor(.gray)
             }
         }
     }

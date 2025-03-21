@@ -209,10 +209,10 @@ struct ContentView: View {
     /// タブのタイトルを管理
     private func tabTitle() -> String {
         switch tabManager.selectedTab {
-            case "Sensor": return "Sensors Connection"
-            case "Sensitivity": return "Sensitivity Settings"
-            case "Instruments": return "Step Instruments"
-            case "Search": return "Search Songs"
+            case "Sensor": return "Sensors"
+            case "Sensitivity": return "Sensitivity"
+            case "Instruments": return "Instruments"
+            case "Search": return "Search"
             default: return ""
         }
     }
