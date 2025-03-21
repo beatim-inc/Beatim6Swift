@@ -32,50 +32,41 @@ struct MusicPlayerView: View {
     var body: some View {
         VStack {
             HStack (alignment: .center) {
-                VStack {
-                    HStack (spacing: 4) {
-                        Image(systemName: "figure.walk")
-                            .frame(width:24, height: 24)
-                            .font(.system(size: 24, weight: .bold))
-                        Text("\(String(format: "%.1f", spmManager.spm))")
-                            .foregroundColor(.primary)
-                            .frame(alignment: .trailing)
+                // 🎵 ジャケット画像
+                if let url = artworkURL {
+                    AsyncImage(url: url) { image in
+                        image.resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 50, height: 50)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } placeholder: {
+                        Image(systemName: "music.note")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.gray)
                     }
-                    .frame(width: 150, height: 32)
-                    Text("Walk Tempo")
+                }
+                
+                VStack(alignment: .leading) {
+                    Text(songTitle)
+                        .font(.headline)
+                        .lineLimit(1)
                         .foregroundColor(.primary)
-                        .font(.caption)
+                    
+                    // 🎵 アーティスト名（曲がある場合のみ表示）
+                    if let artist = artistName {
+                        Text("\(artist)")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                    }
                 }
-                .onTapGesture {
-                    showSpmSetting = true // ✅ タップ時にシートを開く
-                }
-                .sheet(isPresented: $showSpmSetting) { // ✅ `sheet` を使ってモーダル遷移
-                    SpmSettingView(
-                        spm: spmManager.spm,
-                        onSpmUpdate: { newSpm in spmManager.spm = newSpm }
-                    )
-                    .presentationDetents([.height(80)])
-                }
-                .frame(height: 40)
-            
+                
                 Spacer()
 
-                VStack {
-                    HStack (spacing: 10) {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                            .frame(width:24, height: 24)
-                            .font(.system(size: 24, weight: .bold))
-                        Toggle(isOn: $spmManager.allowStepUpdate) {}
-                            .labelsHidden()
-                    }
-                    .frame(width: 150, height: 32)
-                    Text("Auto Tempo Update")
-                        .foregroundColor(.primary)
-                        .font(.caption)
-                }
-                .frame(height: 40)
-
             }
+            .frame(height: 50)
             .padding(.horizontal, 16)
             .padding(.top, 16)
             
@@ -113,43 +104,9 @@ struct MusicPlayerView: View {
             .padding(.horizontal, 16) // 左右の余白を維持
             .padding(.top, 8) // 上の余白を維持
             
-            //再生ボタン系
             
-                
-            HStack (spacing: 10){
-                // 🎵 ジャケット画像
-                if let url = artworkURL {
-                    AsyncImage(url: url) { image in
-                        image.resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 50, height: 50)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                    } placeholder: {
-                        Image(systemName: "music.note")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(.gray)
-                    }
-                }
-                
-                VStack(alignment: .leading) {
-                    Text(songTitle)
-                        .font(.headline)
-                        .lineLimit(1)
-                        .foregroundColor(.primary)
-                    
-                    // 🎵 アーティスト名（曲がある場合のみ表示）
-                    if let artist = artistName {
-                        Text("\(artist)")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .lineLimit(1)
-                    }
-                }
-                
-                Spacer()
-                
+            HStack (){
+                //再生ボタン系
                 if (bpmErrorMessage == "") {
                     //頭出しボタン
                     Button(action:{
@@ -167,6 +124,8 @@ struct MusicPlayerView: View {
                             .foregroundColor(.primary)
                             .frame(width: 44, height: 44) // タップ領域の確保
                     }
+                    
+                    Spacer()
                     
                     // 再生・停止ボタン
                     Button(action: togglePlayback) {
@@ -202,6 +161,58 @@ struct MusicPlayerView: View {
                             .fill(Color.gray.opacity(0.1))
                     )
                 }
+                
+                Spacer()
+                
+                VStack {
+                    HStack (spacing: 4) {
+                        Image(systemName: "figure.walk")
+                            .frame(width:20, height: 20)
+                            .font(.system(size: 20, weight: .bold))
+                        Text("\(String(format: "%.1f", spmManager.spm))")
+                            .foregroundColor(.primary)
+                            .frame(alignment: .trailing)
+                    }
+                    .frame(height: 32)
+                    Text("Walk Tempo")
+                        .foregroundColor(.primary)
+                        .font(.caption)
+                }
+                .onTapGesture {
+                    showSpmSetting = true // ✅ タップ時にシートを開く
+                }
+                .sheet(isPresented: $showSpmSetting) { // ✅ `sheet` を使ってモーダル遷移
+                    SpmSettingView(
+                        spm: spmManager.spm,
+                        onSpmUpdate: { newSpm in spmManager.spm = newSpm }
+                    )
+                    .presentationDetents([.height(80)])
+                }
+                .frame(height: 40)
+            
+                Spacer()
+
+                VStack {
+                    HStack (spacing: 10) {
+                        if spmManager.spmLocked {
+                            Image(systemName: "lock.fill")
+                                .frame(width:20, height: 20)
+                                .font(.system(size: 20, weight: .bold))
+                        }
+                        else {
+                            Image(systemName: "lock.open.fill")
+                                .frame(width:20, height: 20)
+                                .font(.system(size: 20, weight: .bold))
+                        }
+                        Toggle(isOn: $spmManager.spmLocked) {}
+                            .labelsHidden()
+                    }
+                    .frame(height: 32)
+                    Text("Tempo Lock")
+                        .foregroundColor(.primary)
+                        .font(.caption)
+                }
+                .frame(height: 40)
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)

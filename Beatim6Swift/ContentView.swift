@@ -106,14 +106,14 @@ struct ContentView: View {
                     
                     bleManager.onRStepDetectionNotified = {
                         stepSoundManager.playRightStepSound()
-                        if spmManager.allowStepUpdate {
+                        if !spmManager.spmLocked {
                             spmManager.addStepData()
                         }
                     }
                     
                     bleManager.onLStepDetectionNotified = {
                         stepSoundManager.playLeftStepSound()
-                        if spmManager.allowStepUpdate {
+                        if !spmManager.spmLocked {
                             spmManager.addStepData()
                         }
                     }
