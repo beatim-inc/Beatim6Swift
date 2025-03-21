@@ -86,7 +86,15 @@ struct ContentView: View {
                             showSettings = true // ✅ タップ時にシートを開く
                         }
                         .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
-                            SettingView(bleManager: bleManager, parameters: parameters)
+                            SettingView(
+                                bleManager: bleManager,
+                                parameters: parameters,
+                                bpm: musicDefaultBpm,
+                                trackId: $trackId,
+                                bpmErrorMessage: $bpmErrorMessage,
+                                onBpmUpdate: { newBpm in musicDefaultBpm = newBpm },
+                                musicDefaultBpm: $musicDefaultBpm
+                            )
                                 .presentationDetents([.large])
                         }
                     }
@@ -195,6 +203,7 @@ struct ContentView: View {
                 } else {
                     print("Failed to fetch BPM")
                     bpmErrorMessage = "⚠️"
+                    ApplicationMusicPlayer.shared.pause() // BPMを取得できなかったときは再生をとめる
                 }
             }
         }
