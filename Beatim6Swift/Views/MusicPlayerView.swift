@@ -31,108 +31,42 @@ struct MusicPlayerView: View {
 
     var body: some View {
         VStack {
-            HStack {
-                VStack {
-                    HStack (spacing: 8) {
-                        Image("Bpm")
+            HStack (alignment: .center) {
+                // 🎵 ジャケット画像
+                if let url = artworkURL {
+                    AsyncImage(url: url) { image in
+                        image.resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 50, height: 50)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } placeholder: {
+                        Image(systemName: "music.note")
                             .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(.primary)
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                        if bpmErrorMessage == "" {
-                            Text("\(String(format: "%.1f", musicDefaultBpm))")
-                                .foregroundColor(.primary)
-                        } else {
-                            Text(bpmErrorMessage)
-                                .foregroundColor(.primary)
-                        }
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.gray)
                     }
-                    Text("BPM")
+                }
+                
+                VStack(alignment: .leading) {
+                    Text(songTitle)
+                        .font(.headline)
+                        .lineLimit(1)
                         .foregroundColor(.primary)
-                        .font(.caption)
+                    
+                    // 🎵 アーティスト名（曲がある場合のみ表示）
+                    if let artist = artistName {
+                        Text("\(artist)")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                    }
                 }
-                .contentShape(Rectangle()) // ✅ タップ可能にする
-                .onTapGesture {
-                    showBpmSetting = true // ✅ タップ時にシートを開く
-                }
-                .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
-                    BpmSettingView(
-                        bpm: musicDefaultBpm,
-                        trackId: trackId ?? "Unknown",
-                        bpmErrorMessage: $bpmErrorMessage,
-                        onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
-                    )
-                    .presentationDetents([.height(80)])
-                    .environmentObject(songHistoryManager)
-                }
-                .padding(6) // ✅ 内側の余白
-                .background(
-                    RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
-                        .fill(Color.gray.opacity(0.1))
-                )
                 
                 Spacer()
-                
-                VStack {
-                    HStack (spacing: 8) {
-                        Image("PlaybackRate")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(.primary)
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                        Text("×\(String(format: "%.2f", spmManager.spm / musicDefaultBpm))")
-                            .foregroundColor(.primary)
-                    }
-                    Text("Speed")
-                        .foregroundColor(.primary)
-                        .font(.caption)
-                }
-                .padding(6) // ✅ 内側の余白
-                .background(
-                    RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
-                        .fill(Color.gray.opacity(0.1))
-                )
-                
-                Spacer()
-                
-                VStack {
-                    HStack (spacing: 4) {
-                        Image(systemName: "figure.walk")
-                            .frame(width:20, height: 20)
-                        Text("\(String(format: "%.1f", spmManager.spm))")
-                            .foregroundColor(.primary)
-                            .frame(alignment: .trailing)
-                    }
-                    Text("SPM")
-                        .foregroundColor(.primary)
-                        .font(.caption)
-                }
-                .contentShape(Rectangle()) // ✅ タップ可能にする
-                .onTapGesture {
-                    showSpmSetting = true // ✅ タップ時にシートを開く
-                }
-                .sheet(isPresented: $showSpmSetting) { // ✅ `sheet` を使ってモーダル遷移
-                    SpmSettingView(
-                        spm: spmManager.spm,
-                        onSpmUpdate: { newSpm in spmManager.spm = newSpm }
-                    )
-                    .presentationDetents([.height(80)])
-                }
-                .padding(6) // ✅ 内側の余白
-                .background(
-                    RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
-                        .fill(Color.gray.opacity(0.1))
-                )
-                
-                Spacer()
-                
-                VStack {
-                    Toggle(isOn: $spmManager.allowStepUpdate) {}
-                        .toggleStyle(ImageToggleStyle(text: "Update", onImage: "Update", offImage: "Update"))
-                }
+
             }
+            .frame(height: 50)
             .padding(.horizontal, 16)
             .padding(.top, 16)
             
@@ -170,67 +104,115 @@ struct MusicPlayerView: View {
             .padding(.horizontal, 16) // 左右の余白を維持
             .padding(.top, 8) // 上の余白を維持
             
-            //再生ボタン系
-            HStack (spacing: 10){
-                // 🎵 ジャケット画像
-                if let url = artworkURL {
-                    AsyncImage(url: url) { image in
-                        image.resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 50, height: 50)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                    } placeholder: {
-                        Image(systemName: "music.note")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(.gray)
+            
+            HStack (){
+                //再生ボタン系
+                if (bpmErrorMessage == "") {
+                    //頭出しボタン
+                    Button(action:{
+                        Task{
+                            stepSoundManager.playSoundPeriodically(BPM:spmManager.spm)
+                            ApplicationMusicPlayer.shared.playbackTime = 0
+                            ApplicationMusicPlayer.shared.pause()
+                        }
+                    }
+                    ) {
+                        Image(systemName:"backward.fill")
+                            .symbolRenderingMode(.hierarchical) // 視認性向上
+                            .imageScale(.large) // アイコンのスケール調整
+                            .font(.system(size: 24)) // アイコンのサイズ
+                            .foregroundColor(.primary)
+                            .frame(width: 44, height: 44) // タップ領域の確保
+                    }
+                    
+                    Spacer()
+                    
+                    // 再生・停止ボタン
+                    Button(action: togglePlayback) {
+                        Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                            .symbolRenderingMode(.hierarchical)
+                            .imageScale(.large)
+                            .font(.system(size: 24))
+                            .foregroundColor(.primary)
+                            .frame(width: 44, height: 44)
                     }
                 }
-
-                VStack(alignment: .leading) {
-                    Text(songTitle)
-                        .font(.headline)
-                        .lineLimit(1)
-                        .foregroundColor(.primary)
-                    
-                    // 🎵 アーティスト名（曲がある場合のみ表示）
-                    if let artist = artistName {
-                        Text("\(artist)")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .lineLimit(1)
+                else {
+                    HStack {
+                        Text("⚠️ Tap here to set BPM manually")
                     }
+                    .contentShape(Rectangle()) // ✅ タップ可能にする
+                    .onTapGesture {
+                        showBpmSetting = true // ✅ タップ時にシートを開く
+                    }
+                    .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
+                        BpmSettingView(
+                            bpm: musicDefaultBpm,
+                            trackId: trackId ?? "Unknown",
+                            bpmErrorMessage: $bpmErrorMessage,
+                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
+                        )
+                        .presentationDetents([.height(80)])
+                        .environmentObject(songHistoryManager)
+                    }
+                    .padding(6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
+                            .fill(Color.gray.opacity(0.1))
+                    )
                 }
                 
                 Spacer()
-
-                //頭出しボタン
-                Button(action:{
-                    Task{
-                        stepSoundManager.playSoundPeriodically(BPM:spmManager.spm)
-                        ApplicationMusicPlayer.shared.playbackTime = 0
-                        ApplicationMusicPlayer.shared.pause()
+                
+                VStack {
+                    HStack (spacing: 4) {
+                        Image(systemName: "figure.walk")
+                            .frame(width:20, height: 20)
+                            .font(.system(size: 20, weight: .bold))
+                        Text("\(String(format: "%.1f", spmManager.spm))")
+                            .foregroundColor(.primary)
+                            .frame(alignment: .trailing)
                     }
-                }
-                ) {
-                    Image(systemName:"backward.fill")
-                        .symbolRenderingMode(.hierarchical) // 視認性向上
-                        .imageScale(.large) // アイコンのスケール調整
-                        .font(.system(size: 24)) // アイコンのサイズ
+                    .frame(height: 32)
+                    Text("Walk Tempo")
                         .foregroundColor(.primary)
-                        .frame(width: 44, height: 44) // タップ領域の確保
+                        .font(.caption)
                 }
+                .onTapGesture {
+                    showSpmSetting = true // ✅ タップ時にシートを開く
+                }
+                .sheet(isPresented: $showSpmSetting) { // ✅ `sheet` を使ってモーダル遷移
+                    SpmSettingView(
+                        spm: spmManager.spm,
+                        onSpmUpdate: { newSpm in spmManager.spm = newSpm }
+                    )
+                    .presentationDetents([.height(80)])
+                }
+                .frame(height: 40)
+            
+                Spacer()
 
-                // 再生・停止ボタン
-                Button(action: togglePlayback) {
-                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                        .symbolRenderingMode(.hierarchical)
-                        .imageScale(.large)
-                        .font(.system(size: 24))
+                VStack {
+                    HStack (spacing: 10) {
+                        if spmManager.spmLocked {
+                            Image(systemName: "lock.fill")
+                                .frame(width:20, height: 20)
+                                .font(.system(size: 20, weight: .bold))
+                        }
+                        else {
+                            Image(systemName: "lock.open.fill")
+                                .frame(width:20, height: 20)
+                                .font(.system(size: 20, weight: .bold))
+                        }
+                        Toggle(isOn: $spmManager.spmLocked) {}
+                            .labelsHidden()
+                    }
+                    .frame(height: 32)
+                    Text("Tempo Lock")
                         .foregroundColor(.primary)
-                        .frame(width: 44, height: 44)
+                        .font(.caption)
                 }
+                .frame(height: 40)
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
@@ -242,6 +224,7 @@ struct MusicPlayerView: View {
         .onDisappear {
             stopPlaybackObserver()
         }
+            
     }
 
     /// Apple Music の再生状態を監視
@@ -287,7 +270,7 @@ struct MusicPlayerView: View {
     /// 再生・停止の切り替え
     private func togglePlayback() {
         self.isPlaying = !self.isPlaying
-       let player = ApplicationMusicPlayer.shared
+        let player = ApplicationMusicPlayer.shared
 
         Task {
             if(player.state.playbackStatus == MusicPlayer.PlaybackStatus.playing ){
@@ -318,51 +301,5 @@ struct MusicPlayerView: View {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
         return String(format: "%d:%02d", minutes, seconds)
-    }
-    
-    struct ImageToggleStyle: ToggleStyle {
-        let text: String
-        let onImage: String
-        let offImage: String
-
-        func makeBody(configuration: Configuration) -> some View {
-            VStack {
-                if configuration.isOn {
-                    Image(onImage)
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(.white) // ✅ 白にしてコントラストを確保
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
-                    Text(text)
-                        .foregroundStyle(.white)
-                        .font(.caption)
-                } else {
-                    Image(offImage)
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(.primary)
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
-                    Text(text)
-                        .foregroundStyle(.primary)
-                        .font(.caption)
-                }
-                
-                
-                configuration.label
-                    .foregroundColor(.white) // ✅ `isOn` に応じて文字色も変更
-                    .font(.system(size: 15, weight: .heavy))
-            }
-            .padding(6) // ✅ 内側の余白
-
-            .background(
-                RoundedRectangle(cornerRadius: 6) // ✅ 角丸の四角形
-                    .fill(configuration.isOn ? Color.green : Color.gray.opacity(0.1)) // ✅ ON のとき緑、OFF のときグレー
-            )
-            .onTapGesture {
-                configuration.isOn.toggle() // ✅ 画像 or 背景をタップするとトグルが切り替わる
-            }
-        }
     }
 }

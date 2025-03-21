@@ -15,7 +15,7 @@ struct ContentView: View {
     @StateObject var parameters = StepDetectionParameters()
     @StateObject var spmManager = SPMManager()
     @StateObject private var stepSoundManager = StepSoundManager()
-    @StateObject private var tabManager = TabSelectionManager()
+    @StateObject private var tabManager = TabManager()
     @StateObject private var songHistoryManager = SongHistoryManager()
 
     @State private var musicSubscription: MusicSubscription?
@@ -86,7 +86,15 @@ struct ContentView: View {
                             showSettings = true // ✅ タップ時にシートを開く
                         }
                         .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
-                            SettingView(bleManager: bleManager, parameters: parameters)
+                            SettingView(
+                                bleManager: bleManager,
+                                parameters: parameters,
+                                bpm: musicDefaultBpm,
+                                trackId: $trackId,
+                                bpmErrorMessage: $bpmErrorMessage,
+                                onBpmUpdate: { newBpm in musicDefaultBpm = newBpm },
+                                musicDefaultBpm: $musicDefaultBpm
+                            )
                                 .presentationDetents([.large])
                         }
                     }
@@ -98,14 +106,14 @@ struct ContentView: View {
                     
                     bleManager.onRStepDetectionNotified = {
                         stepSoundManager.playRightStepSound()
-                        if spmManager.allowStepUpdate {
+                        if !spmManager.spmLocked {
                             spmManager.addStepData()
                         }
                     }
                     
                     bleManager.onLStepDetectionNotified = {
                         stepSoundManager.playLeftStepSound()
-                        if spmManager.allowStepUpdate {
+                        if !spmManager.spmLocked {
                             spmManager.addStepData()
                         }
                     }
@@ -195,6 +203,7 @@ struct ContentView: View {
                 } else {
                     print("Failed to fetch BPM")
                     bpmErrorMessage = "⚠️"
+                    ApplicationMusicPlayer.shared.pause() // BPMを取得できなかったときは再生をとめる
                 }
             }
         }
