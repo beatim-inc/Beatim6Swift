@@ -18,7 +18,7 @@ struct SpmSettingView: View {
                 HStack {
                     Image(systemName: "figure.walk")
                         .frame(width:20, height: 20)
-                    Text("SPM :")
+                    Text("Tempo (SPM) :")
                     AutoFocusTextField(text: $spmValue, onCommit: saveSpm)
                         .keyboardType(.decimalPad)
                         .onChange(of: spmValue) { oldValue, newValue in
