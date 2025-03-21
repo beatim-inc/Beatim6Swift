@@ -171,10 +171,8 @@ struct ContentView: View {
     /// 再生速度の更新
     private func updatePlaybackRate() {
         let player = ApplicationMusicPlayer.shared
-        let state = player.state
-        if state.playbackStatus == .playing {
-            player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
-        }
+//        let state = player.state
+        player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
     }
     
     /// 現在の曲名からBPMを取得
