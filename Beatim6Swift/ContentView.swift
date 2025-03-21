@@ -15,7 +15,7 @@ struct ContentView: View {
     @StateObject var parameters = StepDetectionParameters()
     @StateObject var spmManager = SPMManager()
     @StateObject private var stepSoundManager = StepSoundManager()
-    @StateObject private var tabManager = TabSelectionManager()
+    @StateObject private var tabManager = TabManager()
     @StateObject private var songHistoryManager = SongHistoryManager()
 
     @State private var musicSubscription: MusicSubscription?
