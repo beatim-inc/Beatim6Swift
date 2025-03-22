@@ -20,7 +20,6 @@ struct SearchSongsView: View {
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
     var defaultBpm : Double
-    private var resultLimit: Int = 5
 
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     @State private var showCancelButton: Bool = false
@@ -92,6 +91,7 @@ struct SearchSongsView: View {
                                 SongInfoView(songItem: song, currentArtistName: $currentArtistName)
                             }
                         }
+                        Section(footer: SpacerView()) {}
                     }
                     .listStyle(PlainListStyle())
                 }
@@ -149,7 +149,8 @@ struct SearchSongsView: View {
     private func performSearch() {
         Task {
             do {
-                let request = MusicCatalogSearchRequest(term: searchTerm, types: [Song.self])
+                var request = MusicCatalogSearchRequest(term: searchTerm, types: [Song.self])
+                request.limit = 25
                 self.isPerformingSearch = true
                 let response = try await request.response()
                 self.isPerformingSearch = false
