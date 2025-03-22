@@ -10,8 +10,15 @@ import MusicKit
 
 struct SearchSongsView: View {
     
+    enum SearchCategory: String, CaseIterable {
+        case artist = "アーティスト"
+        case song = "曲"
+    }
+    
     @State private var searchTerm: String = ""
+    @State private var selectedCategory: SearchCategory = .artist
     @State private var searchResultSongs: MusicItemCollection<Song> = []
+    @State private var searchResultArtists: MusicItemCollection<Artist> = []
     @State private var isPerformingSearch: Bool = false
     @State private var musicSubscription: MusicSubscription?
     @State private var showDeleteAlert = false
@@ -50,6 +57,7 @@ struct SearchSongsView: View {
                             Button(action: {
                                 searchTerm = ""
                                 searchResultSongs = []
+                                searchResultArtists = []
                             }) {
                                 Image(systemName: "xmark.circle.fill")
                                     .foregroundColor(.gray)
@@ -68,6 +76,7 @@ struct SearchSongsView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
                                 showCancelButton = false // フォーカス解除後にボタンを非表示にする
                                 searchResultSongs = []
+                                searchResultArtists = []
                             }
                         }
                         .foregroundColor(.red)
@@ -75,6 +84,14 @@ struct SearchSongsView: View {
                 }
                 .padding(.horizontal)
                 .padding(.top, 8)
+                
+                Picker("Search Type", selection: $selectedCategory) {
+                    ForEach(SearchCategory.allCases, id: \..self) { category in
+                        Text(category.rawValue)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding(.horizontal)
                 
                 // 🔄 検索中インジケーター
                 if isPerformingSearch {
@@ -84,7 +101,7 @@ struct SearchSongsView: View {
                 
                 
                 // 🎵 検索結果リスト
-                if !searchResultSongs.isEmpty {
+                if selectedCategory == .song && !searchResultSongs.isEmpty {
                     List {
                         Section(header: Text("Search Results")) {
                             ForEach(searchResultSongs) { song in
@@ -94,8 +111,32 @@ struct SearchSongsView: View {
                         Section(footer: SpacerView()) {}
                     }
                     .listStyle(PlainListStyle())
-                }
-                else {
+                } else if selectedCategory == .artist && !searchResultArtists.isEmpty {
+                    List {
+                        ForEach(searchResultArtists, id: \.id) { artist in
+                            Button(action: {
+                                fetchTopSongs(for: artist)
+                                currentArtistName = artist.name
+                            }) {
+                                HStack {
+                                    AsyncImage(url: artist.artwork?.url(width: 60, height: 60)) { image in
+                                        image.resizable()
+                                    } placeholder: {
+                                        Color.gray
+                                    }
+                                    .frame(width: 60, height: 60)
+                                    .clipShape(Circle())
+
+                                    Text(artist.name)
+                                        .font(.headline)
+                                        .padding(.leading, 8)
+                                }
+                            }
+                        }
+                        Section(footer: SpacerView()) {}
+                    }
+                    .listStyle(PlainListStyle())
+                } else {
                     List {
                         Section(
                             header: HStack {
@@ -149,18 +190,52 @@ struct SearchSongsView: View {
     private func performSearch() {
         Task {
             do {
-                var request = MusicCatalogSearchRequest(term: searchTerm, types: [Song.self])
-                request.limit = 25
-                self.isPerformingSearch = true
-                let response = try await request.response()
-                self.isPerformingSearch = false
-                self.searchResultSongs = response.songs
-                print("searchResultSongs: \(self.searchResultSongs)")
+                isPerformingSearch = true
+
+                switch selectedCategory {
+                case .song:
+                    var request = MusicCatalogSearchRequest(term: searchTerm, types: [Song.self])
+                    request.limit = 25
+                    let response = try await request.response()
+                    self.searchResultSongs = response.songs
+                    self.searchResultArtists = []
+                case .artist:
+                    var request = MusicCatalogSearchRequest(term: searchTerm, types: [Artist.self])
+                    request.limit = 25
+                    let response = try await request.response()
+                    self.searchResultArtists = response.artists
+                    self.searchResultSongs = []
+                }
+
+                isPerformingSearch = false
             } catch {
                 print("Error: \(error.localizedDescription)")
+                isPerformingSearch = false
             }
         }
     }
+    
+    private func fetchTopSongs(for artist: Artist) {
+        Task {
+            do {
+                print("🔍 Fetching top songs for artist: \(artist.name)")
+
+                var request = MusicCatalogSearchRequest(term: artist.name, types: [Song.self])
+                request.limit = 25 // 多めに取得
+                let response = try await request.response()
+                let songs = response.songs.filter { $0.artistName == artist.name }
+
+                self.searchResultSongs = MusicItemCollection(songs.prefix(25)) // 最初の25曲
+                self.searchResultArtists = []
+                self.selectedCategory = .song
+
+                print("🎵 Filtered top songs: \(self.searchResultSongs.count)")
+            } catch {
+                print("🚨 Failed to fetch top songs: \(error.localizedDescription)")
+            }
+        }
+    }
+
     
     struct SpacerView: View {
         var body: some View {
