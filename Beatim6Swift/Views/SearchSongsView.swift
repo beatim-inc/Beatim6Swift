@@ -15,10 +15,20 @@ struct SearchSongsView: View {
         case song = "曲"
     }
     
+    struct FetchedSong: Identifiable {
+        let song: Song
+        let bpm: Double?
+
+        var id: MusicItemID {
+            song.id
+        }
+    }
+    
     @State private var searchTerm: String = ""
     @State private var selectedCategory: SearchCategory = .artist
     @State private var searchResultSongs: MusicItemCollection<Song> = []
     @State private var searchResultArtists: MusicItemCollection<Artist> = []
+    @State private var fetchedTopSongs: [FetchedSong] = []
     @State private var isPerformingSearch: Bool = false
     @State private var musicSubscription: MusicSubscription?
     @State private var showDeleteAlert = false
@@ -58,6 +68,7 @@ struct SearchSongsView: View {
                                 searchTerm = ""
                                 searchResultSongs = []
                                 searchResultArtists = []
+                                fetchedTopSongs = []
                             }) {
                                 Image(systemName: "xmark.circle.fill")
                                     .foregroundColor(.gray)
@@ -77,6 +88,7 @@ struct SearchSongsView: View {
                                 showCancelButton = false // フォーカス解除後にボタンを非表示にする
                                 searchResultSongs = []
                                 searchResultArtists = []
+                                fetchedTopSongs = []
                             }
                         }
                         .foregroundColor(.red)
@@ -132,6 +144,14 @@ struct SearchSongsView: View {
                                         .padding(.leading, 8)
                                 }
                             }
+                        }
+                        Section(footer: SpacerView()) {}
+                    }
+                    .listStyle(PlainListStyle())
+                } else if !fetchedTopSongs.isEmpty {
+                    List {
+                        ForEach(fetchedTopSongs) { item in
+                            SongInfoView(songItem: item.song, currentArtistName: $currentArtistName)
                         }
                         Section(footer: SpacerView()) {}
                     }
@@ -199,12 +219,14 @@ struct SearchSongsView: View {
                     let response = try await request.response()
                     self.searchResultSongs = response.songs
                     self.searchResultArtists = []
+                    self.fetchedTopSongs = []
                 case .artist:
                     var request = MusicCatalogSearchRequest(term: searchTerm, types: [Artist.self])
                     request.limit = 25
                     let response = try await request.response()
                     self.searchResultArtists = response.artists
                     self.searchResultSongs = []
+                    self.fetchedTopSongs = []
                 }
 
                 isPerformingSearch = false
@@ -224,10 +246,26 @@ struct SearchSongsView: View {
                 request.limit = 25 // 多めに取得
                 let response = try await request.response()
                 let songs = response.songs.filter { $0.artistName == artist.name }
+                var tempFetchedSongs: [FetchedSong] = []
+                let group = DispatchGroup()
+                let fetcher = BPMFetcher(historyManager: songHistoryManager)
 
-                self.searchResultSongs = MusicItemCollection(songs.prefix(25)) // 最初の25曲
-                self.searchResultArtists = []
-                self.selectedCategory = .song
+                for song in songs {
+                    group.enter()
+                    fetcher.fetchBPM(song: song.title, artist: song.artistName, id: song.id.rawValue) { bpm in
+                        tempFetchedSongs.append(FetchedSong(song: song, bpm: bpm))
+                        group.leave()
+                    }
+                }
+
+                group.notify(queue: .main) {
+                    self.fetchedTopSongs = tempFetchedSongs.sorted {
+                        self.evaluateFunction(for: $0) > self.evaluateFunction(for: $1)
+                    }
+                    self.searchResultSongs = []
+                    self.searchResultArtists = []
+                    self.selectedCategory = .song
+                }
 
                 print("🎵 Filtered top songs: \(self.searchResultSongs.count)")
             } catch {
@@ -242,6 +280,13 @@ struct SearchSongsView: View {
             Color.clear
                 .frame(height: 200) // 🎯 `MusicPlayerView` の高さに合わせて余白を確保
         }
+    }
+    
+    private func evaluateFunction(for song: FetchedSong) -> Double {
+        guard let bpm = song.bpm else { return 0 }
+        let spm = spmManager.spm
+        let ratio = spm / bpm
+        return asymmetricGaussian(ratio)
     }
     
     // 🎵 SPM / BPM を計算し、非対称関数に適用
