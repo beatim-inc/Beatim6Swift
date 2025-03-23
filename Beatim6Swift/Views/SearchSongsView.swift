@@ -38,7 +38,7 @@ struct SearchSongsView: View {
     }
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             VStack {
                 // 🔍 検索バー
                 HStack {
@@ -190,14 +190,12 @@ struct SearchSongsView: View {
                     .listStyle(PlainListStyle())
                 }
             }
-            .navigationBarHidden(true)
             .task {
                 for await subscription in MusicSubscription.subscriptionUpdates {
                     self.musicSubscription = subscription
                 }
             }
-        }
-        
+//        }
     }
 
     // 🎯 検索処理をメソッド化（Enterキー & ボタン 両方で使用）

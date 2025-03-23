@@ -47,7 +47,6 @@ struct StepSoundSelectionView: View {
             
             Spacer()
         }
-        .navigationTitle("Instruments")
     }
     
     // 高さを取得するための PreferenceKey
