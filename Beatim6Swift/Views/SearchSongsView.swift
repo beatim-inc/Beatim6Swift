@@ -19,6 +19,7 @@ struct SearchSongsView: View {
     @State private var selectedCategory: SearchCategory = .artist
     @State private var searchResultSongs: MusicItemCollection<Song> = []
     @State private var searchResultArtists: MusicItemCollection<Artist> = []
+    @State private var uniqueArtists: MusicItemCollection<Artist> = []
     @State private var fetchedTopSongs: [FetchedSong] = []
     @State private var isPerformingSearch: Bool = false
     @State private var musicSubscription: MusicSubscription?
@@ -145,6 +146,36 @@ struct SearchSongsView: View {
                     Section(footer: SpacerView()) {}
                 }
                 .listStyle(PlainListStyle())
+            } else if selectedCategory == .artist && !uniqueArtists.isEmpty {
+                List {
+                    Section(header: Text("トップ100からのアーティスト")) {
+                        ForEach(uniqueArtists, id: \.id) { artist in
+                            NavigationLink(
+                                destination: ArtistTopSongsView(
+                                    artist: artist,
+                                    currentArtistName: $currentArtistName
+                                )
+                                .environmentObject(spmManager)
+                                .environmentObject(songHistoryManager)) {
+                                    HStack {
+                                        AsyncImage(url: artist.artwork?.url(width: 40, height: 40)) { image in
+                                            image.resizable()
+                                        } placeholder: {
+                                            Color.gray
+                                        }
+                                        .frame(width: 40, height: 40)
+                                        .clipShape(Circle())
+
+                                        Text(artist.name)
+                                            .font(.headline)
+                                            .padding(.leading, 8)
+                                    }
+                            }
+                        }
+                    }
+                    Section(footer: SpacerView()) {}
+                }
+                .listStyle(PlainListStyle())
             } else {
                 List {
                     Section(
@@ -190,6 +221,9 @@ struct SearchSongsView: View {
                 self.musicSubscription = subscription
             }
         }
+        .task {
+            await loadArtistsFromTop100()
+        }
     }
 
     // 🎯 検索処理をメソッド化（Enterキー & ボタン 両方で使用）
@@ -212,7 +246,52 @@ struct SearchSongsView: View {
         }
     }
     
-    
+    func fetchTop100JapanPlaylist() async -> Playlist? {
+        do {
+            // Top 100: Japan の識別子（固定値）
+            let playlistID = MusicItemID("pl.043a2c9876114d95a4659988497567be") // 公式Top 100: Japan
+            
+            let request = MusicCatalogResourceRequest<Playlist>(matching: \.id, equalTo: playlistID)
+            let response = try await request.response()
+            print(response)
+            return response.items.first
+        } catch {
+            print("🚨 プレイリスト取得失敗: \(error)")
+            return nil
+        }
+    }
+
+    func loadArtistsFromTop100() async {
+        print("🟡 Loading Artists from Top 100")
+        guard let playlist = await fetchTop100JapanPlaylist() else { return }
+
+        do {
+            let songs = try await playlist.with(.tracks).tracks ?? []
+            var artistSet = Set<MusicItemID>()
+            var artists: [Artist] = []
+
+            for song in songs {
+                let artistName = song.artistName
+
+                // 検索で Artist を取得
+                let searchRequest = MusicCatalogSearchRequest(term: artistName, types: [Artist.self])
+                let response = try await searchRequest.response()
+                if let artist = response.artists.first(where: { $0.name == artistName }),
+                   !artistSet.contains(artist.id) {
+                    artistSet.insert(artist.id)
+                    artists.append(artist)
+                }
+
+                try? await Task.sleep(nanoseconds: 150_000_000) // 軽く間隔を空けてAPI負荷軽減
+            }
+
+            await MainActor.run {
+                uniqueArtists = MusicItemCollection(artists)
+            }
+        } catch {
+            print("🚨 アーティスト取得エラー: \(error)")
+        }
+    }
     
     private func evaluateFunction(for song: FetchedSong) -> Double {
         guard let bpm = song.bpm else { return 0 }
