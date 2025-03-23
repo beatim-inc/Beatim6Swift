@@ -38,164 +38,158 @@ struct SearchSongsView: View {
     }
     
     var body: some View {
-//        NavigationView {
-            VStack {
-                // 🔍 検索バー
+        VStack {
+            // 🔍 検索バー
+            HStack {
                 HStack {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
-                        TextField("Song, Artist, Album...", text: $searchTerm, onEditingChanged: { isEditing in
-                            showCancelButton = true
-                        }, onCommit: {
-                            performSearch()
-                        })
-                        .focused($isSearchFieldFocused)
-                        .foregroundColor(.primary)
-                        .submitLabel(.search)
-                        
-                        if !searchTerm.isEmpty {
-                            Button(action: {
-                                searchTerm = ""
-                                searchResultSongs = []
-                                searchResultArtists = []
-                                fetchedTopSongs = []
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                    }
-                    .padding(8)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(10)
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    TextField(
+                        selectedCategory == .artist ? "Artist" :
+                            selectedCategory == .song ? "Song" : "Search",
+                        text: $searchTerm,
+                        onEditingChanged: { isEditing in
+                        showCancelButton = true
+                    }, onCommit: {
+                        performSearch()
+                    })
+                    .focused($isSearchFieldFocused)
+                    .foregroundColor(.primary)
+                    .submitLabel(.search)
                     
-                    if showCancelButton {
-                        Button("Cancel") {
+                    if !searchTerm.isEmpty {
+                        Button(action: {
                             searchTerm = ""
-                            isSearchFieldFocused = false
-                            
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                                showCancelButton = false // フォーカス解除後にボタンを非表示にする
-                                searchResultSongs = []
-                                searchResultArtists = []
-                                fetchedTopSongs = []
-                            }
+                            searchResultSongs = []
+                            searchResultArtists = []
+                            fetchedTopSongs = []
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.gray)
                         }
-                        .foregroundColor(.red)
                     }
                 }
-                .padding(.horizontal)
-                .padding(.top, 8)
+                .padding(8)
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
                 
-                Picker("Search Type", selection: $selectedCategory) {
-                    ForEach(SearchCategory.allCases, id: \..self) { category in
-                        Text(category.rawValue)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal)
-                
-                // 🔄 検索中インジケーター
-                if isPerformingSearch {
-                    ProgressView()
-                        .padding()
-                }
-                
-                
-                // 🎵 検索結果リスト
-                if selectedCategory == .song && !searchResultSongs.isEmpty {
-                    List {
-                        Section(header: Text("Search Results")) {
-                            ForEach(searchResultSongs) { song in
-                                SongInfoView(songItem: song, currentArtistName: $currentArtistName)
-                            }
+                if showCancelButton {
+                    Button("Cancel") {
+                        searchTerm = ""
+                        isSearchFieldFocused = false
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                            showCancelButton = false // フォーカス解除後にボタンを非表示にする
+                            searchResultSongs = []
+                            searchResultArtists = []
+                            fetchedTopSongs = []
                         }
-                        Section(footer: SpacerView()) {}
                     }
-                    .listStyle(PlainListStyle())
-                } else if selectedCategory == .artist && !searchResultArtists.isEmpty {
-                    List {
-                        ForEach(searchResultArtists, id: \.id) { artist in
-                            NavigationLink(
-                                destination: ArtistTopSongsView(
-                                    artist: artist,
-                                    currentArtistName: $currentArtistName
-                                )
-                                .environmentObject(spmManager)
-                                .environmentObject(songHistoryManager)) {
-                                HStack {
-                                    AsyncImage(url: artist.artwork?.url(width: 40, height: 40)) { image in
-                                        image.resizable()
-                                    } placeholder: {
-                                        Color.gray
-                                    }
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
+                    .foregroundColor(.red)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+            
+            Picker("Search Type", selection: $selectedCategory) {
+                ForEach(SearchCategory.allCases, id: \..self) { category in
+                    Text(category.rawValue)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding(.horizontal)
+            
+            // 🔄 検索中インジケーター
+            if isPerformingSearch {
+                ProgressView()
+                    .padding()
+            }
+            
+            
+            // 🎵 検索結果リスト
+            if selectedCategory == .song && !searchResultSongs.isEmpty {
+                List {
+                    Section(header: Text("Search Results")) {
+                        ForEach(searchResultSongs) { song in
+                            SongInfoView(songItem: song, currentArtistName: $currentArtistName)
+                        }
+                    }
+                    Section(footer: SpacerView()) {}
+                }
+                .listStyle(PlainListStyle())
+            } else if selectedCategory == .artist && !searchResultArtists.isEmpty {
+                List {
+                    ForEach(searchResultArtists, id: \.id) { artist in
+                        NavigationLink(
+                            destination: ArtistTopSongsView(
+                                artist: artist,
+                                currentArtistName: $currentArtistName
+                            )
+                            .environmentObject(spmManager)
+                            .environmentObject(songHistoryManager)) {
+                            HStack {
+                                AsyncImage(url: artist.artwork?.url(width: 40, height: 40)) { image in
+                                    image.resizable()
+                                } placeholder: {
+                                    Color.gray
+                                }
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
 
-                                    Text(artist.name)
-                                        .font(.headline)
-                                        .padding(.leading, 8)
-                                }
+                                Text(artist.name)
+                                    .font(.headline)
+                                    .padding(.leading, 8)
                             }
                         }
-                        Section(footer: SpacerView()) {}
                     }
-                    .listStyle(PlainListStyle())
-                } else if !fetchedTopSongs.isEmpty {
-                    List {
-                        ForEach(fetchedTopSongs) { item in
-                            SongInfoView(songItem: item.song, currentArtistName: $currentArtistName)
+                    Section(footer: SpacerView()) {}
+                }
+                .listStyle(PlainListStyle())
+            } else {
+                List {
+                    Section(
+                        header: HStack {
+                            Text("Recommended Songs")
+                            Spacer()
+                            Button(action: {
+                                showDeleteAlert = true // ✅ ポップアップを表示
+                            }) {
+                                Text("delete all")
+                                    .foregroundColor(.red)
+                                    .font(.subheadline)
+                            }
+                            .alert(isPresented: $showDeleteAlert) { // ✅ 削除確認ポップアップ
+                                Alert(
+                                    title: Text("履歴を削除"),
+                                    message: Text("本当に全ての履歴を削除しますか？"),
+                                    primaryButton: .destructive(Text("削除")) {
+                                        songHistoryManager.clearHistory() // ✅ 履歴削除
+                                    },
+                                    secondaryButton: .cancel()
+                                )
+                            }
                         }
-                        Section(footer: SpacerView()) {}
-                    }
-                    .listStyle(PlainListStyle())
-                } else {
-                    List {
-                        Section(
-                            header: HStack {
-                                Text("Recommended Songs")
-                                Spacer()
-                                Button(action: {
-                                    showDeleteAlert = true // ✅ ポップアップを表示
-                                }) {
-                                    Text("delete all")
-                                        .foregroundColor(.red)
-                                        .font(.subheadline)
-                                }
-                                .alert(isPresented: $showDeleteAlert) { // ✅ 削除確認ポップアップ
-                                    Alert(
-                                        title: Text("履歴を削除"),
-                                        message: Text("本当に全ての履歴を削除しますか？"),
-                                        primaryButton: .destructive(Text("削除")) {
-                                            songHistoryManager.clearHistory() // ✅ 履歴削除
-                                        },
-                                        secondaryButton: .cancel()
-                                    )
-                                }
-                            }
-                        ) {
-                            let sortedSongs = songHistoryManager.playedSongs.sorted {
-                                evaluateFunction(for: $0) > evaluateFunction(for: $1)
-                            }
-                            
-                            ForEach(sortedSongs, id: \.id) { song in
-                                SongHistoryRowView(songID: song.id, currentArtistName: $currentArtistName)
-                            }
-                            .onDelete(perform: songHistoryManager.deleteSong) // 🔥 スワイプ削除を有効化
+                    ) {
+                        let sortedSongs = songHistoryManager.playedSongs.sorted {
+                            evaluateFunction(for: $0) > evaluateFunction(for: $1)
                         }
                         
-                        Section(footer: SpacerView()) {}
+                        ForEach(sortedSongs, id: \.id) { song in
+                            SongHistoryRowView(songID: song.id, currentArtistName: $currentArtistName)
+                        }
+                        .onDelete(perform: songHistoryManager.deleteSong) // 🔥 スワイプ削除を有効化
                     }
-                    .listStyle(PlainListStyle())
+                    
+                    Section(footer: SpacerView()) {}
                 }
+                .listStyle(PlainListStyle())
             }
-            .task {
-                for await subscription in MusicSubscription.subscriptionUpdates {
-                    self.musicSubscription = subscription
-                }
+        }
+        .task {
+            for await subscription in MusicSubscription.subscriptionUpdates {
+                self.musicSubscription = subscription
             }
-//        }
+        }
     }
 
     // 🎯 検索処理をメソッド化（Enterキー & ボタン 両方で使用）
@@ -203,23 +197,12 @@ struct SearchSongsView: View {
         Task {
             do {
                 isPerformingSearch = true
-
-                switch selectedCategory {
-                case .song:
-                    var request = MusicCatalogSearchRequest(term: searchTerm, types: [Song.self])
-                    request.limit = 25
-                    let response = try await request.response()
-                    self.searchResultSongs = response.songs
-                    self.searchResultArtists = []
-                    self.fetchedTopSongs = []
-                case .artist:
-                    var request = MusicCatalogSearchRequest(term: searchTerm, types: [Artist.self])
-                    request.limit = 25
-                    let response = try await request.response()
-                    self.searchResultArtists = response.artists
-                    self.searchResultSongs = []
-                    self.fetchedTopSongs = []
-                }
+                
+                var request = MusicCatalogSearchRequest(term: searchTerm, types: [Song.self, Artist.self])
+                request.limit = 25
+                let response = try await request.response()
+                self.searchResultSongs = response.songs
+                self.searchResultArtists = response.artists
 
                 isPerformingSearch = false
             } catch {
@@ -229,50 +212,7 @@ struct SearchSongsView: View {
         }
     }
     
-    private func fetchTopSongs(for artist: Artist) {
-        Task {
-            do {
-                print("🔍 Fetching top songs for artist: \(artist.name)")
-
-                var request = MusicCatalogSearchRequest(term: artist.name, types: [Song.self])
-                request.limit = 25 // 多めに取得
-                let response = try await request.response()
-                let songs = response.songs.filter { $0.artistName == artist.name }
-                var tempFetchedSongs: [FetchedSong] = []
-                let group = DispatchGroup()
-                let fetcher = BPMFetcher(historyManager: songHistoryManager)
-
-                for song in songs {
-                    group.enter()
-                    fetcher.fetchBPM(song: song.title, artist: song.artistName, id: song.id.rawValue) { bpm in
-                        tempFetchedSongs.append(FetchedSong(song: song, bpm: bpm))
-                        group.leave()
-                    }
-                }
-
-                group.notify(queue: .main) {
-                    self.fetchedTopSongs = tempFetchedSongs.sorted {
-                        self.evaluateFunction(for: $0) > self.evaluateFunction(for: $1)
-                    }
-                    self.searchResultSongs = []
-                    self.searchResultArtists = []
-                    self.selectedCategory = .song
-                }
-
-                print("🎵 Filtered top songs: \(self.searchResultSongs.count)")
-            } catch {
-                print("🚨 Failed to fetch top songs: \(error.localizedDescription)")
-            }
-        }
-    }
-
     
-    struct SpacerView: View {
-        var body: some View {
-            Color.clear
-                .frame(height: 200) // 🎯 `MusicPlayerView` の高さに合わせて余白を確保
-        }
-    }
     
     private func evaluateFunction(for song: FetchedSong) -> Double {
         guard let bpm = song.bpm else { return 0 }
@@ -317,8 +257,13 @@ struct ArtistTopSongsView: View {
                 ProgressView("Loading top songs...")
                     .padding()
             } else {
-                List(fetchedSongs) { item in
-                    SongInfoView(songItem: item.song, currentArtistName: $currentArtistName)
+                List {
+                    ForEach(fetchedSongs) { item in
+                        SongInfoView(songItem: item.song, currentArtistName: $currentArtistName)
+                    }
+                    Section(footer: SpacerView()) {
+                        EmptyView() // セクションの中身がないことを明示
+                    }
                 }
                 .listStyle(PlainListStyle())
             }
@@ -382,5 +327,12 @@ struct FetchedSong: Identifiable {
 
     var id: MusicItemID {
         song.id
+    }
+}
+
+struct SpacerView: View {
+    var body: some View {
+        Color.clear
+            .frame(height: 200) // 🎯 `MusicPlayerView` の高さに合わせて余白を確保
     }
 }
