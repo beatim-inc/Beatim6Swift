@@ -15,15 +15,6 @@ struct SearchSongsView: View {
         case song = "曲"
     }
     
-    struct FetchedSong: Identifiable {
-        let song: Song
-        let bpm: Double?
-
-        var id: MusicItemID {
-            song.id
-        }
-    }
-    
     @State private var searchTerm: String = ""
     @State private var selectedCategory: SearchCategory = .artist
     @State private var searchResultSongs: MusicItemCollection<Song> = []
@@ -126,17 +117,20 @@ struct SearchSongsView: View {
                 } else if selectedCategory == .artist && !searchResultArtists.isEmpty {
                     List {
                         ForEach(searchResultArtists, id: \.id) { artist in
-                            Button(action: {
-                                fetchTopSongs(for: artist)
-                                currentArtistName = artist.name
-                            }) {
+                            NavigationLink(
+                                destination: ArtistTopSongsView(
+                                    artist: artist,
+                                    currentArtistName: $currentArtistName
+                                )
+                                .environmentObject(spmManager)
+                                .environmentObject(songHistoryManager)) {
                                 HStack {
-                                    AsyncImage(url: artist.artwork?.url(width: 60, height: 60)) { image in
+                                    AsyncImage(url: artist.artwork?.url(width: 40, height: 40)) { image in
                                         image.resizable()
                                     } placeholder: {
                                         Color.gray
                                     }
-                                    .frame(width: 60, height: 60)
+                                    .frame(width: 40, height: 40)
                                     .clipShape(Circle())
 
                                     Text(artist.name)
@@ -308,3 +302,87 @@ struct SearchSongsView: View {
     }
 }
 
+struct ArtistTopSongsView: View {
+                                
+    let artist: Artist
+    @Binding var currentArtistName: String?
+    
+    @EnvironmentObject var spmManager: SPMManager
+    @EnvironmentObject var songHistoryManager: SongHistoryManager
+
+    @State private var fetchedSongs: [FetchedSong] = []
+    @State private var isLoading: Bool = true
+
+    var body: some View {
+        VStack {
+            if isLoading {
+                ProgressView("Loading top songs...")
+                    .padding()
+            } else {
+                List(fetchedSongs) { item in
+                    SongInfoView(songItem: item.song, currentArtistName: $currentArtistName)
+                }
+                .listStyle(PlainListStyle())
+            }
+        }
+        .navigationTitle(artist.name)
+        .task {
+            await loadTopSongs()
+        }
+    }
+
+    func loadTopSongs() async {
+        do {
+            var request = MusicCatalogSearchRequest(term: artist.name, types: [Song.self])
+            request.limit = 25
+            let response = try await request.response()
+            let songs = response.songs.filter { $0.artistName == artist.name }.prefix(25)
+
+            var tempFetchedSongs: [FetchedSong] = []
+            let group = DispatchGroup()
+
+            for song in songs {
+                group.enter()
+                let bpmFetcher = BPMFetcher(historyManager: songHistoryManager)
+                bpmFetcher.fetchBPM(song: song.title, artist: song.artistName, id: song.id.rawValue) { bpm in
+                    tempFetchedSongs.append(FetchedSong(song: song, bpm: bpm))
+                    group.leave()
+                }
+            }
+
+            group.notify(queue: .main) {
+                self.fetchedSongs = tempFetchedSongs.sorted {
+                    evaluateFunction(for: $0) > evaluateFunction(for: $1)
+                }
+                self.isLoading = false
+            }
+        } catch {
+            print("🚨 Failed to fetch top songs: \(error.localizedDescription)")
+            self.isLoading = false
+        }
+    }
+
+    private func evaluateFunction(for song: FetchedSong) -> Double {
+        guard let bpm = song.bpm else { return 0 }
+        let spm = spmManager.spm
+        let ratio = spm / bpm
+        return asymmetricGaussian(ratio)
+    }
+
+    private func asymmetricGaussian(_ x: Double) -> Double {
+        let x0 = 1.0
+        let sigmaLeft = 0.042
+        let sigmaRight = 0.127
+        let sigma = x < x0 ? sigmaLeft : sigmaRight
+        return exp(-((x - x0) * (x - x0)) / (2 * sigma * sigma))
+    }
+}
+
+struct FetchedSong: Identifiable {
+    let song: Song
+    let bpm: Double?
+
+    var id: MusicItemID {
+        song.id
+    }
+}
