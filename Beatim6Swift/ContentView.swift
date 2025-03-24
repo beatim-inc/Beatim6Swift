@@ -92,6 +92,7 @@ struct ContentView: View {
                         )
                         .environmentObject(stepSoundManager)
                         .environmentObject(spmManager)
+                        .environmentObject(authManager)
                         .toolbar {
                             ToolbarItem(placement: .navigation) {
                                 Text(tabTitle())

@@ -30,6 +30,7 @@ struct SearchSongsView: View {
     @EnvironmentObject var stepSoundManager: StepSoundManager
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
+    @EnvironmentObject var authManager: AuthManager
 
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     @State private var showCancelButton: Bool = false
@@ -121,6 +122,8 @@ struct SearchSongsView: View {
                                 bpmErrorMessage: $bpmErrorMessage
                             )
                                 .environmentObject(songHistoryManager)
+                                .environmentObject(spmManager)
+                                .environmentObject(authManager)
                         }
                     }
                     Section(footer: SpacerView()) {}
@@ -137,7 +140,9 @@ struct SearchSongsView: View {
                                 bpmErrorMessage: $bpmErrorMessage
                             )
                             .environmentObject(spmManager)
-                            .environmentObject(songHistoryManager)) {
+                            .environmentObject(songHistoryManager)
+                            .environmentObject(authManager)
+                        ) {
                             HStack {
                                 AsyncImage(url: artist.artwork?.url(width: 40, height: 40)) { image in
                                     image.resizable()
@@ -168,7 +173,9 @@ struct SearchSongsView: View {
                                     bpmErrorMessage: $bpmErrorMessage
                                 )
                                 .environmentObject(spmManager)
-                                .environmentObject(songHistoryManager)) {
+                                .environmentObject(songHistoryManager)
+                                .environmentObject(authManager)
+                            ) {
                                     HStack {
                                         AsyncImage(url: artist.artwork?.url(width: 40, height: 40)) { image in
                                             image.resizable()
@@ -226,6 +233,7 @@ struct SearchSongsView: View {
                             )
                                 .environmentObject(songHistoryManager)
                                 .environmentObject(spmManager)
+                                .environmentObject(authManager)
                         }
                         .onDelete(perform: songHistoryManager.deleteSong) // 🔥 スワイプ削除を有効化
                     }
@@ -390,6 +398,7 @@ struct ArtistTopSongsView: View {
     
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
+    @EnvironmentObject var authManager: AuthManager
 
     @State private var fetchedSongs: [FetchedSong] = []
     @State private var isLoading: Bool = true
@@ -408,6 +417,9 @@ struct ArtistTopSongsView: View {
                             musicDefaultBpm: $musicDefaultBpm,
                             bpmErrorMessage: $bpmErrorMessage
                         )
+                        .environmentObject(songHistoryManager)
+                        .environmentObject(spmManager)
+                        .environmentObject(authManager)
                     }
                     Section(footer: SpacerView()) {
                         EmptyView() // セクションの中身がないことを明示

@@ -15,11 +15,18 @@ struct SongInfoView: View {
     @Binding var bpmErrorMessage: String
     @EnvironmentObject var songHistoryManager: SongHistoryManager
     @EnvironmentObject var spmManager: SPMManager
+    @EnvironmentObject var authManager: AuthManager
     
     var body: some View {         
         // Music Player
         Button(action: {
             Task {
+                guard authManager.isAuthorized else {
+                    print("🚫 MusicKit authorization not granted.")
+                    bpmErrorMessage = "🔒"
+                    return
+                }
+                
                 let player = ApplicationMusicPlayer.shared
                 await MainActor.run {
                     self.currentArtistName = songItem.artistName
@@ -27,26 +34,33 @@ struct SongInfoView: View {
                 // 🎯 キューを設定
                 player.queue = .init(for: [songItem])
                 
-                if let musicDefaultBpm = songHistoryManager.getBPM(for: songItem.id.rawValue) {
-                    player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)        // ✅ BPM更新後に再生速度を変更
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        print("Actual playbackRate is: \(player.state.playbackRate)")
-                        if player.state.playbackRate != Float(spmManager.spm / musicDefaultBpm)  {
-                            player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
-                        }
-                    }
+                // 先に再生準備
+                do {
+                    try await player.prepareToPlay()
+                } catch {
+                    print("prepareToPlay failed: \(error)")
+                    return
+                }
+                
+                // BPMが取得できていれば playbackRate 設定
+                if let bpm = songHistoryManager.getBPM(for: songItem.id.rawValue) {
+                    musicDefaultBpm = bpm
+                    let rate = Float(spmManager.spm / bpm)
+                    player.state.playbackRate = rate
+                    print("設定した playbackRate: \(rate)")
                     bpmErrorMessage = ""
                 } else {
-                    print("Failed to fetch BPM")
                     bpmErrorMessage = "⚠️"
-                    player.pause() // BPMを取得できなかったときは再生をとめる
+                    player.pause()
+                    return
                 }
 
                 // 🎯 再生 → すぐに一時停止
                 do {
                     try await player.play()
-//                    try await Task.sleep(nanoseconds: 100_000_000) // 0.1秒待機
-//                    player.pause()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        print("再生後の playbackRate: \(player.state.playbackRate)")
+                    }
                 } catch {
                     print("⚠️ エラー: \(error.localizedDescription)")
                 }
@@ -81,6 +95,7 @@ struct SongHistoryRowView: View {
     @State private var isLoading: Bool = true
     @EnvironmentObject var songHistoryManager: SongHistoryManager
     @EnvironmentObject var spmManager: SPMManager
+    @EnvironmentObject var authManager: AuthManager
 
     var body: some View {
         HStack {
@@ -93,6 +108,7 @@ struct SongHistoryRowView: View {
                 )
                     .environmentObject(songHistoryManager)
                     .environmentObject(spmManager)
+                    .environmentObject(authManager)
             } else if isLoading {
                 HStack {
                     ProgressView()
