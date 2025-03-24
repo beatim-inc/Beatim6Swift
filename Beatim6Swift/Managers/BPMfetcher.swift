@@ -19,7 +19,7 @@ class BPMFetcher {
 
     /// Google Custom Search API を使ってSongBPMのURLを取得
     func searchSongBPM(song: String, artist: String, completion: @escaping (String?) -> Void) {
-        let query = "\(song) \(artist) site:songbpm.com"
+        let query = "\(song) \(artist) site:songbpm.com -originally -vega -原曲歌手 -オリジナルアーティスト"
         let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let urlString = "https://www.googleapis.com/customsearch/v1?q=\(encodedQuery)&key=\(apiKey)&cx=\(cx)"
 

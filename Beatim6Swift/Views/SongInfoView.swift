@@ -44,26 +44,24 @@ struct SongInfoView: View {
                 
                 // BPMが取得できていれば playbackRate 設定
                 if let bpm = songHistoryManager.getBPM(for: songItem.id.rawValue) {
+                    print("✅️ BPM got from history: \(bpm)")
                     musicDefaultBpm = bpm
                     let rate = Float(spmManager.spm / bpm)
-                    player.state.playbackRate = rate
+                    player.state.playbackRate = rate // 実質的にこの時点で曲の再生が開始する
                     print("設定した playbackRate: \(rate)")
                     bpmErrorMessage = ""
                 } else {
-                    bpmErrorMessage = "⚠️"
+                    bpmErrorMessage = "🔍"
                     player.pause()
                     return
                 }
-
-                // 🎯 再生 → すぐに一時停止
-                do {
-                    try await player.play()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        print("再生後の playbackRate: \(player.state.playbackRate)")
-                    }
-                } catch {
-                    print("⚠️ エラー: \(error.localizedDescription)")
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    print("再生後の playbackRate: \(player.state.playbackRate)")
                 }
+                
+                // player.play() を実行すると再生速度が1に戻ってしまうので書かない
+
             }
         }) {
             // Song info
