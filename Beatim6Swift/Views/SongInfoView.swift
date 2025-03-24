@@ -11,6 +11,10 @@ import MusicKit
 struct SongInfoView: View {
     var songItem: Song
     @Binding var currentArtistName: String?
+    @Binding var musicDefaultBpm: Double
+    @Binding var bpmErrorMessage: String
+    @EnvironmentObject var songHistoryManager: SongHistoryManager
+    @EnvironmentObject var spmManager: SPMManager
     
     var body: some View {         
         // Music Player
@@ -22,6 +26,16 @@ struct SongInfoView: View {
                 }
                 // 🎯 キューを設定
                 player.queue = .init(for: [songItem])
+                
+                if let musicDefaultBpm = songHistoryManager.getBPM(for: songItem.id.rawValue) {
+                    player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)        // ✅ BPM更新後に再生速度を変更
+                    print("Updated BPM: \(musicDefaultBpm)")
+                    bpmErrorMessage = ""
+                } else {
+                    print("Failed to fetch BPM")
+                    bpmErrorMessage = "⚠️"
+                    player.pause() // BPMを取得できなかったときは再生をとめる
+                }
 
                 // 🎯 再生 → すぐに一時停止
                 do {
@@ -36,7 +50,8 @@ struct SongInfoView: View {
             // Song info
             HStack(alignment: .center) {
                 if let artwork = songItem.artwork {
-                    ArtworkImage(artwork, height: 40)
+                    ArtworkImage(artwork, width: 40, height: 40)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
                 VStack(alignment: .leading) {
                     Text(songItem.title)
@@ -50,19 +65,35 @@ struct SongInfoView: View {
         }
     }
     
+    /// 現在の曲名からBPMを取得
+    private func fetchBPMForCurrentSong() {
+
+        
+    }
+    
 }
 
 struct SongHistoryRowView: View {
     var songID: String
     @Binding var currentArtistName: String?
+    @Binding var musicDefaultBpm: Double
+    @Binding var bpmErrorMessage: String
     @State private var songItem: Song?
     @State private var isLoading: Bool = true
     @EnvironmentObject var songHistoryManager: SongHistoryManager
+    @EnvironmentObject var spmManager: SPMManager
 
     var body: some View {
         HStack {
             if let songItem = songItem {
-                SongInfoView(songItem: songItem, currentArtistName: $currentArtistName)
+                SongInfoView(
+                    songItem: songItem,
+                    currentArtistName: $currentArtistName,
+                    musicDefaultBpm: $musicDefaultBpm,
+                    bpmErrorMessage: $bpmErrorMessage
+                )
+                    .environmentObject(songHistoryManager)
+                    .environmentObject(spmManager)
             } else if isLoading {
                 HStack {
                     ProgressView()

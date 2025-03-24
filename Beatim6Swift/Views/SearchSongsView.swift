@@ -25,17 +25,19 @@ struct SearchSongsView: View {
     @State private var musicSubscription: MusicSubscription?
     @State private var showDeleteAlert = false
     @Binding var currentArtistName: String?
+    @Binding var musicDefaultBpm: Double
+    @Binding var bpmErrorMessage: String
     @EnvironmentObject var stepSoundManager: StepSoundManager
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
-    var defaultBpm : Double
 
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     @State private var showCancelButton: Bool = false
     
-    init(musicDefaultBpm: Double, currentArtistName: Binding<String?>){
-        defaultBpm = musicDefaultBpm
+    init(musicDefaultBpm: Binding<Double>, currentArtistName: Binding<String?>, bpmErrorMessage: Binding<String>){
+        self._musicDefaultBpm = musicDefaultBpm
         self._currentArtistName = currentArtistName
+        self._bpmErrorMessage = bpmErrorMessage
     }
     
     var body: some View {
@@ -112,7 +114,13 @@ struct SearchSongsView: View {
                 List {
                     Section(header: Text("Search Results")) {
                         ForEach(searchResultSongs) { song in
-                            SongInfoView(songItem: song, currentArtistName: $currentArtistName)
+                            SongInfoView(
+                                songItem: song,
+                                currentArtistName: $currentArtistName,
+                                musicDefaultBpm: $musicDefaultBpm,
+                                bpmErrorMessage: $bpmErrorMessage
+                            )
+                                .environmentObject(songHistoryManager)
                         }
                     }
                     Section(footer: SpacerView()) {}
@@ -124,7 +132,9 @@ struct SearchSongsView: View {
                         NavigationLink(
                             destination: ArtistTopSongsView(
                                 artist: artist,
-                                currentArtistName: $currentArtistName
+                                currentArtistName: $currentArtistName,
+                                musicDefaultBpm: $musicDefaultBpm,
+                                bpmErrorMessage: $bpmErrorMessage
                             )
                             .environmentObject(spmManager)
                             .environmentObject(songHistoryManager)) {
@@ -153,7 +163,9 @@ struct SearchSongsView: View {
                             NavigationLink(
                                 destination: ArtistTopSongsView(
                                     artist: artist,
-                                    currentArtistName: $currentArtistName
+                                    currentArtistName: $currentArtistName,
+                                    musicDefaultBpm: $musicDefaultBpm,
+                                    bpmErrorMessage: $bpmErrorMessage
                                 )
                                 .environmentObject(spmManager)
                                 .environmentObject(songHistoryManager)) {
@@ -206,7 +218,14 @@ struct SearchSongsView: View {
                         }
                         
                         ForEach(sortedSongs, id: \.id) { song in
-                            SongHistoryRowView(songID: song.id, currentArtistName: $currentArtistName)
+                            SongHistoryRowView(
+                                songID: song.id,
+                                currentArtistName: $currentArtistName,
+                                musicDefaultBpm: $musicDefaultBpm,
+                                bpmErrorMessage: $bpmErrorMessage
+                            )
+                                .environmentObject(songHistoryManager)
+                                .environmentObject(spmManager)
                         }
                         .onDelete(perform: songHistoryManager.deleteSong) // 🔥 スワイプ削除を有効化
                     }
@@ -323,6 +342,8 @@ struct ArtistTopSongsView: View {
                                 
     let artist: Artist
     @Binding var currentArtistName: String?
+    @Binding var musicDefaultBpm: Double
+    @Binding var bpmErrorMessage: String
     
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
@@ -338,7 +359,12 @@ struct ArtistTopSongsView: View {
             } else {
                 List {
                     ForEach(fetchedSongs) { item in
-                        SongInfoView(songItem: item.song, currentArtistName: $currentArtistName)
+                        SongInfoView(
+                            songItem: item.song,
+                            currentArtistName: $currentArtistName,
+                            musicDefaultBpm: $musicDefaultBpm,
+                            bpmErrorMessage: $bpmErrorMessage
+                        )
                     }
                     Section(footer: SpacerView()) {
                         EmptyView() // セクションの中身がないことを明示
