@@ -91,10 +91,13 @@ struct AutoFocusTextField: UIViewRepresentable {
         
         // 🎯 キーボード上部に "Done" ボタンを追加
         let toolbar = UIToolbar()
-        toolbar.sizeToFit()
+        let screenWidth = UIScreen.main.bounds.width
+        toolbar.frame = CGRect(x: 0, y: 0, width: screenWidth, height: 44)
+
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: context.coordinator, action: #selector(Coordinator.doneTapped))
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         toolbar.setItems([flexSpace, doneButton], animated: false)
+
         textField.inputAccessoryView = toolbar
 
         return textField

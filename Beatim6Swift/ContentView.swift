@@ -59,9 +59,7 @@ struct ContentView: View {
                                     .bold()
                             }
                             ToolbarItem(placement: .navigationBarTrailing) {
-                                HStack (spacing: 8) {
-                                    Image(systemName: "gear")
-                                }
+                                Image(systemName: "gear")
                                 .contentShape(Rectangle()) // ✅ タップ可能にする
                                 .onTapGesture {
                                     showSettings = true // ✅ タップ時にシートを開く
@@ -100,9 +98,7 @@ struct ContentView: View {
                                     .bold()
                             }
                             ToolbarItem(placement: .navigationBarTrailing) {
-                                HStack (spacing: 8) {
-                                    Image(systemName: "gear")
-                                }
+                                Image(systemName: "gear")
                                 .contentShape(Rectangle()) // ✅ タップ可能にする
                                 .onTapGesture {
                                     showSettings = true // ✅ タップ時にシートを開く

@@ -432,6 +432,13 @@ struct ArtistTopSongsView: View {
         .task {
             await loadTopSongs()
         }
+        .onReceive(spmManager.$spm) { _ in
+            // SPMが更新されたらリストを再ソート
+            fetchedSongs = fetchedSongs.sorted {
+                evaluateFunction(for: $0) > evaluateFunction(for: $1)
+            }
+        }
+
     }
 
     func loadTopSongs() async {
