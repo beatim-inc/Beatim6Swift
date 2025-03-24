@@ -43,142 +43,134 @@ struct ContentView: View {
     var body: some View {
         
             ZStack(alignment: .bottom) {
-//                NavigationStack {
-                    TabView (selection: $tabManager.selectedTab) {
-                        
-                        NavigationStack {
-                            StepSoundSelectionView(
-                                selectedRightStepSound: $stepSoundManager.rightStepSoundName,
-                                selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
-                                setSoundName: stepSoundManager.setRightStepSoundName
-                            )
-                            .environmentObject(stepSoundManager)
-                            .toolbar {
-                                ToolbarItem(placement: .navigation) {
-                                    Text(tabTitle())
-                                        .font(.largeTitle)
-                                        .bold()
+                TabView (selection: $tabManager.selectedTab) {
+                    
+                    NavigationStack {
+                        StepSoundSelectionView(
+                            selectedRightStepSound: $stepSoundManager.rightStepSoundName,
+                            selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
+                            setSoundName: stepSoundManager.setRightStepSoundName
+                        )
+                        .environmentObject(stepSoundManager)
+                        .toolbar {
+                            ToolbarItem(placement: .navigation) {
+                                Text(tabTitle())
+                                    .font(.largeTitle)
+                                    .bold()
+                            }
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                HStack (spacing: 8) {
+                                    Image(systemName: "gear")
                                 }
-                                ToolbarItem(placement: .navigationBarTrailing) {
-                                    HStack (spacing: 8) {
-                                        Image(systemName: "gear")
-                                    }
-                                    .contentShape(Rectangle()) // ✅ タップ可能にする
-                                    .onTapGesture {
-                                        showSettings = true // ✅ タップ時にシートを開く
-                                    }
-                                    .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
-                                        SettingView(
-                                            bleManager: bleManager,
-                                            parameters: parameters,
-                                            bpm: musicDefaultBpm,
-                                            trackId: $trackId,
-                                            bpmErrorMessage: $bpmErrorMessage,
-                                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm },
-                                            musicDefaultBpm: $musicDefaultBpm
-                                        )
-                                        .presentationDetents([.large])
-                                    }
+                                .contentShape(Rectangle()) // ✅ タップ可能にする
+                                .onTapGesture {
+                                    showSettings = true // ✅ タップ時にシートを開く
+                                }
+                                .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
+                                    SettingView(
+                                        bleManager: bleManager,
+                                        parameters: parameters,
+                                        bpm: musicDefaultBpm,
+                                        trackId: $trackId,
+                                        bpmErrorMessage: $bpmErrorMessage,
+                                        onBpmUpdate: { newBpm in musicDefaultBpm = newBpm },
+                                        musicDefaultBpm: $musicDefaultBpm
+                                    )
+                                    .presentationDetents([.large])
                                 }
                             }
                         }
-                        .tabItem {
-                            Image("Drums")
-                                .renderingMode(.template)
-                                .foregroundColor(.primary)
-                            Text("Instruments")
-                        }
-                        .tag("Instruments")
-                        
-                        NavigationStack {
-                            SearchSongsView(
-                                musicDefaultBpm: musicDefaultBpm,
-                                currentArtistName: $currentArtistName
-                            )
-                            .environmentObject(stepSoundManager)
-                            .environmentObject(spmManager)
-                            .toolbar {
-                                ToolbarItem(placement: .navigation) {
-                                    Text(tabTitle())
-                                        .font(.largeTitle)
-                                        .bold()
+                    }
+                    .tabItem {
+                        Image("Drums")
+                            .renderingMode(.template)
+                            .foregroundColor(.primary)
+                        Text("Instruments")
+                    }
+                    .tag("Instruments")
+                    
+                    NavigationStack {
+                        SearchSongsView(
+                            musicDefaultBpm: musicDefaultBpm,
+                            currentArtistName: $currentArtistName
+                        )
+                        .environmentObject(stepSoundManager)
+                        .environmentObject(spmManager)
+                        .toolbar {
+                            ToolbarItem(placement: .navigation) {
+                                Text(tabTitle())
+                                    .font(.largeTitle)
+                                    .bold()
+                            }
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                HStack (spacing: 8) {
+                                    Image(systemName: "gear")
                                 }
-                                ToolbarItem(placement: .navigationBarTrailing) {
-                                    HStack (spacing: 8) {
-                                        Image(systemName: "gear")
-                                    }
-                                    .contentShape(Rectangle()) // ✅ タップ可能にする
-                                    .onTapGesture {
-                                        showSettings = true // ✅ タップ時にシートを開く
-                                    }
-                                    .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
-                                        SettingView(
-                                            bleManager: bleManager,
-                                            parameters: parameters,
-                                            bpm: musicDefaultBpm,
-                                            trackId: $trackId,
-                                            bpmErrorMessage: $bpmErrorMessage,
-                                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm },
-                                            musicDefaultBpm: $musicDefaultBpm
-                                        )
-                                        .presentationDetents([.large])
-                                    }
+                                .contentShape(Rectangle()) // ✅ タップ可能にする
+                                .onTapGesture {
+                                    showSettings = true // ✅ タップ時にシートを開く
+                                }
+                                .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
+                                    SettingView(
+                                        bleManager: bleManager,
+                                        parameters: parameters,
+                                        bpm: musicDefaultBpm,
+                                        trackId: $trackId,
+                                        bpmErrorMessage: $bpmErrorMessage,
+                                        onBpmUpdate: { newBpm in musicDefaultBpm = newBpm },
+                                        musicDefaultBpm: $musicDefaultBpm
+                                    )
+                                    .presentationDetents([.large])
                                 }
                             }
                         }
-                        .tabItem {
-                            Image(systemName: "magnifyingglass")
-                            Text("Search")
-                        }
-                        .tag("Search")
-                        
                     }
-//                    .toolbarBackground(Color(.systemBackground), for: .navigationBar) // 🔥 これでダークモード対応
-                    .onAppear{
-                        authManager.requestMusicAuthorization()
-                        bleManager.startScanning()
-                        
-                        bleManager.onRStepDetectionNotified = {
-                            stepSoundManager.playRightStepSound()
-                            if !spmManager.spmLocked {
-                                spmManager.addStepData()
-                            }
-                        }
-                        
-                        bleManager.onLStepDetectionNotified = {
-                            stepSoundManager.playLeftStepSound()
-                            if !spmManager.spmLocked {
-                                spmManager.addStepData()
-                            }
-                        }
-                        //TODO:見つかるまでスキャンを繰り返す
-                        for _ in 0..<10 {
-                            bleManager.startScanning()
+                    .tabItem {
+                        Image(systemName: "magnifyingglass")
+                        Text("Search")
+                    }
+                    .tag("Search")
+                    
+                }
+                .onAppear{
+                    authManager.requestMusicAuthorization()
+                    bleManager.startScanning()
+                    
+                    bleManager.onRStepDetectionNotified = {
+                        stepSoundManager.playRightStepSound()
+                        if !spmManager.spmLocked {
+                            spmManager.addStepData()
                         }
                     }
-                    .onChange(of: spmManager.spm) { oldSPM, newSPM in
-                        if newSPM > 10 && newSPM < 200 {
-                            updatePlaybackRate()
+                    
+                    bleManager.onLStepDetectionNotified = {
+                        stepSoundManager.playLeftStepSound()
+                        if !spmManager.spmLocked {
+                            spmManager.addStepData()
                         }
                     }
-                    .onChange(of: musicDefaultBpm) { _, _ in
-                        if spmManager.spm > 10 && spmManager.spm < 200 {
-                            updatePlaybackRate()
-                        }
-                    }
-                    .onChange(of: trackId) { _, _ in
-                        fetchBPMForCurrentSong()
+                }
+                .onChange(of: spmManager.spm) { oldSPM, newSPM in
+                    if newSPM > 10 && newSPM < 200 {
                         updatePlaybackRate()
                     }
-                    .task {
-                        for await subscription in MusicSubscription.subscriptionUpdates {
-                            self.musicSubscription = subscription
-                        }
+                }
+                .onChange(of: musicDefaultBpm) { _, _ in
+                    if spmManager.spm > 10 && spmManager.spm < 200 {
+                        updatePlaybackRate()
                     }
-                    .environmentObject(tabManager)
-                    .environmentObject(songHistoryManager)
-                    
-//                }
+                }
+                .onChange(of: trackId) { _, _ in
+                    fetchBPMForCurrentSong()
+                    updatePlaybackRate()
+                }
+                .task {
+                    for await subscription in MusicSubscription.subscriptionUpdates {
+                        self.musicSubscription = subscription
+                    }
+                }
+                .environmentObject(tabManager)
+                .environmentObject(songHistoryManager)
                 
                 VStack {
                     Spacer()

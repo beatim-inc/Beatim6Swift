@@ -14,6 +14,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     var parameters: StepDetectionParameters
 
     @Published var isSwitchedOn = false
+    @Published var scanEnabled = false
     @Published var peripherals = [CBPeripheral]() // 🎯 接続可能なデバイスのリスト
     @Published var connectedPeripherals = [CBPeripheral]() // 🎯 接続中のデバイスのリスト
     
@@ -59,6 +60,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
 
     func checkAndReconnectPeripherals() {
+        if !scanEnabled { return }
+        
         let connectedUUIDs = connectedPeripherals.map { $0.identifier }
         
         if !connectedUUIDs.contains(leftPeripheralUUID!) {
@@ -96,6 +99,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
 
     //NOTE:withServiceをnilにすると、全デバイスを検索
     func startScanning() {
+        if !scanEnabled { return }
+        
         print("Scanning...")
         centralManager.scanForPeripherals(withServices: [serviceUUID], options: nil)
 

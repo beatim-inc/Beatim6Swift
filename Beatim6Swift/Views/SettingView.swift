@@ -45,7 +45,9 @@ struct SettingView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section (header: Text("Connected Peripherals")) {
+                
+                Section (header: Text("Sensor Actions")) {
+                    Toggle("Enable Scan", isOn: $bleManager.scanEnabled)
                     List(bleManager.peripherals, id: \..identifier) { peripheral in
                         Button(action: {
                             bleManager.connectPeripheral(peripheral: peripheral)
@@ -53,9 +55,6 @@ struct SettingView: View {
                             Text(peripheral.name ?? "Unknown")
                         }
                     }
-                }
-                
-                Section (header: Text("Sensor Actions")) {
                     Button("Scan Sensors") {
                         bleManager.startScanning()
                     }
