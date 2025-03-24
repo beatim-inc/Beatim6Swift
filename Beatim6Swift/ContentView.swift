@@ -69,12 +69,7 @@ struct ContentView: View {
                                 .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
                                     SettingView(
                                         bleManager: bleManager,
-                                        parameters: parameters,
-                                        bpm: musicDefaultBpm,
-                                        trackId: $trackId,
-                                        bpmErrorMessage: $bpmErrorMessage,
-                                        onBpmUpdate: { newBpm in musicDefaultBpm = newBpm },
-                                        musicDefaultBpm: $musicDefaultBpm
+                                        parameters: parameters
                                     )
                                     .presentationDetents([.large])
                                 }
@@ -113,12 +108,7 @@ struct ContentView: View {
                                 .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
                                     SettingView(
                                         bleManager: bleManager,
-                                        parameters: parameters,
-                                        bpm: musicDefaultBpm,
-                                        trackId: $trackId,
-                                        bpmErrorMessage: $bpmErrorMessage,
-                                        onBpmUpdate: { newBpm in musicDefaultBpm = newBpm },
-                                        musicDefaultBpm: $musicDefaultBpm
+                                        parameters: parameters
                                     )
                                     .presentationDetents([.large])
                                 }
@@ -200,7 +190,6 @@ struct ContentView: View {
     /// 再生速度の更新
     private func updatePlaybackRate() {
         let player = ApplicationMusicPlayer.shared
-//        let state = player.state
         player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
     }
     

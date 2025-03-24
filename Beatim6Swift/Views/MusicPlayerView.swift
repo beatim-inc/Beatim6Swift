@@ -64,6 +64,36 @@ struct MusicPlayerView: View {
                 }
                 
                 Spacer()
+                
+                HStack (spacing: 8) {
+                    Image("Bpm")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(.secondary.opacity(0.5))
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                    if bpmErrorMessage == "" {
+                        Text("\(String(format: "%.1f", musicDefaultBpm))")
+                            .foregroundColor(.secondary.opacity(0.5))
+                    } else {
+                        Text(bpmErrorMessage)
+                            .foregroundColor(.secondary.opacity(0.5))
+                    }
+                }
+                .contentShape(Rectangle()) // ✅ タップ可能にする
+                .onTapGesture {
+                    showBpmSetting = true // ✅ タップ時にシートを開く
+                }
+                .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
+                    BpmSettingView(
+                        bpm: musicDefaultBpm,
+                        trackId: trackId ?? "Unknown",
+                        bpmErrorMessage: $bpmErrorMessage,
+                        onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
+                    )
+                    .presentationDetents([.height(80)])
+                    .environmentObject(songHistoryManager)
+                }
 
             }
             .frame(height: 50)

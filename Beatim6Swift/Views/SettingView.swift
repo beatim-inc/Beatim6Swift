@@ -11,35 +11,13 @@ import SwiftUI
 struct SettingView: View {
     @ObservedObject var bleManager: BLEManager
     @ObservedObject var parameters: StepDetectionParameters
-    
-    /// BPM関係
-    @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var songHistoryManager: SongHistoryManager
-    @State private var bpmValue: String
-    @State private var originalBpmValue: String
-    var onBpmUpdate: (Double) -> Void
-    @Binding var bpmErrorMessage: String
-    @Binding var musicDefaultBpm: Double 
-    @Binding var trackId: String?
-    @State private var showBpmSetting = false
 
     init(
         bleManager: BLEManager,
-        parameters: StepDetectionParameters,
-        bpm: Double,
-        trackId: Binding<String?>,
-        bpmErrorMessage: Binding<String>,
-        onBpmUpdate: @escaping (Double) -> Void,
-        musicDefaultBpm: Binding<Double>
+        parameters: StepDetectionParameters
     ) {
         self.bleManager = bleManager
         self.parameters = parameters
-        self._bpmValue = State(initialValue: String(format: "%.1f", bpm))
-        self._originalBpmValue = State(initialValue: String(format: "%.1f", bpm))
-        self._bpmErrorMessage = bpmErrorMessage
-        self.onBpmUpdate = onBpmUpdate
-        self._trackId = trackId
-        self._musicDefaultBpm = musicDefaultBpm
     }
 
     var body: some View {
@@ -104,40 +82,6 @@ struct SettingView: View {
                         }
                     }
                     .padding()
-                }
-                
-                Section (header: Text("BPM")) {
-                    
-                    HStack (spacing: 8) {
-                        Image("Bpm")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(.primary)
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                        if bpmErrorMessage == "" {
-                            Text("\(String(format: "%.1f", musicDefaultBpm))")
-                                .foregroundColor(.primary)
-                        } else {
-                            Text(bpmErrorMessage)
-                                .foregroundColor(.primary)
-                        }
-                    }
-                    .contentShape(Rectangle()) // ✅ タップ可能にする
-                    .onTapGesture {
-                        showBpmSetting = true // ✅ タップ時にシートを開く
-                    }
-                    .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
-                        BpmSettingView(
-                            bpm: musicDefaultBpm,
-                            trackId: trackId ?? "Unknown",
-                            bpmErrorMessage: $bpmErrorMessage,
-                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
-                        )
-                        .presentationDetents([.height(80)])
-                        .environmentObject(songHistoryManager)
-                    }
-                    .padding(6) // ✅ 内側の余白
                 }
             }
         }
