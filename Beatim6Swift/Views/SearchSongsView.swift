@@ -435,6 +435,16 @@ struct ArtistTopSongsView: View {
     }
 
     func loadTopSongs() async {
+        // キャッシュがあれば使う
+        if let cached = loadTopSongsFromDisk(artistID: artist.id) {
+            self.fetchedSongs = cached.sorted {
+                evaluateFunction(for: $0) > evaluateFunction(for: $1)
+            }
+            self.isLoading = false
+            print("📦 Top songs loaded from cache for \(artist.name)")
+            return
+        }
+
         do {
             var request = MusicCatalogSearchRequest(term: artist.name, types: [Song.self])
             request.limit = 25
@@ -454,16 +464,19 @@ struct ArtistTopSongsView: View {
             }
 
             group.notify(queue: .main) {
-                self.fetchedSongs = tempFetchedSongs.sorted {
+                let sortedSongs = tempFetchedSongs.sorted {
                     evaluateFunction(for: $0) > evaluateFunction(for: $1)
                 }
+                self.fetchedSongs = sortedSongs
                 self.isLoading = false
+                saveTopSongsToDisk(artistID: artist.id, songs: sortedSongs)
             }
         } catch {
             print("🚨 Failed to fetch top songs: \(error.localizedDescription)")
             self.isLoading = false
         }
     }
+
 
     private func evaluateFunction(for song: FetchedSong) -> Double {
         guard let bpm = song.bpm else { return 0 }
@@ -479,16 +492,66 @@ struct ArtistTopSongsView: View {
         let sigma = x < x0 ? sigmaLeft : sigmaRight
         return exp(-((x - x0) * (x - x0)) / (2 * sigma * sigma))
     }
+    
+    func saveTopSongsToDisk(artistID: MusicItemID, songs: [FetchedSong]) {
+        let filename = "top_songs_\(artistID.rawValue).json"
+        let url = getCacheDirectory().appendingPathComponent(filename)
+        do {
+            let data = try JSONEncoder().encode(songs)
+            try data.write(to: url)
+            print("✅ Top songs cached for \(artistID)")
+        } catch {
+            print("🚨 Failed to cache top songs: \(error)")
+        }
+    }
+
+    func loadTopSongsFromDisk(artistID: MusicItemID) -> [FetchedSong]? {
+        let filename = "top_songs_\(artistID.rawValue).json"
+        let url = getCacheDirectory().appendingPathComponent(filename)
+        do {
+            let data = try Data(contentsOf: url)
+            let songs = try JSONDecoder().decode([FetchedSong].self, from: data)
+            return songs
+        } catch {
+            print("🚨 Failed to load cached top songs: \(error)")
+            return nil
+        }
+    }
+
+    func getCacheDirectory() -> URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+    }
+
 }
 
-struct FetchedSong: Identifiable {
+struct FetchedSong: Identifiable, Codable {
     let song: Song
     let bpm: Double?
 
-    var id: MusicItemID {
-        song.id
+    var id: MusicItemID { song.id }
+
+    enum CodingKeys: CodingKey {
+        case song, bpm
+    }
+
+    init(song: Song, bpm: Double?) {
+        self.song = song
+        self.bpm = bpm
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.song = try container.decode(Song.self, forKey: .song)
+        self.bpm = try container.decodeIfPresent(Double.self, forKey: .bpm)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(song, forKey: .song)
+        try container.encodeIfPresent(bpm, forKey: .bpm)
     }
 }
+
 
 struct SpacerView: View {
     var body: some View {
