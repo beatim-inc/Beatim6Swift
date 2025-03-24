@@ -29,7 +29,12 @@ struct SongInfoView: View {
                 
                 if let musicDefaultBpm = songHistoryManager.getBPM(for: songItem.id.rawValue) {
                     player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)        // ✅ BPM更新後に再生速度を変更
-                    print("Updated BPM: \(musicDefaultBpm)")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        print("Actual playbackRate is: \(player.state.playbackRate)")
+                        if player.state.playbackRate != Float(spmManager.spm / musicDefaultBpm)  {
+                            player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
+                        }
+                    }
                     bpmErrorMessage = ""
                 } else {
                     print("Failed to fetch BPM")
@@ -63,12 +68,6 @@ struct SongInfoView: View {
                 }
             }
         }
-    }
-    
-    /// 現在の曲名からBPMを取得
-    private func fetchBPMForCurrentSong() {
-
-        
     }
     
 }

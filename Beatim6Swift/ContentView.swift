@@ -151,7 +151,7 @@ struct ContentView: View {
                         updatePlaybackRate()
                     }
                 }
-                .onChange(of: trackId) { _, _ in
+                .onChange(of: currentSongTitle) { _, _ in
                     fetchBPMForCurrentSong()
                     updatePlaybackRate()
                 }
@@ -192,6 +192,7 @@ struct ContentView: View {
     private func updatePlaybackRate() {
         let player = ApplicationMusicPlayer.shared
         player.state.playbackRate = Float(spmManager.spm / musicDefaultBpm)
+        print("Update playbackRate: \(player.state.playbackRate)")
     }
     
     /// 現在の曲名からBPMを取得

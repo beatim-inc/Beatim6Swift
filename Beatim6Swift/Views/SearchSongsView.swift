@@ -192,7 +192,7 @@ struct SearchSongsView: View {
                 List {
                     Section(
                         header: HStack {
-                            Text("Recommended Songs")
+                            Text("再生された曲")
                             Spacer()
                             Button(action: {
                                 showDeleteAlert = true // ✅ ポップアップを表示
@@ -281,7 +281,18 @@ struct SearchSongsView: View {
     }
 
     func loadArtistsFromTop100() async {
-        print("🟡 Loading Artists from Top 100")
+        print("🟡 Top100アーティスト読み込み開始")
+
+        // キャッシュがあればそれを使う
+        if let cachedArtists = loadArtistsFromDisk() {
+            print("📦 キャッシュからアーティスト読み込み")
+            await MainActor.run {
+                uniqueArtists = MusicItemCollection(cachedArtists)
+            }
+            return
+        }
+
+        // なければAPIから取得
         guard let playlist = await fetchTop100JapanPlaylist() else { return }
 
         do {
@@ -291,8 +302,6 @@ struct SearchSongsView: View {
 
             for song in songs {
                 let artistName = song.artistName
-
-                // 検索で Artist を取得
                 let searchRequest = MusicCatalogSearchRequest(term: artistName, types: [Artist.self])
                 let response = try await searchRequest.response()
                 if let artist = response.artists.first(where: { $0.name == artistName }),
@@ -300,9 +309,11 @@ struct SearchSongsView: View {
                     artistSet.insert(artist.id)
                     artists.append(artist)
                 }
-
-                try? await Task.sleep(nanoseconds: 150_000_000) // 軽く間隔を空けてAPI負荷軽減
+                try? await Task.sleep(nanoseconds: 150_000_000)
             }
+
+            // キャッシュ保存
+            saveArtistsToDisk(artists)
 
             await MainActor.run {
                 uniqueArtists = MusicItemCollection(artists)
@@ -311,6 +322,7 @@ struct SearchSongsView: View {
             print("🚨 アーティスト取得エラー: \(error)")
         }
     }
+
     
     private func evaluateFunction(for song: FetchedSong) -> Double {
         guard let bpm = song.bpm else { return 0 }
@@ -336,6 +348,37 @@ struct SearchSongsView: View {
         let sigma = x < x0 ? sigmaLeft : sigmaRight
         return exp(-((x - x0) * (x - x0)) / (2 * sigma * sigma))
     }
+    
+    private func saveArtistsToDisk(_ artists: [Artist]) {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(artists)
+            let url = getArtistsCacheURL()
+            try data.write(to: url)
+            print("✅ アーティストキャッシュ保存済み")
+        } catch {
+            print("🚨 アーティストキャッシュ保存エラー: \(error)")
+        }
+    }
+    
+    private func loadArtistsFromDisk() -> [Artist]? {
+        do {
+            let url = getArtistsCacheURL()
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let artists = try decoder.decode([Artist].self, from: data)
+            return artists
+        } catch {
+            print("🚨 アーティストキャッシュ読み込みエラー: \(error)")
+            return nil
+        }
+    }
+    
+    func getArtistsCacheURL() -> URL {
+        let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        return documents.appendingPathComponent("top100_artists.json")
+    }
+
 }
 
 struct ArtistTopSongsView: View {
