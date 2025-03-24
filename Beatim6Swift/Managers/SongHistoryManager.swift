@@ -51,8 +51,8 @@ class SongHistoryManager: ObservableObject {
             print("✅ 新しい曲 (ID: \(id)) を履歴に追加しました")
         }
 
-        // 🎯 100件以上になったら最古のデータを削除
-        if playedSongs.count > 100 {
+        // 🎯 10000件以上になったら最古のデータを削除
+        if playedSongs.count > 10000 {
             playedSongs.removeFirst()
         }
 

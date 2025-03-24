@@ -444,11 +444,28 @@ struct ArtistTopSongsView: View {
     func loadTopSongs() async {
         // キャッシュがあれば使う
         if let cached = loadTopSongsFromDisk(artistID: artist.id) {
-            self.fetchedSongs = cached.sorted {
-                evaluateFunction(for: $0) > evaluateFunction(for: $1)
+            self.isLoading = true
+            var tempFetchedSongs: [FetchedSong] = []
+            let group = DispatchGroup()
+
+            for cachedSong in cached {
+                group.enter()
+                let bpmFetcher = BPMFetcher(historyManager: songHistoryManager)
+                bpmFetcher.fetchBPM(song: cachedSong.song.title, artist: cachedSong.song.artistName, id: cachedSong.song.id.rawValue) { bpm in
+                    tempFetchedSongs.append(FetchedSong(song: cachedSong.song, bpm: bpm))
+                    group.leave()
+                }
             }
-            self.isLoading = false
-            print("📦 Top songs loaded from cache for \(artist.name)")
+
+            group.notify(queue: .main) {
+                let sortedSongs = tempFetchedSongs.sorted {
+                    evaluateFunction(for: $0) > evaluateFunction(for: $1)
+                }
+                self.fetchedSongs = sortedSongs
+                self.isLoading = false
+                print("📦 Top songs (with BPM) loaded from cache for \(artist.name)")
+            }
+
             return
         }
 
