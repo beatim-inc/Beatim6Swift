@@ -52,29 +52,29 @@ struct ContentView: View {
                             setSoundName: stepSoundManager.setRightStepSoundName
                         )
                         .environmentObject(stepSoundManager)
-//                        .toolbar {
-//                            ToolbarItem(placement: .navigation) {
-//                                Text(tabTitle())
-//                                    .font(.largeTitle)
-//                                    .bold()
-//                            }
-//                            ToolbarItem(placement: .navigationBarTrailing) {
-//                                HStack (spacing: 8) {
-//                                    Image(systemName: "gear")
-//                                }
-//                                .contentShape(Rectangle()) // ✅ タップ可能にする
-//                                .onTapGesture {
-//                                    showSettings = true // ✅ タップ時にシートを開く
-//                                }
-//                                .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
-//                                    SettingView(
-//                                        bleManager: bleManager,
-//                                        parameters: parameters
-//                                    )
-//                                    .presentationDetents([.large])
-//                                }
-//                            }
-//                        }
+                        .toolbar {
+                            ToolbarItem(placement: .navigation) {
+                                Text(tabTitle())
+                                    .font(.largeTitle)
+                                    .bold()
+                            }
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                HStack (spacing: 8) {
+                                    Image(systemName: "gear")
+                                }
+                                .contentShape(Rectangle()) // ✅ タップ可能にする
+                                .onTapGesture {
+                                    showSettings = true // ✅ タップ時にシートを開く
+                                }
+                                .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
+                                    SettingView(
+                                        bleManager: bleManager,
+                                        parameters: parameters
+                                    )
+                                    .presentationDetents([.large])
+                                }
+                            }
+                        }
                     }
                     .tabItem {
                         Image("Drums")

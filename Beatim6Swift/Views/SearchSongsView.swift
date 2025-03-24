@@ -11,8 +11,8 @@ import MusicKit
 struct SearchSongsView: View {
     
     enum SearchCategory: String, CaseIterable {
-        case artist = "アーティスト"
-        case song = "曲"
+        case artist = "Artist"
+        case song = "Song"
     }
     
     @State private var searchTerm: String = ""
@@ -158,7 +158,7 @@ struct SearchSongsView: View {
                 .listStyle(PlainListStyle())
             } else if selectedCategory == .artist && !uniqueArtists.isEmpty {
                 List {
-                    Section(header: Text("トップ100からのアーティスト")) {
+                    Section(header: Text("Artists form Top 100 Japan")) {
                         ForEach(uniqueArtists, id: \.id) { artist in
                             NavigationLink(
                                 destination: ArtistTopSongsView(
@@ -192,7 +192,7 @@ struct SearchSongsView: View {
                 List {
                     Section(
                         header: HStack {
-                            Text("再生された曲")
+                            Text("Played Songs")
                             Spacer()
                             Button(action: {
                                 showDeleteAlert = true // ✅ ポップアップを表示
@@ -203,9 +203,9 @@ struct SearchSongsView: View {
                             }
                             .alert(isPresented: $showDeleteAlert) { // ✅ 削除確認ポップアップ
                                 Alert(
-                                    title: Text("履歴を削除"),
-                                    message: Text("本当に全ての履歴を削除しますか？"),
-                                    primaryButton: .destructive(Text("削除")) {
+                                    title: Text("Clear History"),
+                                    message: Text("Do you really want to delete all history?"),
+                                    primaryButton: .destructive(Text("delete")) {
                                         songHistoryManager.clearHistory() // ✅ 履歴削除
                                     },
                                     secondaryButton: .cancel()
