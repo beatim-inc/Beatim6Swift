@@ -135,7 +135,11 @@ struct ContentView: View {
                     }
                     
                     do {
-                        try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+                        try AVAudioSession.sharedInstance().setCategory(
+                            .playback,
+                            mode: .default,
+                            options: [.mixWithOthers]
+                        )
                         try AVAudioSession.sharedInstance().setActive(true)
                     } catch {
                         print("⚠️ Audio session setup failed: \(error)")
