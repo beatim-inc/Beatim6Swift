@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreBluetooth
 import MusicKit
+import AVFoundation
 
 
 struct ContentView: View {
@@ -64,13 +65,7 @@ struct ContentView: View {
                                 .onTapGesture {
                                     showSettings = true // ✅ タップ時にシートを開く
                                 }
-                                .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
-                                    SettingView(
-                                        bleManager: bleManager,
-                                        parameters: parameters
-                                    )
-                                    .presentationDetents([.large])
-                                }
+                                
                             }
                         }
                     }
@@ -103,13 +98,6 @@ struct ContentView: View {
                                 .onTapGesture {
                                     showSettings = true // ✅ タップ時にシートを開く
                                 }
-                                .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
-                                    SettingView(
-                                        bleManager: bleManager,
-                                        parameters: parameters
-                                    )
-                                    .presentationDetents([.large])
-                                }
                             }
                         }
                     }
@@ -120,6 +108,14 @@ struct ContentView: View {
                     .tag("Search")
                     
                 }
+                .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
+                    SettingView(
+                        bleManager: bleManager,
+                        parameters: parameters
+                    )
+                    .presentationDetents([.large])
+                }
+                .tint(.primary)
                 .onAppear{
                     authManager.requestMusicAuthorization()
                     bleManager.startScanning()
@@ -137,6 +133,14 @@ struct ContentView: View {
                             spmManager.addStepData()
                         }
                     }
+                    
+                    do {
+                        try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+                        try AVAudioSession.sharedInstance().setActive(true)
+                    } catch {
+                        print("⚠️ Audio session setup failed: \(error)")
+                    }
+
                 }
                 .onChange(of: spmManager.spm) { oldSPM, newSPM in
                     if newSPM > 10 && newSPM < 200 {
