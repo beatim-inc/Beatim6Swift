@@ -16,7 +16,7 @@ struct StepSoundSelectionView: View {
     // 高さを格納するための @State 変数
     @State private var stepSoundViewHeight: CGFloat = 0
     
-    let availableSounds = ["BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk", "Claverotor"]
+    let availableSounds = ["BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk", "HiHat", "Beep", "None"]
     
     var body: some View {
         VStack (alignment: .leading){
@@ -65,7 +65,7 @@ struct StepSoundPickerView: View {
     @State private var isPickerExpanded = false
     @EnvironmentObject var stepSoundManager: StepSoundManager
     
-    let availableSounds = ["BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk", "Claverotor"]
+    let availableSounds = ["BassDrum", "Clap", "DJ Drum", "SnareDrum", "Walk", "HiHat", "Beep", "None"]
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2) // 3列グリッド
     
     var body: some View {

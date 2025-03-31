@@ -440,8 +440,7 @@ struct ArtistTopSongsView: View {
                             .opacity(
                                 skipEvaluation
                                 ? 1.0 // 並び替えスキップ時はすべて不透明
-//                                : (evaluateFunction(for: item) < 0.5 ? 0.3 : 1.0)
-                                : 0.7 * evaluateFunction(for: item) + 0.1
+                                : 0.7 * evaluateFunction(for: item) + 0.1 // スコアに応じて不透明度を調整
                             )
                         }
                     }
