@@ -27,6 +27,7 @@ struct SearchSongsView: View {
     @Binding var currentArtistName: String?
     @Binding var musicDefaultBpm: Double
     @Binding var bpmErrorMessage: String
+    @Binding var skipEvaluation: Bool
     @EnvironmentObject var stepSoundManager: StepSoundManager
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
@@ -35,10 +36,11 @@ struct SearchSongsView: View {
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     @State private var showCancelButton: Bool = false
     
-    init(musicDefaultBpm: Binding<Double>, currentArtistName: Binding<String?>, bpmErrorMessage: Binding<String>){
+    init(musicDefaultBpm: Binding<Double>, currentArtistName: Binding<String?>, bpmErrorMessage: Binding<String>, skipEvaluation: Binding<Bool>){
         self._musicDefaultBpm = musicDefaultBpm
         self._currentArtistName = currentArtistName
         self._bpmErrorMessage = bpmErrorMessage
+        self._skipEvaluation = skipEvaluation
     }
     
     var body: some View {
@@ -137,7 +139,8 @@ struct SearchSongsView: View {
                                 artist: artist,
                                 currentArtistName: $currentArtistName,
                                 musicDefaultBpm: $musicDefaultBpm,
-                                bpmErrorMessage: $bpmErrorMessage
+                                bpmErrorMessage: $bpmErrorMessage,
+                                skipEvaluation: $skipEvaluation
                             )
                             .environmentObject(spmManager)
                             .environmentObject(songHistoryManager)
@@ -170,7 +173,8 @@ struct SearchSongsView: View {
                                     artist: artist,
                                     currentArtistName: $currentArtistName,
                                     musicDefaultBpm: $musicDefaultBpm,
-                                    bpmErrorMessage: $bpmErrorMessage
+                                    bpmErrorMessage: $bpmErrorMessage,
+                                    skipEvaluation: $skipEvaluation
                                 )
                                 .environmentObject(spmManager)
                                 .environmentObject(songHistoryManager)
@@ -392,9 +396,11 @@ struct SearchSongsView: View {
 struct ArtistTopSongsView: View {
                                 
     let artist: Artist
+     
     @Binding var currentArtistName: String?
     @Binding var musicDefaultBpm: Double
     @Binding var bpmErrorMessage: String
+    @Binding var skipEvaluation: Bool
     
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
@@ -410,12 +416,18 @@ struct ArtistTopSongsView: View {
                     .padding()
             } else {
                 List {
-                    Section(header: Text("Recommended songs for your walk tempo")) {
-                        let fetchedSongs = fetchedSongs.sorted {
-                            evaluateFunction(for: $0) > evaluateFunction(for: $1)
-                        }
-                        
-                        ForEach(fetchedSongs) { item in
+                    Section(header: skipEvaluation ? Text("Top 25 songs") : Text("Recommended songs for your walk tempo")) {
+                        let displaySongs: [FetchedSong] = {
+                            if skipEvaluation {
+                                return fetchedSongs // 並び替えしない
+                            } else {
+                                return fetchedSongs.sorted {
+                                    evaluateFunction(for: $0) > evaluateFunction(for: $1)
+                                }
+                            }
+                        }()
+
+                        ForEach(displaySongs) { item in
                             SongInfoView(
                                 songItem: item.song,
                                 currentArtistName: $currentArtistName,
@@ -425,7 +437,12 @@ struct ArtistTopSongsView: View {
                             .environmentObject(songHistoryManager)
                             .environmentObject(spmManager)
                             .environmentObject(authManager)
-                            .opacity(evaluateFunction(for: item) < 0.5 ? 0.3 : 1.0)
+                            .opacity(
+                                skipEvaluation
+                                ? 1.0 // 並び替えスキップ時はすべて不透明
+//                                : (evaluateFunction(for: item) < 0.5 ? 0.3 : 1.0)
+                                : 0.7 * evaluateFunction(for: item) + 0.1
+                            )
                         }
                     }
                     Section(footer: SpacerView()) {
@@ -444,7 +461,7 @@ struct ArtistTopSongsView: View {
 
     func loadTopSongs() async {
         // キャッシュがあれば使う
-        if let cached = loadTopSongsFromDisk(artistID: artist.id) {
+        if !skipEvaluation, let cached = loadTopSongsFromDisk(artistID: artist.id) {
             self.isLoading = true
             let group = DispatchGroup()
 

@@ -31,6 +31,7 @@ struct ContentView: View {
     @State private var musicDefaultBpm: Double = 0
     @State private var isNavigatingToSearchPlaylist = false
     @State private var bpmErrorMessage: String = ""
+    @State private var skipEvaluation: Bool = false
     
     @StateObject var bleManager: BLEManager
     @State var showSettings: Bool = false
@@ -50,7 +51,8 @@ struct ContentView: View {
                         SearchSongsView(
                             musicDefaultBpm: $musicDefaultBpm,
                             currentArtistName: $currentArtistName,
-                            bpmErrorMessage: $bpmErrorMessage
+                            bpmErrorMessage: $bpmErrorMessage,
+                            skipEvaluation: $skipEvaluation
                         )
                         .environmentObject(stepSoundManager)
                         .environmentObject(spmManager)
@@ -111,7 +113,8 @@ struct ContentView: View {
                 .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
                     SettingView(
                         bleManager: bleManager,
-                        parameters: parameters
+                        parameters: parameters,
+                        skipEvaluation: $skipEvaluation
                     )
                     .presentationDetents([.large])
                 }

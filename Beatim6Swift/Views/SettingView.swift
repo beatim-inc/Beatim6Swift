@@ -11,13 +11,16 @@ import SwiftUI
 struct SettingView: View {
     @ObservedObject var bleManager: BLEManager
     @ObservedObject var parameters: StepDetectionParameters
+    @Binding var skipEvaluation: Bool
 
     init(
         bleManager: BLEManager,
-        parameters: StepDetectionParameters
+        parameters: StepDetectionParameters,
+        skipEvaluation: Binding<Bool>
     ) {
         self.bleManager = bleManager
         self.parameters = parameters
+        self._skipEvaluation = skipEvaluation
     }
 
     var body: some View {
@@ -82,6 +85,10 @@ struct SettingView: View {
                         }
                     }
                     .padding()
+                }
+                
+                Section (header: Text("Skip Evaluation")) {
+                    Toggle("SPM評価をスキップ", isOn: $skipEvaluation)
                 }
             }
         }
