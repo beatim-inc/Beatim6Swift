@@ -28,7 +28,7 @@ struct SettingView: View {
             Form {
                 
                 Section (header: Text("Sensors")) {
-                    Toggle("Enable Scanning", isOn: $bleManager.scanEnabled)
+                    Toggle("Enable Scanning", isOn: $bleManager.scanEnabled).tint(nil)
                     List(bleManager.peripherals, id: \..identifier) { peripheral in
                         Button(action: {
                             bleManager.connectPeripheral(peripheral: peripheral)
@@ -87,9 +87,10 @@ struct SettingView: View {
                     .padding()
                 }
                 
-                Section (header: Text("Skip Evaluation")) {
-                    Toggle("SPM評価をスキップ", isOn: $skipEvaluation)
+                Section (header: Text("Disable SPM Evaluation")) {
+                    Toggle("SPM評価を無効化", isOn: $skipEvaluation)
                 }
+                .tint(nil)
             }
         }
     }
