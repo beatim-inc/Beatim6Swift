@@ -176,19 +176,19 @@ struct SearchSongsView: View {
                                 .environmentObject(songHistoryManager)
                                 .environmentObject(authManager)
                             ) {
-                                    HStack {
-                                        AsyncImage(url: artist.artwork?.url(width: 40, height: 40)) { image in
-                                            image.resizable()
-                                        } placeholder: {
-                                            Color.gray
-                                        }
-                                        .frame(width: 40, height: 40)
-                                        .clipShape(Circle())
-
-                                        Text(artist.name)
-                                            .font(.headline)
-                                            .padding(.leading, 8)
+                                HStack {
+                                    AsyncImage(url: artist.artwork?.url(width: 40, height: 40)) { image in
+                                        image.resizable()
+                                    } placeholder: {
+                                        Color.gray
                                     }
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(Circle())
+
+                                    Text(artist.name)
+                                        .font(.headline)
+                                        .padding(.leading, 8)
+                                }
                             }
                         }
                     }
@@ -410,16 +410,23 @@ struct ArtistTopSongsView: View {
                     .padding()
             } else {
                 List {
-                    ForEach(fetchedSongs) { item in
-                        SongInfoView(
-                            songItem: item.song,
-                            currentArtistName: $currentArtistName,
-                            musicDefaultBpm: $musicDefaultBpm,
-                            bpmErrorMessage: $bpmErrorMessage
-                        )
-                        .environmentObject(songHistoryManager)
-                        .environmentObject(spmManager)
-                        .environmentObject(authManager)
+                    Section(header: Text("Recommended songs for your walk tempo")) {
+                        let fetchedSongs = fetchedSongs.sorted {
+                            evaluateFunction(for: $0) > evaluateFunction(for: $1)
+                        }
+                        
+                        ForEach(fetchedSongs) { item in
+                            SongInfoView(
+                                songItem: item.song,
+                                currentArtistName: $currentArtistName,
+                                musicDefaultBpm: $musicDefaultBpm,
+                                bpmErrorMessage: $bpmErrorMessage
+                            )
+                            .environmentObject(songHistoryManager)
+                            .environmentObject(spmManager)
+                            .environmentObject(authManager)
+                            .opacity(evaluateFunction(for: item) < 0.5 ? 0.3 : 1.0)
+                        }
                     }
                     Section(footer: SpacerView()) {
                         EmptyView() // セクションの中身がないことを明示
@@ -432,12 +439,6 @@ struct ArtistTopSongsView: View {
         .task {
             await loadTopSongs()
         }
-        .onReceive(spmManager.$spm) { _ in
-            // SPMが更新されたらリストを再ソート
-            fetchedSongs = fetchedSongs.sorted {
-                evaluateFunction(for: $0) > evaluateFunction(for: $1)
-            }
-        }
 
     }
 
@@ -445,23 +446,18 @@ struct ArtistTopSongsView: View {
         // キャッシュがあれば使う
         if let cached = loadTopSongsFromDisk(artistID: artist.id) {
             self.isLoading = true
-            var tempFetchedSongs: [FetchedSong] = []
             let group = DispatchGroup()
 
             for cachedSong in cached {
                 group.enter()
                 let bpmFetcher = BPMFetcher(historyManager: songHistoryManager)
                 bpmFetcher.fetchBPM(song: cachedSong.song.title, artist: cachedSong.song.artistName, id: cachedSong.song.id.rawValue) { bpm in
-                    tempFetchedSongs.append(FetchedSong(song: cachedSong.song, bpm: bpm))
+                    self.fetchedSongs.append(FetchedSong(song: cachedSong.song, bpm: bpm))
                     group.leave()
                 }
             }
 
             group.notify(queue: .main) {
-                let sortedSongs = tempFetchedSongs.sorted {
-                    evaluateFunction(for: $0) > evaluateFunction(for: $1)
-                }
-                self.fetchedSongs = sortedSongs
                 self.isLoading = false
                 print("📦 Top songs (with BPM) loaded from cache for \(artist.name)")
             }
@@ -475,25 +471,20 @@ struct ArtistTopSongsView: View {
             let response = try await request.response()
             let songs = response.songs.filter { $0.artistName == artist.name }.prefix(25)
 
-            var tempFetchedSongs: [FetchedSong] = []
             let group = DispatchGroup()
 
             for song in songs {
                 group.enter()
                 let bpmFetcher = BPMFetcher(historyManager: songHistoryManager)
                 bpmFetcher.fetchBPM(song: song.title, artist: song.artistName, id: song.id.rawValue) { bpm in
-                    tempFetchedSongs.append(FetchedSong(song: song, bpm: bpm))
+                    self.fetchedSongs.append(FetchedSong(song: song, bpm: bpm))
                     group.leave()
                 }
             }
 
             group.notify(queue: .main) {
-                let sortedSongs = tempFetchedSongs.sorted {
-                    evaluateFunction(for: $0) > evaluateFunction(for: $1)
-                }
-                self.fetchedSongs = sortedSongs
                 self.isLoading = false
-                saveTopSongsToDisk(artistID: artist.id, songs: sortedSongs)
+                saveTopSongsToDisk(artistID: artist.id, songs: self.fetchedSongs)
             }
         } catch {
             print("🚨 Failed to fetch top songs: \(error.localizedDescription)")

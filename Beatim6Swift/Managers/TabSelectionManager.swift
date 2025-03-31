@@ -8,5 +8,5 @@
 import SwiftUI
 
 class TabManager: ObservableObject {
-    @Published var selectedTab: String = "Instruments" // 初期タブ
+    @Published var selectedTab: String = "Search" // 初期タブ
 }

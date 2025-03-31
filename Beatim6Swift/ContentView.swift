@@ -47,6 +47,36 @@ struct ContentView: View {
                 TabView (selection: $tabManager.selectedTab) {
                     
                     NavigationStack {
+                        SearchSongsView(
+                            musicDefaultBpm: $musicDefaultBpm,
+                            currentArtistName: $currentArtistName,
+                            bpmErrorMessage: $bpmErrorMessage
+                        )
+                        .environmentObject(stepSoundManager)
+                        .environmentObject(spmManager)
+                        .environmentObject(authManager)
+                        .toolbar {
+                            ToolbarItem(placement: .navigation) {
+                                Text(tabTitle())
+                                    .font(.largeTitle)
+                                    .bold()
+                            }
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Image(systemName: "gear")
+                                .contentShape(Rectangle()) // ✅ タップ可能にする
+                                .onTapGesture {
+                                    showSettings = true // ✅ タップ時にシートを開く
+                                }
+                            }
+                        }
+                    }
+                    .tabItem {
+                        Image(systemName: "magnifyingglass")
+                        Text("Search")
+                    }
+                    .tag("Search")
+                    
+                    NavigationStack {
                         StepSoundSelectionView(
                             selectedRightStepSound: $stepSoundManager.rightStepSoundName,
                             selectedLeftStepSound: $stepSoundManager.leftStepSoundName,
@@ -76,36 +106,6 @@ struct ContentView: View {
                         Text("Instruments")
                     }
                     .tag("Instruments")
-                    
-                    NavigationStack {
-                        SearchSongsView(
-                            musicDefaultBpm: $musicDefaultBpm,
-                            currentArtistName: $currentArtistName,
-                            bpmErrorMessage: $bpmErrorMessage
-                        )
-                        .environmentObject(stepSoundManager)
-                        .environmentObject(spmManager)
-                        .environmentObject(authManager)
-                        .toolbar {
-                            ToolbarItem(placement: .navigation) {
-                                Text(tabTitle())
-                                    .font(.largeTitle)
-                                    .bold()
-                            }
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Image(systemName: "gear")
-                                .contentShape(Rectangle()) // ✅ タップ可能にする
-                                .onTapGesture {
-                                    showSettings = true // ✅ タップ時にシートを開く
-                                }
-                            }
-                        }
-                    }
-                    .tabItem {
-                        Image(systemName: "magnifyingglass")
-                        Text("Search")
-                    }
-                    .tag("Search")
                     
                 }
                 .sheet(isPresented: $showSettings) { // ✅ `sheet` を使ってモーダル遷移
