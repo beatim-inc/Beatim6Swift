@@ -500,6 +500,7 @@ struct ArtistTopSongsView: View {
 
             group.notify(queue: .main) {
                 self.isLoading = false
+                removeTopSongsCache(artistID: artist.id)
                 saveTopSongsToDisk(artistID: artist.id, songs: self.fetchedSongs)
             }
         } catch {
@@ -522,6 +523,19 @@ struct ArtistTopSongsView: View {
         let sigmaRight = 0.127
         let sigma = x < x0 ? sigmaLeft : sigmaRight
         return exp(-((x - x0) * (x - x0)) / (2 * sigma * sigma))
+    }
+    
+    func removeTopSongsCache(artistID: MusicItemID) {
+        let filename = "top_songs_\(artistID.rawValue).json"
+        let url = getCacheDirectory().appendingPathComponent(filename)
+        do {
+            if FileManager.default.fileExists(atPath: url.path) {
+                try FileManager.default.removeItem(at: url)
+                print("🗑️ 既存キャッシュ削除済み for \(artistID)")
+            }
+        } catch {
+            print("⚠️ キャッシュ削除失敗: \(error)")
+        }
     }
     
     func saveTopSongsToDisk(artistID: MusicItemID, songs: [FetchedSong]) {
