@@ -459,21 +459,25 @@ struct ArtistTopSongsView: View {
     }
 
     func loadTopSongs() async {
+        self.isLoading = true
+        self.fetchedSongs = []
+        
         // キャッシュがあれば使う
         if !skipEvaluation, let cached = loadTopSongsFromDisk(artistID: artist.id) {
-            self.isLoading = true
+            var tempFetchedSongs: [FetchedSong] = []
             let group = DispatchGroup()
 
             for cachedSong in cached {
                 group.enter()
                 let bpmFetcher = BPMFetcher(historyManager: songHistoryManager)
                 bpmFetcher.fetchBPM(song: cachedSong.song.title, artist: cachedSong.song.artistName, id: cachedSong.song.id.rawValue) { bpm in
-                    self.fetchedSongs.append(FetchedSong(song: cachedSong.song, bpm: bpm))
+                    tempFetchedSongs.append(FetchedSong(song: cachedSong.song, bpm: bpm))
                     group.leave()
                 }
             }
 
             group.notify(queue: .main) {
+                self.fetchedSongs = tempFetchedSongs
                 self.isLoading = false
                 print("📦 Top songs (with BPM) loaded from cache for \(artist.name)")
             }
@@ -487,18 +491,20 @@ struct ArtistTopSongsView: View {
             let response = try await request.response()
             let songs = response.songs.filter { $0.artistName == artist.name }.prefix(25)
 
+            var tempFetchedSongs: [FetchedSong] = []
             let group = DispatchGroup()
 
             for song in songs {
                 group.enter()
                 let bpmFetcher = BPMFetcher(historyManager: songHistoryManager)
                 bpmFetcher.fetchBPM(song: song.title, artist: song.artistName, id: song.id.rawValue) { bpm in
-                    self.fetchedSongs.append(FetchedSong(song: song, bpm: bpm))
+                    tempFetchedSongs.append(FetchedSong(song: song, bpm: bpm))
                     group.leave()
                 }
             }
 
             group.notify(queue: .main) {
+                self.fetchedSongs = tempFetchedSongs
                 self.isLoading = false
                 removeTopSongsCache(artistID: artist.id)
                 saveTopSongsToDisk(artistID: artist.id, songs: self.fetchedSongs)
