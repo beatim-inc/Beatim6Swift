@@ -27,7 +27,7 @@ struct SearchSongsView: View {
     @Binding var currentArtistName: String?
     @Binding var musicDefaultBpm: Double
     @Binding var bpmErrorMessage: String
-    @Binding var skipEvaluation: Bool
+    @Binding var tempoRatioEvaluationEnabled: Bool
     @EnvironmentObject var stepSoundManager: StepSoundManager
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
@@ -36,11 +36,11 @@ struct SearchSongsView: View {
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     @State private var showCancelButton: Bool = false
     
-    init(musicDefaultBpm: Binding<Double>, currentArtistName: Binding<String?>, bpmErrorMessage: Binding<String>, skipEvaluation: Binding<Bool>){
+    init(musicDefaultBpm: Binding<Double>, currentArtistName: Binding<String?>, bpmErrorMessage: Binding<String>, tempoRatioEvaluationEnabled: Binding<Bool>){
         self._musicDefaultBpm = musicDefaultBpm
         self._currentArtistName = currentArtistName
         self._bpmErrorMessage = bpmErrorMessage
-        self._skipEvaluation = skipEvaluation
+        self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
     }
     
     var body: some View {
@@ -140,7 +140,7 @@ struct SearchSongsView: View {
                                 currentArtistName: $currentArtistName,
                                 musicDefaultBpm: $musicDefaultBpm,
                                 bpmErrorMessage: $bpmErrorMessage,
-                                skipEvaluation: $skipEvaluation
+                                tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled
                             )
                             .environmentObject(spmManager)
                             .environmentObject(songHistoryManager)
@@ -174,7 +174,7 @@ struct SearchSongsView: View {
                                     currentArtistName: $currentArtistName,
                                     musicDefaultBpm: $musicDefaultBpm,
                                     bpmErrorMessage: $bpmErrorMessage,
-                                    skipEvaluation: $skipEvaluation
+                                    tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled
                                 )
                                 .environmentObject(spmManager)
                                 .environmentObject(songHistoryManager)
@@ -400,7 +400,7 @@ struct ArtistTopSongsView: View {
     @Binding var currentArtistName: String?
     @Binding var musicDefaultBpm: Double
     @Binding var bpmErrorMessage: String
-    @Binding var skipEvaluation: Bool
+    @Binding var tempoRatioEvaluationEnabled: Bool
     
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
@@ -416,14 +416,14 @@ struct ArtistTopSongsView: View {
                     .padding()
             } else {
                 List {
-                    Section(header: skipEvaluation ? Text("Top 25 songs") : Text("Recommended songs for your walk tempo")) {
+                    Section(header: tempoRatioEvaluationEnabled ? Text("Recommended songs for your walk tempo") : Text("Top 25 songs")) {
                         let displaySongs: [FetchedSong] = {
-                            if skipEvaluation {
-                                return fetchedSongs // 並び替えしない
-                            } else {
+                            if tempoRatioEvaluationEnabled {
                                 return fetchedSongs.sorted {
                                     evaluateFunction(for: $0) > evaluateFunction(for: $1)
                                 }
+                            } else {
+                                return fetchedSongs // 並び替えしない
                             }
                         }()
 
@@ -438,9 +438,9 @@ struct ArtistTopSongsView: View {
                             .environmentObject(spmManager)
                             .environmentObject(authManager)
                             .opacity(
-                                skipEvaluation
-                                ? 1.0 // 並び替えスキップ時はすべて不透明
-                                : 0.7 * evaluateFunction(for: item) + 0.1 // スコアに応じて不透明度を調整
+                                tempoRatioEvaluationEnabled
+                                ? 0.7 * evaluateFunction(for: item) + 0.1 // スコアに応じて不透明度を調整
+                                : 1.0 // 並び替えスキップ時はすべて不透明
                             )
                         }
                     }
@@ -463,7 +463,7 @@ struct ArtistTopSongsView: View {
         self.fetchedSongs = []
         
         // キャッシュがあれば使う
-        if !skipEvaluation, let cached = loadTopSongsFromDisk(artistID: artist.id) {
+        if tempoRatioEvaluationEnabled, let cached = loadTopSongsFromDisk(artistID: artist.id) {
             var tempFetchedSongs: [FetchedSong] = []
             let group = DispatchGroup()
 

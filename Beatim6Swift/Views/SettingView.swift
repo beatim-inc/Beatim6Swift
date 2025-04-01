@@ -8,19 +8,24 @@
 import Foundation
 import SwiftUI
 
+class StepDetectionParameters: ObservableObject {
+    @Published var azThreshould: Float = -0.2 // 接地時Z軸加速度の閾値
+    @Published var debounceTime: TimeInterval = 600 // ミリ秒
+}
+
 struct SettingView: View {
     @ObservedObject var bleManager: BLEManager
     @ObservedObject var parameters: StepDetectionParameters
-    @Binding var skipEvaluation: Bool
+    @Binding var tempoRatioEvaluationEnabled: Bool
 
     init(
         bleManager: BLEManager,
         parameters: StepDetectionParameters,
-        skipEvaluation: Binding<Bool>
+        tempoRatioEvaluationEnabled: Binding<Bool>
     ) {
         self.bleManager = bleManager
         self.parameters = parameters
-        self._skipEvaluation = skipEvaluation
+        self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
     }
 
     var body: some View {
@@ -87,16 +92,11 @@ struct SettingView: View {
                     .padding()
                 }
                 
-                Section (header: Text("Disable SPM Evaluation")) {
-                    Toggle("SPM評価を無効化", isOn: $skipEvaluation)
+                Section (header: Text("Tempo Ratio Evaluation")) {
+                    Toggle("Enable Tempo Ratio Evaluation", isOn: $tempoRatioEvaluationEnabled)
                 }
                 .tint(nil)
             }
         }
     }
-}
-
-class StepDetectionParameters: ObservableObject {
-    @Published var azThreshould: Float = -0.2 // 接地時Z軸加速度の閾値
-    @Published var debounceTime: TimeInterval = 300 // ミリ秒
 }

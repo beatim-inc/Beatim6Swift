@@ -31,7 +31,7 @@ struct ContentView: View {
     @State private var musicDefaultBpm: Double = 0
     @State private var isNavigatingToSearchPlaylist = false
     @State private var bpmErrorMessage: String = ""
-    @State private var skipEvaluation: Bool = false
+    @State private var tempoRatioEvaluationEnabled: Bool = true
     
     @StateObject var bleManager: BLEManager
     @State var showSettings: Bool = false
@@ -52,7 +52,7 @@ struct ContentView: View {
                             musicDefaultBpm: $musicDefaultBpm,
                             currentArtistName: $currentArtistName,
                             bpmErrorMessage: $bpmErrorMessage,
-                            skipEvaluation: $skipEvaluation
+                            tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled
                         )
                         .environmentObject(stepSoundManager)
                         .environmentObject(spmManager)
@@ -114,7 +114,7 @@ struct ContentView: View {
                     SettingView(
                         bleManager: bleManager,
                         parameters: parameters,
-                        skipEvaluation: $skipEvaluation
+                        tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled
                     )
                     .presentationDetents([.large])
                 }
