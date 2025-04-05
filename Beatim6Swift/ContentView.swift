@@ -18,6 +18,7 @@ struct ContentView: View {
     @StateObject private var stepSoundManager = StepSoundManager()
     @StateObject private var tabManager = TabManager()
     @StateObject private var songHistoryManager = SongHistoryManager()
+    @StateObject private var spreadSheetManager = SpreadSheetManager()
 
     @State private var musicSubscription: MusicSubscription?
     @State private var selectedPeripheral: CBPeripheral?
@@ -114,6 +115,9 @@ struct ContentView: View {
                     SettingView(
                         bleManager: bleManager,
                         parameters: parameters,
+                        spreadSheetManager: spreadSheetManager,
+                        spmManager: spmManager,
+                        stepSoundManager: stepSoundManager,
                         tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled
                     )
                     .presentationDetents([.large])
