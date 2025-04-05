@@ -22,6 +22,9 @@ struct SettingView: View {
     @ObservedObject var stepSoundManager: StepSoundManager
     @Binding var tempoRatioEvaluationEnabled: Bool
     @State private var experimentId: String = ""
+    @State private var songTitle: String
+    @State private var artistName: String?
+    @State private var bpm: Double
 
 
     init(
@@ -30,6 +33,9 @@ struct SettingView: View {
         spreadSheetManager: SpreadSheetManager,
         spmManager: SPMManager,
         stepSoundManager: StepSoundManager,
+        songTitle: String,
+        artistName: String?,
+        bpm:Double,
         tempoRatioEvaluationEnabled: Binding<Bool>
     ) {
         self.bleManager = bleManager
@@ -37,6 +43,9 @@ struct SettingView: View {
         self.spreadSheetManager = spreadSheetManager
         self.spmManager = spmManager
         self.stepSoundManager = stepSoundManager
+        self.songTitle = songTitle
+        self.artistName = artistName
+        self.bpm = bpm
         self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
     }
 
@@ -116,7 +125,9 @@ struct SettingView: View {
                     Button("sync"){
                         spreadSheetManager.post(
                             id:experimentId,
-                            music:ApplicationMusicPlayer.shared.queue.currentEntry?.title ?? "empty",
+                            music:songTitle,
+                            artist:artistName ?? "no artist data",
+                            bpm:bpm,
                             spm:spmManager.spm,
                             rightStepSound: stepSoundManager.rightStepSoundName,
                             leftStepSound: stepSoundManager.leftStepSoundName,

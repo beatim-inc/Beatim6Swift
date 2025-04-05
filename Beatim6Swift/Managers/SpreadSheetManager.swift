@@ -17,12 +17,14 @@ struct ResponseResult: Decodable {
 class SpreadSheetManager: ObservableObject {
 
     //NOTE:AppScriptの内容の修正を行った際は、再度デプロイしてURLを更新してください。
-    let url = "https://script.google.com/macros/s/AKfycbzNgG3j9C5M1e9O9T3joAOVd2FCdGyk-TcifrYHxw0If8rkGrB6s4dnK-akkTM8W_0N6A/exec"
+    let url = "https://script.google.com/macros/s/AKfycbzmMVgSiV9xndNQ-Sk2GQMeHuQl1-HW5jTGJ2LnkRajXUvMZMoz-t5l3uSo0Ejh_hQcoQ/exec"
 
 //ID,曲名,SPM,rightStepSound,LeftStepSound
     func post(
         id: String,
         music: String,
+        artist: String,
+        bpm: Double,
         spm: Double,
         rightStepSound: String,
         leftStepSound: String
@@ -40,6 +42,8 @@ class SpreadSheetManager: ObservableObject {
         data["timeStamp"] = dateFormatter.string(from: dt)
         
         data["music"] = music
+        data["artist"] = artist
+        data["bpm"] = bpm
         data["spm"] = spm
         data["rightStepSound"] = rightStepSound
         data["leftStepSound"] = leftStepSound

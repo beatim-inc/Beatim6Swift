@@ -118,6 +118,9 @@ struct ContentView: View {
                         spreadSheetManager: spreadSheetManager,
                         spmManager: spmManager,
                         stepSoundManager: stepSoundManager,
+                        songTitle: currentSongTitle,
+                        artistName: currentArtistName,
+                        bpm:musicDefaultBpm,
                         tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled
                     )
                     .presentationDetents([.large])
