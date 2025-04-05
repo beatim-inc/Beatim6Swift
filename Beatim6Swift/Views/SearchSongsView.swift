@@ -51,8 +51,8 @@ struct SearchSongsView: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
                     TextField(
-                        selectedCategory == .artist ? "Artist" :
-                            selectedCategory == .song ? "Song" : "Search",
+                        selectedCategory == .artist ? "アーティスト名を検索" :
+                            selectedCategory == .song ? "曲名を検索" : "Search",
                         text: $searchTerm,
                         onEditingChanged: { isEditing in
                         showCancelButton = true
@@ -166,7 +166,7 @@ struct SearchSongsView: View {
                 .listStyle(PlainListStyle())
             } else if selectedCategory == .artist && !uniqueArtists.isEmpty {
                 List {
-                    Section(header: Text("Artists form Top 100 Japan")) {
+                    Section(header: Text("人気のアーティスト")) {
                         ForEach(uniqueArtists, id: \.id) { artist in
                             NavigationLink(
                                 destination: ArtistTopSongsView(
@@ -203,7 +203,7 @@ struct SearchSongsView: View {
                 List {
                     Section(
                         header: HStack {
-                            Text("Played Songs")
+                            Text("再生された曲")
                             Spacer()
                             Button(action: {
                                 showDeleteAlert = true // ✅ ポップアップを表示
@@ -416,7 +416,7 @@ struct ArtistTopSongsView: View {
                     .padding()
             } else {
                 List {
-                    Section(header: tempoRatioEvaluationEnabled ? Text("Recommended songs for your walk tempo") : Text("Top 25 songs")) {
+                    Section(header: tempoRatioEvaluationEnabled ? Text("おすすめ順") : Text("おすすめ順")) {
                         let displaySongs: [FetchedSong] = {
                             if tempoRatioEvaluationEnabled {
                                 return fetchedSongs.sorted {
