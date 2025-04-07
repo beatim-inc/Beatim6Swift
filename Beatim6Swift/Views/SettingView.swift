@@ -130,7 +130,7 @@ struct SettingView: View {
                             bpm:bpm,
                             spm:spmManager.spm,
                             rightStepSound: stepSoundManager.rightStepSoundName,
-                            leftStepSound: stepSoundManager.leftStepSoundName,
+                            leftStepSound: stepSoundManager.leftStepSoundName
                         )
                     }
                 }
