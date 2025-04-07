@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import MusicKit
 
 class StepDetectionParameters: ObservableObject {
     @Published var azThreshould: Float = -0.2 // 接地時Z軸加速度の閾値
@@ -16,15 +17,35 @@ class StepDetectionParameters: ObservableObject {
 struct SettingView: View {
     @ObservedObject var bleManager: BLEManager
     @ObservedObject var parameters: StepDetectionParameters
+    @ObservedObject var spreadSheetManager: SpreadSheetManager
+    @ObservedObject var spmManager: SPMManager
+    @ObservedObject var stepSoundManager: StepSoundManager
     @Binding var tempoRatioEvaluationEnabled: Bool
+    @State private var experimentId: String = ""
+    @State private var songTitle: String
+    @State private var artistName: String?
+    @State private var bpm: Double
+
 
     init(
         bleManager: BLEManager,
         parameters: StepDetectionParameters,
+        spreadSheetManager: SpreadSheetManager,
+        spmManager: SPMManager,
+        stepSoundManager: StepSoundManager,
+        songTitle: String,
+        artistName: String?,
+        bpm:Double,
         tempoRatioEvaluationEnabled: Binding<Bool>
     ) {
         self.bleManager = bleManager
         self.parameters = parameters
+        self.spreadSheetManager = spreadSheetManager
+        self.spmManager = spmManager
+        self.stepSoundManager = stepSoundManager
+        self.songTitle = songTitle
+        self.artistName = artistName
+        self.bpm = bpm
         self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
     }
 
@@ -96,6 +117,23 @@ struct SettingView: View {
                     Toggle("Enable Tempo Ratio Evaluation", isOn: $tempoRatioEvaluationEnabled)
                 }
                 .tint(nil)
+                //ID入力
+                Section (header: Text("Log")){
+                    //Input Id
+                    TextField("Enter ID", text: $experimentId)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    Button("sync"){
+                        spreadSheetManager.post(
+                            id:experimentId,
+                            music:songTitle,
+                            artist:artistName ?? "no artist data",
+                            bpm:bpm,
+                            spm:spmManager.spm,
+                            rightStepSound: stepSoundManager.rightStepSoundName,
+                            leftStepSound: stepSoundManager.leftStepSoundName
+                        )
+                    }
+                }
             }
         }
     }
