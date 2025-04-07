@@ -190,7 +190,8 @@ struct ContentView: View {
                         bpmErrorMessage: $bpmErrorMessage,
                         stepSoundManager: stepSoundManager,
                         spmManager: spmManager,
-                        musicDefaultBpm: $musicDefaultBpm
+                        musicDefaultBpm: $musicDefaultBpm,
+                        autoPause: $autoPause
                     )
                     .frame(maxWidth: .infinity)
                     .background(.ultraThinMaterial) // iOS 標準の半透明背景

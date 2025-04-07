@@ -28,6 +28,8 @@ struct MusicPlayerView: View {
     @State private var showBpmSetting = false
     @State private var showSpmSetting = false
     @EnvironmentObject var songHistoryManager: SongHistoryManager
+    @Binding var autoPause: Bool
+    @State private var autoPauseWorkItem: DispatchWorkItem?
 
     var body: some View {
         VStack {
@@ -306,6 +308,9 @@ struct MusicPlayerView: View {
             if(player.state.playbackStatus == MusicPlayer.PlaybackStatus.playing ){
                 player.pause()
                 stepSoundManager.stopPeriodicSound()
+                
+                autoPauseWorkItem?.cancel()
+                autoPauseWorkItem = nil
                 return;
             }
             do {
@@ -320,6 +325,28 @@ struct MusicPlayerView: View {
                 print(player.state.playbackStatus)
                 await MainActor.run {
                     self.isPlaying = player.state.playbackStatus == .playing
+                }
+                // ✅ 自動一時停止処理
+                if autoPause {
+                    // 古い WorkItem があればキャンセル
+                    autoPauseWorkItem?.cancel()
+
+                    // 新しい WorkItem を作成
+                    let workItem = DispatchWorkItem {
+                        Task {
+                            if player.state.playbackStatus == .playing {
+                                player.playbackTime = 0
+                                player.pause()
+                                print("⏸️ 自動一時停止しました（90秒）")
+                            }
+                        }
+                    }
+
+                    // 保存して後でキャンセル可能に
+                    autoPauseWorkItem = workItem
+
+                    // タイマーをセット
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 90, execute: workItem)
                 }
             } catch {
                 print(error.localizedDescription)
