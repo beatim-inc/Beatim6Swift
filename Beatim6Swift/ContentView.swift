@@ -33,6 +33,7 @@ struct ContentView: View {
     @State private var isNavigatingToSearchPlaylist = false
     @State private var bpmErrorMessage: String = ""
     @State private var tempoRatioEvaluationEnabled: Bool = true
+    @State private var autoPause: Bool = true
     
     @StateObject var bleManager: BLEManager
     @State var showSettings: Bool = false
@@ -53,7 +54,8 @@ struct ContentView: View {
                             musicDefaultBpm: $musicDefaultBpm,
                             currentArtistName: $currentArtistName,
                             bpmErrorMessage: $bpmErrorMessage,
-                            tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled
+                            tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled,
+                            autoPause: $autoPause
                         )
                         .environmentObject(stepSoundManager)
                         .environmentObject(spmManager)
@@ -121,7 +123,8 @@ struct ContentView: View {
                         songTitle: currentSongTitle,
                         artistName: currentArtistName,
                         bpm:musicDefaultBpm,
-                        tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled
+                        tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled,
+                        autoPause: $autoPause
                     )
                     .presentationDetents([.large])
                 }

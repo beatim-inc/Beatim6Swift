@@ -25,6 +25,7 @@ struct SettingView: View {
     @State private var songTitle: String
     @State private var artistName: String?
     @State private var bpm: Double
+    @Binding var autoPause: Bool
 
 
     init(
@@ -36,7 +37,8 @@ struct SettingView: View {
         songTitle: String,
         artistName: String?,
         bpm:Double,
-        tempoRatioEvaluationEnabled: Binding<Bool>
+        tempoRatioEvaluationEnabled: Binding<Bool>,
+        autoPause: Binding<Bool>
     ) {
         self.bleManager = bleManager
         self.parameters = parameters
@@ -47,6 +49,7 @@ struct SettingView: View {
         self.artistName = artistName
         self.bpm = bpm
         self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
+        self._autoPause = autoPause
     }
 
     var body: some View {
@@ -133,6 +136,10 @@ struct SettingView: View {
                             leftStepSound: stepSoundManager.leftStepSoundName
                         )
                     }
+                }
+                
+                Section (header: Text("auto pause")) {
+                    Toggle("Auto Pause", isOn: $autoPause)
                 }
             }
         }

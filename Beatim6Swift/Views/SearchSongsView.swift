@@ -28,6 +28,7 @@ struct SearchSongsView: View {
     @Binding var musicDefaultBpm: Double
     @Binding var bpmErrorMessage: String
     @Binding var tempoRatioEvaluationEnabled: Bool
+    @Binding var autoPause: Bool
     @EnvironmentObject var stepSoundManager: StepSoundManager
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
@@ -36,11 +37,12 @@ struct SearchSongsView: View {
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     @State private var showCancelButton: Bool = false
     
-    init(musicDefaultBpm: Binding<Double>, currentArtistName: Binding<String?>, bpmErrorMessage: Binding<String>, tempoRatioEvaluationEnabled: Binding<Bool>){
+    init(musicDefaultBpm: Binding<Double>, currentArtistName: Binding<String?>, bpmErrorMessage: Binding<String>, tempoRatioEvaluationEnabled: Binding<Bool>, autoPause: Binding<Bool>){
         self._musicDefaultBpm = musicDefaultBpm
         self._currentArtistName = currentArtistName
         self._bpmErrorMessage = bpmErrorMessage
         self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
+        self._autoPause = autoPause
     }
     
     var body: some View {
@@ -121,7 +123,8 @@ struct SearchSongsView: View {
                                 songItem: song,
                                 currentArtistName: $currentArtistName,
                                 musicDefaultBpm: $musicDefaultBpm,
-                                bpmErrorMessage: $bpmErrorMessage
+                                bpmErrorMessage: $bpmErrorMessage,
+                                autoPause: $autoPause
                             )
                                 .environmentObject(songHistoryManager)
                                 .environmentObject(spmManager)
@@ -140,7 +143,8 @@ struct SearchSongsView: View {
                                 currentArtistName: $currentArtistName,
                                 musicDefaultBpm: $musicDefaultBpm,
                                 bpmErrorMessage: $bpmErrorMessage,
-                                tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled
+                                tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled,
+                                autoPause: $autoPause
                             )
                             .environmentObject(spmManager)
                             .environmentObject(songHistoryManager)
@@ -174,7 +178,8 @@ struct SearchSongsView: View {
                                     currentArtistName: $currentArtistName,
                                     musicDefaultBpm: $musicDefaultBpm,
                                     bpmErrorMessage: $bpmErrorMessage,
-                                    tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled
+                                    tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled,
+                                    autoPause: $autoPause
                                 )
                                 .environmentObject(spmManager)
                                 .environmentObject(songHistoryManager)
@@ -233,7 +238,8 @@ struct SearchSongsView: View {
                                 songID: song.id,
                                 currentArtistName: $currentArtistName,
                                 musicDefaultBpm: $musicDefaultBpm,
-                                bpmErrorMessage: $bpmErrorMessage
+                                bpmErrorMessage: $bpmErrorMessage,
+                                autoPause: $autoPause
                             )
                                 .environmentObject(songHistoryManager)
                                 .environmentObject(spmManager)
@@ -401,6 +407,7 @@ struct ArtistTopSongsView: View {
     @Binding var musicDefaultBpm: Double
     @Binding var bpmErrorMessage: String
     @Binding var tempoRatioEvaluationEnabled: Bool
+    @Binding var autoPause: Bool
     
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var songHistoryManager: SongHistoryManager
@@ -432,7 +439,8 @@ struct ArtistTopSongsView: View {
                                 songItem: item.song,
                                 currentArtistName: $currentArtistName,
                                 musicDefaultBpm: $musicDefaultBpm,
-                                bpmErrorMessage: $bpmErrorMessage
+                                bpmErrorMessage: $bpmErrorMessage,
+                                autoPause: $autoPause
                             )
                             .environmentObject(songHistoryManager)
                             .environmentObject(spmManager)
