@@ -21,7 +21,7 @@ struct SettingView: View {
     @ObservedObject var spmManager: SPMManager
     @ObservedObject var stepSoundManager: StepSoundManager
     @Binding var tempoRatioEvaluationEnabled: Bool
-    @Binding var experimentId: String
+    @Binding var userID: String
     @State private var songTitle: String
     @State private var artistName: String?
     @State private var bpm: Double
@@ -38,7 +38,7 @@ struct SettingView: View {
         artistName: String?,
         bpm:Double,
         tempoRatioEvaluationEnabled: Binding<Bool>,
-        experimentId: Binding<String>,
+        userID: Binding<String>,
         autoPause: Binding<Bool>
     ) {
         self.bleManager = bleManager
@@ -50,7 +50,7 @@ struct SettingView: View {
         self.artistName = artistName
         self.bpm = bpm
         self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
-        self._experimentId = experimentId
+        self._userID = userID
         self._autoPause = autoPause
     }
 
@@ -126,11 +126,11 @@ struct SettingView: View {
                 //ID入力
                 Section (header: Text("Log")){
                     //Input Id
-                    TextField("Enter ID", text: $experimentId)
+                    TextField("Enter ID", text: $userID)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     Button("sync"){
                         spreadSheetManager.post(
-                            id:experimentId,
+                            id:userID,
                             music:songTitle,
                             artist:artistName ?? "no artist data",
                             bpm:bpm,

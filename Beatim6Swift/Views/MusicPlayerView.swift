@@ -31,7 +31,7 @@ struct MusicPlayerView: View {
     @Binding var autoPause: Bool
     @State private var autoPauseWorkItem: DispatchWorkItem?
     @EnvironmentObject var spreadSheetManager: SpreadSheetManager
-    @Binding var experimentId: String
+    @Binding var userID: String
 
     var body: some View {
         VStack {
@@ -343,7 +343,7 @@ struct MusicPlayerView: View {
                                 
                                 // 情報をGoogle SpreadSheetsに同期
                                 spreadSheetManager.post(
-                                    id:experimentId,
+                                    id:userID,
                                     music:songTitle,
                                     artist:artistName ?? "no artist data",
                                     bpm:musicDefaultBpm,

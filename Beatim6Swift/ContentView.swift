@@ -34,10 +34,11 @@ struct ContentView: View {
     @State private var bpmErrorMessage: String = ""
     @State private var tempoRatioEvaluationEnabled: Bool = true
     @State private var autoPause: Bool = true
-    @State private var experimentId: String = "test"
+    @State private var userID: String = "test"
     
     @StateObject var bleManager: BLEManager
     @State var showSettings: Bool = false
+    @State var showUserSettings: Bool = false
     
     init() {
         let params = StepDetectionParameters()
@@ -68,10 +69,19 @@ struct ContentView: View {
                                     .bold()
                             }
                             ToolbarItem(placement: .navigationBarTrailing) {
-                                Image(systemName: "gear")
-                                .contentShape(Rectangle()) // ✅ タップ可能にする
-                                .onTapGesture {
-                                    showSettings = true // ✅ タップ時にシートを開く
+                                HStack (spacing: 8) {
+                                    HStack {
+                                        Image(systemName: "person.crop.circle")
+                                        Text("\(userID)")
+                                    }
+                                    .onTapGesture {
+                                        showUserSettings = true
+                                    }
+                                    Image(systemName: "gear")
+                                    .contentShape(Rectangle()) // ✅ タップ可能にする
+                                    .onTapGesture {
+                                        showSettings = true // ✅ タップ時にシートを開く
+                                    }
                                 }
                             }
                         }
@@ -89,20 +99,28 @@ struct ContentView: View {
                             setSoundName: stepSoundManager.setRightStepSoundName
                         )
                         .environmentObject(stepSoundManager)
-                    }
-                    .toolbar {
-                        ToolbarItem(placement: .navigation) {
-                            Text(tabTitle())
-                                .font(.largeTitle)
-                                .bold()
-                        }
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Image(systemName: "gear")
-                            .contentShape(Rectangle()) // ✅ タップ可能にする
-                            .onTapGesture {
-                                showSettings = true // ✅ タップ時にシートを開く
+                        .toolbar {
+                            ToolbarItem(placement: .navigation) {
+                                Text(tabTitle())
+                                    .font(.largeTitle)
+                                    .bold()
                             }
-                            
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                HStack (spacing: 8) {
+                                    HStack {
+                                        Image(systemName: "person.crop.circle")
+                                        Text("\(userID)")
+                                    }
+                                    .onTapGesture {
+                                        showUserSettings = true
+                                    }
+                                    Image(systemName: "gear")
+                                    .contentShape(Rectangle()) // ✅ タップ可能にする
+                                    .onTapGesture {
+                                        showSettings = true // ✅ タップ時にシートを開く
+                                    }
+                                }
+                            }
                         }
                     }
                     .tabItem {
@@ -125,10 +143,16 @@ struct ContentView: View {
                         artistName: currentArtistName,
                         bpm:musicDefaultBpm,
                         tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled,
-                        experimentId: $experimentId,
+                        userID: $userID,
                         autoPause: $autoPause
                     )
                     .presentationDetents([.large])
+                }
+                .sheet(isPresented: $showUserSettings) {
+                    UserSettingView(
+                        userID: userID,
+                        onUserIdUpdate: { newUserID in userID = newUserID }
+                    )
                 }
                 .tint(.primary)
                 .onAppear{
@@ -194,7 +218,7 @@ struct ContentView: View {
                         spmManager: spmManager,
                         musicDefaultBpm: $musicDefaultBpm,
                         autoPause: $autoPause,
-                        experimentId: $experimentId
+                        userID: $userID
                     )
                     .frame(maxWidth: .infinity)
                     .background(.ultraThinMaterial) // iOS 標準の半透明背景
