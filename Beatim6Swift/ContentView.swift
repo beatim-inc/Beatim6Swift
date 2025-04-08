@@ -34,6 +34,7 @@ struct ContentView: View {
     @State private var bpmErrorMessage: String = ""
     @State private var tempoRatioEvaluationEnabled: Bool = true
     @State private var autoPause: Bool = true
+    @State private var experimentId: String = "test"
     
     @StateObject var bleManager: BLEManager
     @State var showSettings: Bool = false
@@ -88,20 +89,20 @@ struct ContentView: View {
                             setSoundName: stepSoundManager.setRightStepSoundName
                         )
                         .environmentObject(stepSoundManager)
-                        .toolbar {
-                            ToolbarItem(placement: .navigation) {
-                                Text(tabTitle())
-                                    .font(.largeTitle)
-                                    .bold()
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .navigation) {
+                            Text(tabTitle())
+                                .font(.largeTitle)
+                                .bold()
+                        }
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Image(systemName: "gear")
+                            .contentShape(Rectangle()) // ✅ タップ可能にする
+                            .onTapGesture {
+                                showSettings = true // ✅ タップ時にシートを開く
                             }
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Image(systemName: "gear")
-                                .contentShape(Rectangle()) // ✅ タップ可能にする
-                                .onTapGesture {
-                                    showSettings = true // ✅ タップ時にシートを開く
-                                }
-                                
-                            }
+                            
                         }
                     }
                     .tabItem {
@@ -124,6 +125,7 @@ struct ContentView: View {
                         artistName: currentArtistName,
                         bpm:musicDefaultBpm,
                         tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled,
+                        experimentId: $experimentId,
                         autoPause: $autoPause
                     )
                     .presentationDetents([.large])
@@ -191,7 +193,8 @@ struct ContentView: View {
                         stepSoundManager: stepSoundManager,
                         spmManager: spmManager,
                         musicDefaultBpm: $musicDefaultBpm,
-                        autoPause: $autoPause
+                        autoPause: $autoPause,
+                        experimentId: $experimentId
                     )
                     .frame(maxWidth: .infinity)
                     .background(.ultraThinMaterial) // iOS 標準の半透明背景
@@ -199,6 +202,7 @@ struct ContentView: View {
                     .padding(.horizontal, 16)
                     .shadow(radius: 5)
                     .environmentObject(songHistoryManager)
+                    .environmentObject(spreadSheetManager)
                 }
                 .padding(.top, 20)
                 .padding(.bottom, 64)

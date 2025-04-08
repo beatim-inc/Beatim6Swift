@@ -21,7 +21,7 @@ struct SettingView: View {
     @ObservedObject var spmManager: SPMManager
     @ObservedObject var stepSoundManager: StepSoundManager
     @Binding var tempoRatioEvaluationEnabled: Bool
-    @State private var experimentId: String = ""
+    @Binding var experimentId: String
     @State private var songTitle: String
     @State private var artistName: String?
     @State private var bpm: Double
@@ -38,6 +38,7 @@ struct SettingView: View {
         artistName: String?,
         bpm:Double,
         tempoRatioEvaluationEnabled: Binding<Bool>,
+        experimentId: Binding<String>,
         autoPause: Binding<Bool>
     ) {
         self.bleManager = bleManager
@@ -49,6 +50,7 @@ struct SettingView: View {
         self.artistName = artistName
         self.bpm = bpm
         self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
+        self._experimentId = experimentId
         self._autoPause = autoPause
     }
 

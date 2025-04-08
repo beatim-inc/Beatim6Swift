@@ -30,6 +30,8 @@ struct MusicPlayerView: View {
     @EnvironmentObject var songHistoryManager: SongHistoryManager
     @Binding var autoPause: Bool
     @State private var autoPauseWorkItem: DispatchWorkItem?
+    @EnvironmentObject var spreadSheetManager: SpreadSheetManager
+    @Binding var experimentId: String
 
     var body: some View {
         VStack {
@@ -338,6 +340,17 @@ struct MusicPlayerView: View {
                                 player.playbackTime = 0
                                 player.pause()
                                 print("⏸️ 自動一時停止しました（90秒）")
+                                
+                                // 情報をGoogle SpreadSheetsに同期
+                                spreadSheetManager.post(
+                                    id:experimentId,
+                                    music:songTitle,
+                                    artist:artistName ?? "no artist data",
+                                    bpm:musicDefaultBpm,
+                                    spm:spmManager.spm,
+                                    rightStepSound: stepSoundManager.rightStepSoundName,
+                                    leftStepSound: stepSoundManager.leftStepSoundName
+                                )
                             }
                         }
                     }
