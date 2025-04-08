@@ -11,7 +11,7 @@ import MusicKit
 
 class StepDetectionParameters: ObservableObject {
     @Published var azThreshould: Float = -0.2 // 接地時Z軸加速度の閾値
-    @Published var debounceTime: TimeInterval = 600 // ミリ秒
+    @Published var debounceTime: TimeInterval = 800 // ミリ秒
 }
 
 struct SettingView: View {
@@ -116,8 +116,9 @@ struct SettingView: View {
                     .padding()
                 }
                 
-                Section (header: Text("Tempo Ratio Evaluation")) {
+                Section (header: Text("Experimental Settings")) {
                     Toggle("Enable Tempo Ratio Evaluation", isOn: $tempoRatioEvaluationEnabled)
+                    Toggle("Auto Pause", isOn: $autoPause)
                 }
                 .tint(nil)
                 //ID入力
@@ -136,10 +137,6 @@ struct SettingView: View {
                             leftStepSound: stepSoundManager.leftStepSoundName
                         )
                     }
-                }
-                
-                Section (header: Text("auto pause")) {
-                    Toggle("Auto Pause", isOn: $autoPause)
                 }
             }
         }
