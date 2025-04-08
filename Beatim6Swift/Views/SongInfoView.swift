@@ -13,6 +13,7 @@ struct SongInfoView: View {
     @Binding var currentArtistName: String?
     @Binding var musicDefaultBpm: Double
     @Binding var bpmErrorMessage: String
+    @Binding var autoPause: Bool
     @EnvironmentObject var songHistoryManager: SongHistoryManager
     @EnvironmentObject var spmManager: SPMManager
     @EnvironmentObject var authManager: AuthManager
@@ -50,6 +51,21 @@ struct SongInfoView: View {
                     player.state.playbackRate = rate // 実質的にこの時点で曲の再生が開始する
                     print("設定した playbackRate: \(rate)")
                     bpmErrorMessage = ""
+                    
+//                    // ⏸️ 自動一時停止処理
+//                    if autoPause {
+//                        DispatchQueue.main.asyncAfter(deadline: .now() + 90) {
+//                            Task {
+//                                // 再生中であれば一時停止
+//                                if player.state.playbackStatus == .playing {
+//                                    player.playbackTime = 0
+//                                    player.pause()
+//                                    print("⏸️ 自動一時停止しました（90秒）")
+//                                }
+//                            }
+//                        }
+//                    }
+                    
                 } else {
                     bpmErrorMessage = "🔍"
                     player.pause()
@@ -89,6 +105,7 @@ struct SongHistoryRowView: View {
     @Binding var currentArtistName: String?
     @Binding var musicDefaultBpm: Double
     @Binding var bpmErrorMessage: String
+    @Binding var autoPause: Bool
     @State private var songItem: Song?
     @State private var isLoading: Bool = true
     @EnvironmentObject var songHistoryManager: SongHistoryManager
@@ -102,7 +119,8 @@ struct SongHistoryRowView: View {
                     songItem: songItem,
                     currentArtistName: $currentArtistName,
                     musicDefaultBpm: $musicDefaultBpm,
-                    bpmErrorMessage: $bpmErrorMessage
+                    bpmErrorMessage: $bpmErrorMessage,
+                    autoPause: $autoPause
                 )
                     .environmentObject(songHistoryManager)
                     .environmentObject(spmManager)

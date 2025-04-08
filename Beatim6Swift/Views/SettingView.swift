@@ -11,7 +11,7 @@ import MusicKit
 
 class StepDetectionParameters: ObservableObject {
     @Published var azThreshould: Float = -0.2 // 接地時Z軸加速度の閾値
-    @Published var debounceTime: TimeInterval = 600 // ミリ秒
+    @Published var debounceTime: TimeInterval = 800 // ミリ秒
 }
 
 struct SettingView: View {
@@ -25,6 +25,7 @@ struct SettingView: View {
     @State private var songTitle: String
     @State private var artistName: String?
     @State private var bpm: Double
+    @Binding var autoPause: Bool
 
 
     init(
@@ -36,7 +37,8 @@ struct SettingView: View {
         songTitle: String,
         artistName: String?,
         bpm:Double,
-        tempoRatioEvaluationEnabled: Binding<Bool>
+        tempoRatioEvaluationEnabled: Binding<Bool>,
+        autoPause: Binding<Bool>
     ) {
         self.bleManager = bleManager
         self.parameters = parameters
@@ -47,6 +49,7 @@ struct SettingView: View {
         self.artistName = artistName
         self.bpm = bpm
         self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
+        self._autoPause = autoPause
     }
 
     var body: some View {
@@ -113,8 +116,9 @@ struct SettingView: View {
                     .padding()
                 }
                 
-                Section (header: Text("Tempo Ratio Evaluation")) {
+                Section (header: Text("Experimental Settings")) {
                     Toggle("Enable Tempo Ratio Evaluation", isOn: $tempoRatioEvaluationEnabled)
+                    Toggle("Auto Pause", isOn: $autoPause)
                 }
                 .tint(nil)
                 //ID入力
