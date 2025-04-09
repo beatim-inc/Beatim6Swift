@@ -52,20 +52,6 @@ struct SongInfoView: View {
                     print("設定した playbackRate: \(rate)")
                     bpmErrorMessage = ""
                     
-//                    // ⏸️ 自動一時停止処理
-//                    if autoPause {
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 90) {
-//                            Task {
-//                                // 再生中であれば一時停止
-//                                if player.state.playbackStatus == .playing {
-//                                    player.playbackTime = 0
-//                                    player.pause()
-//                                    print("⏸️ 自動一時停止しました（90秒）")
-//                                }
-//                            }
-//                        }
-//                    }
-                    
                 } else {
                     bpmErrorMessage = "🔍"
                     player.pause()

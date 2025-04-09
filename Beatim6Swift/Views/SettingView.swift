@@ -20,6 +20,7 @@ struct SettingView: View {
     @ObservedObject var spreadSheetManager: SpreadSheetManager
     @ObservedObject var spmManager: SPMManager
     @ObservedObject var stepSoundManager: StepSoundManager
+    @EnvironmentObject var distanceTracker: DistanceTracker
     @Binding var tempoRatioEvaluationEnabled: Bool
     @Binding var userID: String
     @State private var songTitle: String
@@ -136,7 +137,8 @@ struct SettingView: View {
                             bpm:bpm,
                             spm:spmManager.spm,
                             rightStepSound: stepSoundManager.rightStepSoundName,
-                            leftStepSound: stepSoundManager.leftStepSoundName
+                            leftStepSound: stepSoundManager.leftStepSoundName,
+                            distance: distanceTracker.distance
                         )
                     }
                 }

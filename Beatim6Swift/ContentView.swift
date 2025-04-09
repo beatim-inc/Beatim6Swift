@@ -149,6 +149,7 @@ struct ContentView: View {
                         autoPause: $autoPause
                     )
                     .presentationDetents([.large])
+                    .environmentObject(distanceTracker)
                 }
                 .sheet(isPresented: $showUserSettings) {
                     UserSettingView(

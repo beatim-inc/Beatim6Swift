@@ -357,7 +357,8 @@ struct MusicPlayerView: View {
                                     bpm:musicDefaultBpm,
                                     spm:spmManager.spm,
                                     rightStepSound: stepSoundManager.rightStepSoundName,
-                                    leftStepSound: stepSoundManager.leftStepSoundName
+                                    leftStepSound: stepSoundManager.leftStepSoundName,
+                                    distance: distanceTracker.distance
                                 )
                             }
                         }
@@ -367,7 +368,7 @@ struct MusicPlayerView: View {
                     autoPauseWorkItem = workItem
 
                     // タイマーをセット
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 90, execute: workItem)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 10, execute: workItem)
                 }
             } catch {
                 print(error.localizedDescription)

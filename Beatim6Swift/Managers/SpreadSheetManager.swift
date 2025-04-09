@@ -17,7 +17,7 @@ struct ResponseResult: Decodable {
 class SpreadSheetManager: ObservableObject {
 
     //NOTE:AppScriptの内容の修正を行った際は、再度デプロイしてURLを更新してください。
-    let url = "https://script.google.com/macros/s/AKfycbzmMVgSiV9xndNQ-Sk2GQMeHuQl1-HW5jTGJ2LnkRajXUvMZMoz-t5l3uSo0Ejh_hQcoQ/exec"
+    let url = "https://script.google.com/macros/s/AKfycbwGDkTJO1ocK2VZ7HRf1a5HjYnPYWCQEB-3I3n0I3Xqfk3HHXcyXSDTp4VP0XnCQegC/exec"
 
 //ID,曲名,SPM,rightStepSound,LeftStepSound
     func post(
@@ -27,7 +27,8 @@ class SpreadSheetManager: ObservableObject {
         bpm: Double,
         spm: Double,
         rightStepSound: String,
-        leftStepSound: String
+        leftStepSound: String,
+        distance: Float
     ) {
         
         //POSTするデータの生成
@@ -47,6 +48,7 @@ class SpreadSheetManager: ObservableObject {
         data["spm"] = spm
         data["rightStepSound"] = rightStepSound
         data["leftStepSound"] = leftStepSound
+        data["distance"] = distance
         
         //POST処理
         AF.request(url,
