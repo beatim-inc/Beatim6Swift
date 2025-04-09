@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 import MusicKit
+import RealityKit
+import ARKit
 
 struct MusicPlayerView: View {
     @State private var playbackProgress: Double = 0
@@ -32,6 +34,7 @@ struct MusicPlayerView: View {
     @State private var autoPauseWorkItem: DispatchWorkItem?
     @EnvironmentObject var spreadSheetManager: SpreadSheetManager
     @Binding var userID: String
+    @EnvironmentObject var distanceTracker: DistanceTracker
 
     var body: some View {
         VStack {
@@ -69,36 +72,41 @@ struct MusicPlayerView: View {
                 
                 Spacer()
                 
-                HStack (spacing: 8) {
-                    Image("Bpm")
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(.secondary.opacity(0.5))
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
-                    if bpmErrorMessage == "" {
-                        Text("\(String(format: "%.1f", musicDefaultBpm))")
+                VStack (alignment: .leading){
+                    HStack {
+                        Image(systemName: "metronome")
                             .foregroundColor(.secondary.opacity(0.5))
-                    } else {
-                        Text(bpmErrorMessage)
+                        if bpmErrorMessage == "" {
+                            Text("\(String(format: "%.1f", musicDefaultBpm))")
+                                .foregroundColor(.secondary.opacity(0.5))
+                        } else {
+                            Text(bpmErrorMessage)
+                                .foregroundColor(.secondary.opacity(0.5))
+                        }
+                    }
+                    .contentShape(Rectangle()) // ✅ タップ可能にする
+                    .onTapGesture {
+                        showBpmSetting = true // ✅ タップ時にシートを開く
+                    }
+                    .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
+                        BpmSettingView(
+                            bpm: musicDefaultBpm,
+                            trackId: trackId ?? "Unknown",
+                            bpmErrorMessage: $bpmErrorMessage,
+                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
+                        )
+                        .presentationDetents([.height(80)])
+                        .environmentObject(songHistoryManager)
+                    }
+                    
+                    HStack {
+                        Image(systemName: "point.bottomleft.forward.to.arrow.triangle.scurvepath")
+                            .foregroundColor(.secondary.opacity(0.5))
+                        Text("\(String(format: "%.1f", distanceTracker.distance)) m")
                             .foregroundColor(.secondary.opacity(0.5))
                     }
                 }
-                .contentShape(Rectangle()) // ✅ タップ可能にする
-                .onTapGesture {
-                    showBpmSetting = true // ✅ タップ時にシートを開く
-                }
-                .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
-                    BpmSettingView(
-                        bpm: musicDefaultBpm,
-                        trackId: trackId ?? "Unknown",
-                        bpmErrorMessage: $bpmErrorMessage,
-                        onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
-                    )
-                    .presentationDetents([.height(80)])
-                    .environmentObject(songHistoryManager)
-                }
-
+                .frame(width: 80)
             }
             .frame(height: 50)
             .padding(.horizontal, 16)
@@ -313,16 +321,15 @@ struct MusicPlayerView: View {
                 
                 autoPauseWorkItem?.cancel()
                 autoPauseWorkItem = nil
+                distanceTracker.stop()
                 return;
             }
             do {
                 try await player.prepareToPlay()
                 stepSoundManager.playSoundPeriodically(BPM:spmManager.spm)
-                //これを入れると再生速度が1になってしまう
-                //try await ApplicationMusicPlayer.shared.play()
-                player.state.playbackRate =
-                (spmManager.spm > 0 ?
-                Float(spmManager.spm/musicDefaultBpm) : 1.0)
+                //try await ApplicationMusicPlayer.shared.play() //これを入れると再生速度が1になってしまう
+                player.state.playbackRate = (spmManager.spm > 0 ? Float(spmManager.spm/musicDefaultBpm) : 1.0) // これが実質上再生開始
+                distanceTracker.start() // 距離計測開始
                 print(player.state.playbackRate)
                 print(player.state.playbackStatus)
                 await MainActor.run {
@@ -339,6 +346,7 @@ struct MusicPlayerView: View {
                             if player.state.playbackStatus == .playing {
                                 player.playbackTime = 0
                                 player.pause()
+                                distanceTracker.stop()
                                 print("⏸️ 自動一時停止しました（90秒）")
                                 
                                 // 情報をGoogle SpreadSheetsに同期

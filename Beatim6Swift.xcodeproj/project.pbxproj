@@ -440,6 +440,7 @@
 				INFOPLIST_FILE = Beatim6Swift/Info.plist;
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "このアプリはApple Musicライブラリの音楽を再生します";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "このアプリはBLEデバイスと接続し、ステップデータを受信するためにBluetoothを使用します。";
+				INFOPLIST_KEY_NSCameraUsageDescription = "AR機能を使用するため";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -473,6 +474,7 @@
 				INFOPLIST_FILE = Beatim6Swift/Info.plist;
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "このアプリはApple Musicライブラリの音楽を再生します";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "このアプリはBLEデバイスと接続し、ステップデータを受信するためにBluetoothを使用します。";
+				INFOPLIST_KEY_NSCameraUsageDescription = "AR機能を使用するため";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -9,7 +9,8 @@ import SwiftUI
 import CoreBluetooth
 import MusicKit
 import AVFoundation
-
+import RealityKit
+import ARKit
 
 struct ContentView: View {
     @StateObject var authManager = AuthManager()
@@ -19,6 +20,7 @@ struct ContentView: View {
     @StateObject private var tabManager = TabManager()
     @StateObject private var songHistoryManager = SongHistoryManager()
     @StateObject private var spreadSheetManager = SpreadSheetManager()
+    @StateObject private var distanceTracker = DistanceTracker()
 
     @State private var musicSubscription: MusicSubscription?
     @State private var selectedPeripheral: CBPeripheral?
@@ -227,6 +229,7 @@ struct ContentView: View {
                     .shadow(radius: 5)
                     .environmentObject(songHistoryManager)
                     .environmentObject(spreadSheetManager)
+                    .environmentObject(distanceTracker)
                 }
                 .padding(.top, 20)
                 .padding(.bottom, 64)
