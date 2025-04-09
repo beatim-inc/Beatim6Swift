@@ -361,8 +361,8 @@ struct SearchSongsView: View {
     // 🎼 非対称関数（右緩やか・左急激）
     private func asymmetricGaussian(_ x: Double) -> Double {
         let x0 = 1.0
-        let sigmaLeft = 0.042
-        let sigmaRight = 0.127
+        let sigmaLeft = 0.04246609001440099
+        let sigmaRight = 0.21233045007200477
         let sigma = x < x0 ? sigmaLeft : sigmaRight
         return exp(-((x - x0) * (x - x0)) / (2 * sigma * sigma))
     }
@@ -447,7 +447,7 @@ struct ArtistTopSongsView: View {
                             .environmentObject(authManager)
                             .opacity(
                                 tempoRatioEvaluationEnabled
-                                ? 0.7 * evaluateFunction(for: item) + 0.1 // スコアに応じて不透明度を調整
+                                ? ( evaluateFunction(for: item) >= 0.5 ? evaluateFunction(for: item) : 0) // スコアに応じて不透明度を調整
                                 : 1.0 // 並び替えスキップ時はすべて不透明
                             )
                         }
@@ -533,8 +533,8 @@ struct ArtistTopSongsView: View {
 
     private func asymmetricGaussian(_ x: Double) -> Double {
         let x0 = 1.0
-        let sigmaLeft = 0.042
-        let sigmaRight = 0.127
+        let sigmaLeft = 0.04246609001440099
+        let sigmaRight = 0.21233045007200477
         let sigma = x < x0 ? sigmaLeft : sigmaRight
         return exp(-((x - x0) * (x - x0)) / (2 * sigma * sigma))
     }
