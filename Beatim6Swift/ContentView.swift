@@ -207,6 +207,7 @@ struct ContentView: View {
                         bpmErrorMessage: $bpmErrorMessage,
                         stepSoundManager: stepSoundManager,
                         spmManager: spmManager,
+                        conditionManager: conditionManager,
                         musicDefaultBpm: $musicDefaultBpm,
                         autoPause: $autoPause,
                         userID: $userID

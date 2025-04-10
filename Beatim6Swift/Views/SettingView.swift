@@ -77,7 +77,7 @@ struct SettingView: View {
                 
                 // 実験条件
                 Section(header: Text("実験条件")) {
-                    Picker("条件を選択", selection: $conditionManager.selectedCondition) {
+                    Picker(selection: $conditionManager.selectedCondition, label: EmptyView()) {
                         ForEach(ExperimentConditionType.allCases) { condition in
                             Text(condition.description).tag(condition)
                         }
@@ -91,28 +91,6 @@ struct SettingView: View {
                         let stepSoundName = (newCondition.stepSoundType == .beep) ? "Beep" : "None"
                         stepSoundManager.leftStepSoundName = stepSoundName
                         stepSoundManager.rightStepSoundName = stepSoundName
-                    }
-
-                    Text("選択中: \(conditionManager.selectedCondition.description)")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
-                
-                // Sensor接続
-                Section (header: Text("Sensors")) {
-                    Toggle("Enable Scanning", isOn: $bleManager.scanEnabled).tint(nil)
-                    List(bleManager.peripherals, id: \..identifier) { peripheral in
-                        Button(action: {
-                            bleManager.connectPeripheral(peripheral: peripheral)
-                        }) {
-                            Text(peripheral.name ?? "Unknown")
-                        }
-                    }
-                    Button("Scan Sensors") {
-                        bleManager.startScanning()
-                    }
-                    Button("Connect All") {
-                        bleManager.autoConnectAllPeripherals()
                     }
                 }
                 
@@ -159,6 +137,25 @@ struct SettingView: View {
                     .padding()
                 }
                 
+                // Sensor接続
+                Section (header: Text("Sensors")) {
+                    Toggle("Enable Scanning", isOn: $bleManager.scanEnabled).tint(nil)
+                    List(bleManager.peripherals, id: \..identifier) { peripheral in
+                        Button(action: {
+                            bleManager.connectPeripheral(peripheral: peripheral)
+                        }) {
+                            Text(peripheral.name ?? "Unknown")
+                        }
+                    }
+                    Button("Scan Sensors") {
+                        bleManager.startScanning()
+                    }
+                    Button("Connect All") {
+                        bleManager.autoConnectAllPeripherals()
+                    }
+                }
+                
+                // 実験上の設定
                 Section (header: Text("Experimental Settings")) {
                     Toggle("Tempo-based Recommendations", isOn: $isRecommendationEnabled)
                     Toggle("Auto Pause", isOn: $autoPause)

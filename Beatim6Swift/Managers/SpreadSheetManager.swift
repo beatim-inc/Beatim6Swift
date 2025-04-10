@@ -17,11 +17,12 @@ struct ResponseResult: Decodable {
 class SpreadSheetManager: ObservableObject {
 
     //NOTE:AppScriptの内容の修正を行った際は、再度デプロイしてURLを更新してください。
-    let url = "https://script.google.com/macros/s/AKfycbwGDkTJO1ocK2VZ7HRf1a5HjYnPYWCQEB-3I3n0I3Xqfk3HHXcyXSDTp4VP0XnCQegC/exec"
+    let url = "https://script.google.com/macros/s/AKfycbyOjwB_N4dHCVP4sA7Ku5vI1x7C7SmfY2OmScWNdzKcWaorE1FX9K9O4NBLOSWyWUw8lw/exec"
 
 //ID,曲名,SPM,rightStepSound,LeftStepSound
     func post(
         id: String,
+        condition: ExperimentConditionType,
         music: String,
         artist: String,
         bpm: Double,
@@ -41,7 +42,7 @@ class SpreadSheetManager: ObservableObject {
         // DateFormatter を使用して書式とロケールを指定する
         dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yMMMdHms", options: 0, locale: Locale(identifier: "ja_JP"))
         data["timeStamp"] = dateFormatter.string(from: dt)
-        
+        data["condition"] = condition.rawValue
         data["music"] = music
         data["artist"] = artist
         data["bpm"] = bpm

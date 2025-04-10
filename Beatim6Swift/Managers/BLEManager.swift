@@ -14,7 +14,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     var parameters: StepDetectionParameters
 
     @Published var isSwitchedOn = false
-    @Published var scanEnabled = false
+    @Published var scanEnabled = true
     @Published var peripherals = [CBPeripheral]() // 🎯 接続可能なデバイスのリスト
     @Published var connectedPeripherals = [CBPeripheral]() // 🎯 接続中のデバイスのリスト
     

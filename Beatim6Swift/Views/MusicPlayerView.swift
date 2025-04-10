@@ -25,7 +25,8 @@ struct MusicPlayerView: View {
     
     @StateObject var stepSoundManager: StepSoundManager
     @StateObject var spmManager: SPMManager
-    @Binding var musicDefaultBpm: Double 
+    @StateObject var conditionManager: ConditionManager
+    @Binding var musicDefaultBpm: Double
     @State private var songItem: MusicItem? // 再生する曲情報
     @State private var showBpmSetting = false
     @State private var showSpmSetting = false
@@ -352,6 +353,7 @@ struct MusicPlayerView: View {
                                 // 情報をGoogle SpreadSheetsに同期
                                 spreadSheetManager.post(
                                     id:userID,
+                                    condition:conditionManager.selectedCondition,
                                     music:songTitle,
                                     artist:artistName ?? "no artist data",
                                     bpm:musicDefaultBpm,
