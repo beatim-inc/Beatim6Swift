@@ -27,7 +27,7 @@ struct SearchSongsView: View {
     @Binding var currentArtistName: String?
     @Binding var musicDefaultBpm: Double
     @Binding var bpmErrorMessage: String
-    @Binding var tempoRatioEvaluationEnabled: Bool
+    @Binding var isRecommendationEnabled: Bool
     @Binding var autoPause: Bool
     @EnvironmentObject var stepSoundManager: StepSoundManager
     @EnvironmentObject var spmManager: SPMManager
@@ -37,11 +37,11 @@ struct SearchSongsView: View {
     @FocusState private var isSearchFieldFocused: Bool // 🎯 フォーカス状態を管理
     @State private var showCancelButton: Bool = false
     
-    init(musicDefaultBpm: Binding<Double>, currentArtistName: Binding<String?>, bpmErrorMessage: Binding<String>, tempoRatioEvaluationEnabled: Binding<Bool>, autoPause: Binding<Bool>){
+    init(musicDefaultBpm: Binding<Double>, currentArtistName: Binding<String?>, bpmErrorMessage: Binding<String>, isRecommendationEnabled: Binding<Bool>, autoPause: Binding<Bool>){
         self._musicDefaultBpm = musicDefaultBpm
         self._currentArtistName = currentArtistName
         self._bpmErrorMessage = bpmErrorMessage
-        self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
+        self._isRecommendationEnabled = isRecommendationEnabled
         self._autoPause = autoPause
     }
     
@@ -143,7 +143,7 @@ struct SearchSongsView: View {
                                 currentArtistName: $currentArtistName,
                                 musicDefaultBpm: $musicDefaultBpm,
                                 bpmErrorMessage: $bpmErrorMessage,
-                                tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled,
+                                isRecommendationEnabled: $isRecommendationEnabled,
                                 autoPause: $autoPause
                             )
                             .environmentObject(spmManager)
@@ -178,7 +178,7 @@ struct SearchSongsView: View {
                                     currentArtistName: $currentArtistName,
                                     musicDefaultBpm: $musicDefaultBpm,
                                     bpmErrorMessage: $bpmErrorMessage,
-                                    tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled,
+                                    isRecommendationEnabled: $isRecommendationEnabled,
                                     autoPause: $autoPause
                                 )
                                 .environmentObject(spmManager)
@@ -406,7 +406,7 @@ struct ArtistTopSongsView: View {
     @Binding var currentArtistName: String?
     @Binding var musicDefaultBpm: Double
     @Binding var bpmErrorMessage: String
-    @Binding var tempoRatioEvaluationEnabled: Bool
+    @Binding var isRecommendationEnabled: Bool
     @Binding var autoPause: Bool
     
     @EnvironmentObject var spmManager: SPMManager
@@ -423,9 +423,9 @@ struct ArtistTopSongsView: View {
                     .padding()
             } else {
                 List {
-                    Section(header: tempoRatioEvaluationEnabled ? Text("おすすめ順") : Text("おすすめ順")) {
+                    Section(header: isRecommendationEnabled ? Text("おすすめ順") : Text("おすすめ順")) {
                         let displaySongs: [FetchedSong] = {
-                            if tempoRatioEvaluationEnabled {
+                            if isRecommendationEnabled {
                                 return fetchedSongs.sorted {
                                     evaluateFunction(for: $0) > evaluateFunction(for: $1)
                                 }
@@ -446,7 +446,7 @@ struct ArtistTopSongsView: View {
                             .environmentObject(spmManager)
                             .environmentObject(authManager)
                             .opacity(
-                                tempoRatioEvaluationEnabled
+                                isRecommendationEnabled
                                 ? ( evaluateFunction(for: item) >= 0.5 ? evaluateFunction(for: item) : 0) // スコアに応じて不透明度を調整
                                 : 1.0 // 並び替えスキップ時はすべて不透明
                             )
@@ -471,7 +471,7 @@ struct ArtistTopSongsView: View {
         self.fetchedSongs = []
         
         // キャッシュがあれば使う
-        if tempoRatioEvaluationEnabled, let cached = loadTopSongsFromDisk(artistID: artist.id) {
+        if isRecommendationEnabled, let cached = loadTopSongsFromDisk(artistID: artist.id) {
             var tempFetchedSongs: [FetchedSong] = []
             let group = DispatchGroup()
 

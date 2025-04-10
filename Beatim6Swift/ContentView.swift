@@ -21,6 +21,7 @@ struct ContentView: View {
     @StateObject private var songHistoryManager = SongHistoryManager()
     @StateObject private var spreadSheetManager = SpreadSheetManager()
     @StateObject private var distanceTracker = DistanceTracker()
+    @ObservedObject var conditionManager = ConditionManager()
 
     @State private var musicSubscription: MusicSubscription?
     @State private var selectedPeripheral: CBPeripheral?
@@ -34,7 +35,7 @@ struct ContentView: View {
     @State private var musicDefaultBpm: Double = 0
     @State private var isNavigatingToSearchPlaylist = false
     @State private var bpmErrorMessage: String = ""
-    @State private var tempoRatioEvaluationEnabled: Bool = true
+    @State private var isRecommendationEnabled: Bool = true
     @State private var autoPause: Bool = true
     @State private var userID: String = "test"
     
@@ -58,7 +59,7 @@ struct ContentView: View {
                             musicDefaultBpm: $musicDefaultBpm,
                             currentArtistName: $currentArtistName,
                             bpmErrorMessage: $bpmErrorMessage,
-                            tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled,
+                            isRecommendationEnabled: $isRecommendationEnabled,
                             autoPause: $autoPause
                         )
                         .environmentObject(stepSoundManager)
@@ -109,13 +110,9 @@ struct ContentView: View {
                                         Image(systemName: "person.crop.circle")
                                         Text("\(userID)")
                                     }
+                                    .contentShape(Rectangle())
                                     .onTapGesture {
-                                        showUserSettings = true
-                                    }
-                                    Image(systemName: "gear")
-                                    .contentShape(Rectangle()) // ✅ タップ可能にする
-                                    .onTapGesture {
-                                        showSettings = true // ✅ タップ時にシートを開く
+                                        showSettings = true
                                     }
                                 }
                             }
@@ -137,10 +134,11 @@ struct ContentView: View {
                         spreadSheetManager: spreadSheetManager,
                         spmManager: spmManager,
                         stepSoundManager: stepSoundManager,
+                        conditionManager: conditionManager,
                         songTitle: currentSongTitle,
                         artistName: currentArtistName,
                         bpm:musicDefaultBpm,
-                        tempoRatioEvaluationEnabled: $tempoRatioEvaluationEnabled,
+                        isRecommendationEnabled: $isRecommendationEnabled,
                         userID: $userID,
                         autoPause: $autoPause
                     )

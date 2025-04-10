@@ -20,8 +20,9 @@ struct SettingView: View {
     @ObservedObject var spreadSheetManager: SpreadSheetManager
     @ObservedObject var spmManager: SPMManager
     @ObservedObject var stepSoundManager: StepSoundManager
+    @ObservedObject var conditionManager: ConditionManager
     @EnvironmentObject var distanceTracker: DistanceTracker
-    @Binding var tempoRatioEvaluationEnabled: Bool
+    @Binding var isRecommendationEnabled: Bool
     @Binding var userID: String
     @State private var songTitle: String
     @State private var artistName: String?
@@ -35,10 +36,11 @@ struct SettingView: View {
         spreadSheetManager: SpreadSheetManager,
         spmManager: SPMManager,
         stepSoundManager: StepSoundManager,
+        conditionManager: ConditionManager,
         songTitle: String,
         artistName: String?,
         bpm:Double,
-        tempoRatioEvaluationEnabled: Binding<Bool>,
+        isRecommendationEnabled: Binding<Bool>,
         userID: Binding<String>,
         autoPause: Binding<Bool>
     ) {
@@ -47,10 +49,11 @@ struct SettingView: View {
         self.spreadSheetManager = spreadSheetManager
         self.spmManager = spmManager
         self.stepSoundManager = stepSoundManager
+        self.conditionManager = conditionManager
         self.songTitle = songTitle
         self.artistName = artistName
         self.bpm = bpm
-        self._tempoRatioEvaluationEnabled = tempoRatioEvaluationEnabled
+        self._isRecommendationEnabled = isRecommendationEnabled
         self._userID = userID
         self._autoPause = autoPause
     }
@@ -72,6 +75,24 @@ struct SettingView: View {
                     }
                 }
                 
+                // 実験条件
+                Section(header: Text("実験条件")) {
+                    Picker("条件を選択", selection: $conditionManager.selectedCondition) {
+                        ForEach(ExperimentConditionType.allCases) { condition in
+                            Text(condition.description).tag(condition)
+                        }
+                    }
+                    .pickerStyle(.inline)
+                    .onChange(of: conditionManager.selectedCondition) { _, newCondition in
+                        isRecommendationEnabled = newCondition.isRecommendationEnabled
+                    }
+
+                    Text("選択中: \(conditionManager.selectedCondition.description)")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+                
+                // Sensor接続
                 Section (header: Text("Sensors")) {
                     Toggle("Enable Scanning", isOn: $bleManager.scanEnabled).tint(nil)
                     List(bleManager.peripherals, id: \..identifier) { peripheral in
@@ -89,7 +110,7 @@ struct SettingView: View {
                     }
                 }
                 
-                
+                // 感度
                 Section (header: Text("Sensitivity")) {
                     VStack(alignment: .leading) {
                         
@@ -133,7 +154,7 @@ struct SettingView: View {
                 }
                 
                 Section (header: Text("Experimental Settings")) {
-                    Toggle("Enable Tempo Ratio Evaluation", isOn: $tempoRatioEvaluationEnabled)
+                    Toggle("Tempo-based Recommendations", isOn: $isRecommendationEnabled)
                     Toggle("Auto Pause", isOn: $autoPause)
                 }
                 .tint(nil)
