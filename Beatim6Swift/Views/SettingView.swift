@@ -84,7 +84,13 @@ struct SettingView: View {
                     }
                     .pickerStyle(.inline)
                     .onChange(of: conditionManager.selectedCondition) { _, newCondition in
+                        // 推薦の更新
                         isRecommendationEnabled = newCondition.isRecommendationEnabled
+                        
+                        // ステップサウンドの更新
+                        let stepSoundName = (newCondition.stepSoundType == .beep) ? "Beep" : "None"
+                        stepSoundManager.leftStepSoundName = stepSoundName
+                        stepSoundManager.rightStepSoundName = stepSoundName
                     }
 
                     Text("選択中: \(conditionManager.selectedCondition.description)")
