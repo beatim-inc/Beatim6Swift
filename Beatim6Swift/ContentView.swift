@@ -76,13 +76,9 @@ struct ContentView: View {
                                         Image(systemName: "person.crop.circle")
                                         Text("\(userID)")
                                     }
+                                    .contentShape(Rectangle())
                                     .onTapGesture {
-                                        showUserSettings = true
-                                    }
-                                    Image(systemName: "gear")
-                                    .contentShape(Rectangle()) // ✅ タップ可能にする
-                                    .onTapGesture {
-                                        showSettings = true // ✅ タップ時にシートを開く
+                                        showSettings = true
                                     }
                                 }
                             }
@@ -150,12 +146,6 @@ struct ContentView: View {
                     )
                     .presentationDetents([.large])
                     .environmentObject(distanceTracker)
-                }
-                .sheet(isPresented: $showUserSettings) {
-                    UserSettingView(
-                        userID: userID,
-                        onUserIdUpdate: { newUserID in userID = newUserID }
-                    )
                 }
                 .tint(.primary)
                 .onAppear{

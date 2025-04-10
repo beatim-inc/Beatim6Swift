@@ -59,6 +59,19 @@ struct SettingView: View {
         NavigationView {
             Form {
                 
+                //ID入力
+                Section (header: Text("User ID")){
+                    HStack {
+                        Image(systemName: "person.fill")
+                        Spacer()
+                        TextField("", text: $userID)
+                            .onChange(of: userID) { _, newValue in
+                                userID = newValue
+                            }
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                    }
+                }
+                
                 Section (header: Text("Sensors")) {
                     Toggle("Enable Scanning", isOn: $bleManager.scanEnabled).tint(nil)
                     List(bleManager.peripherals, id: \..identifier) { peripheral in
@@ -124,24 +137,7 @@ struct SettingView: View {
                     Toggle("Auto Pause", isOn: $autoPause)
                 }
                 .tint(nil)
-                //ID入力
-                Section (header: Text("Log")){
-                    //Input Id
-                    TextField("Enter ID", text: $userID)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    Button("sync"){
-                        spreadSheetManager.post(
-                            id:userID,
-                            music:songTitle,
-                            artist:artistName ?? "no artist data",
-                            bpm:bpm,
-                            spm:spmManager.spm,
-                            rightStepSound: stepSoundManager.rightStepSoundName,
-                            leftStepSound: stepSoundManager.leftStepSoundName,
-                            distance: distanceTracker.distance
-                        )
-                    }
-                }
+                
             }
         }
     }

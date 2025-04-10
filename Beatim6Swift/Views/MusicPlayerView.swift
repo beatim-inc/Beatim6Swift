@@ -368,7 +368,7 @@ struct MusicPlayerView: View {
                     autoPauseWorkItem = workItem
 
                     // タイマーをセット
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 10, execute: workItem)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 90, execute: workItem)
                 }
             } catch {
                 print(error.localizedDescription)
