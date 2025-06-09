@@ -54,3 +54,4 @@ GoogleService-Info.plist
 #APIキー
 APIKey.swift
 config.json
+Secrets.plist

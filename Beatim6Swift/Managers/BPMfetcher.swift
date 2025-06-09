@@ -9,8 +9,26 @@ import Foundation
 import SwiftSoup
 
 class BPMFetcher {
-    let apiKey = "AIzaSyDu4RUh1JARrsU27LVcKdCHStJRSdJBdXY" // ✅ Google Custom Search APIキーをセット
-    let cx = "675fbfdc2a9d5446e" // ✅ Google CSE IDをセット
+        struct Secrets {
+        static var apiKey: String {
+            return getValue(for: "apiKey")
+        }
+        
+        static var cx: String {
+            return getValue(for: "cx")
+        }
+
+        private static func getValue(for key: String) -> String {
+            guard let path = Bundle.main.path(forResource: "Secrets", ofType: "plist"),
+                let dict = NSDictionary(contentsOfFile: path),
+                let value = dict[key] as? String else {
+                fatalError("Missing \(key) in Secrets.plist")
+            }
+            return value
+        }
+    }
+    let apiKey =  Secrets.apiKey // ✅ Google Custom Search APIキーをセット
+    let cx =  Secrets.cx // ✅ Google CSE IDをセット
     var historyManager: SongHistoryManager
     
     init(historyManager: SongHistoryManager) {
