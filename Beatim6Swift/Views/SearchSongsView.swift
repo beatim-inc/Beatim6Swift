@@ -423,7 +423,7 @@ struct ArtistTopSongsView: View {
                     .padding()
             } else {
                 List {
-                    Section(header: isRecommendationEnabled ? Text("おすすめ順") : Text("おすすめ順")) {
+                    Section(header: isRecommendationEnabled ? Text("Sorted by recommendation") : Text("Sorted by recommendation")) {
                         let displaySongs: [FetchedSong] = {
                             if isRecommendationEnabled {
                                 return fetchedSongs.sorted {
@@ -435,16 +435,30 @@ struct ArtistTopSongsView: View {
                         }()
 
                         ForEach(displaySongs) { item in
-                            SongInfoView(
-                                songItem: item.song,
-                                currentArtistName: $currentArtistName,
-                                musicDefaultBpm: $musicDefaultBpm,
-                                bpmErrorMessage: $bpmErrorMessage,
-                                autoPause: $autoPause
-                            )
-                            .environmentObject(songHistoryManager)
-                            .environmentObject(spmManager)
-                            .environmentObject(authManager)
+                            HStack {
+                                SongInfoView(
+                                    songItem: item.song,
+                                    currentArtistName: $currentArtistName,
+                                    musicDefaultBpm: $musicDefaultBpm,
+                                    bpmErrorMessage: $bpmErrorMessage,
+                                    autoPause: $autoPause
+                                )
+                                .environmentObject(songHistoryManager)
+                                .environmentObject(spmManager)
+                                .environmentObject(authManager)
+                                
+                                Spacer()
+
+                                if let bpm = item.bpm {
+                                    Text("\(Int(bpm)) BPM")
+                                        .font(.subheadline)
+                                        .foregroundColor(.blue)
+                                } else {
+                                    Text("-- BPM")
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+                            }
                             .opacity(
                                 isRecommendationEnabled
                                 ? ( evaluateFunction(for: item) >= 0.5 ? evaluateFunction(for: item) : 0) // スコアに応じて不透明度を調整

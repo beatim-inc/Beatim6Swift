@@ -73,41 +73,41 @@ struct MusicPlayerView: View {
                 
                 Spacer()
                 
-                VStack (alignment: .leading){
-                    HStack {
-                        Image(systemName: "metronome")
-                            .foregroundColor(.secondary.opacity(0.5))
-                        if bpmErrorMessage == "" {
-                            Text("\(String(format: "%.1f", musicDefaultBpm))")
-                                .foregroundColor(.secondary.opacity(0.5))
-                        } else {
-                            Text(bpmErrorMessage)
-                                .foregroundColor(.secondary.opacity(0.5))
-                        }
-                    }
-                    .contentShape(Rectangle()) // ✅ タップ可能にする
-                    .onTapGesture {
-                        showBpmSetting = true // ✅ タップ時にシートを開く
-                    }
-                    .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
-                        BpmSettingView(
-                            bpm: musicDefaultBpm,
-                            trackId: trackId ?? "Unknown",
-                            bpmErrorMessage: $bpmErrorMessage,
-                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
-                        )
-                        .presentationDetents([.height(80)])
-                        .environmentObject(songHistoryManager)
-                    }
-                    
-                    HStack {
-                        Image(systemName: "point.bottomleft.forward.to.arrow.triangle.scurvepath")
-                            .foregroundColor(.secondary.opacity(0.5))
-                        Text("\(String(format: "%.1f", distanceTracker.distance)) m")
-                            .foregroundColor(.secondary.opacity(0.5))
-                    }
-                }
-                .frame(width: 80)
+//                VStack (alignment: .leading){
+//                    HStack {
+//                        Image(systemName: "metronome")
+//                            .foregroundColor(.secondary.opacity(0.5))
+//                        if bpmErrorMessage == "" {
+//                            Text("\(String(format: "%.1f", musicDefaultBpm))")
+//                                .foregroundColor(.secondary.opacity(0.5))
+//                        } else {
+//                            Text(bpmErrorMessage)
+//                                .foregroundColor(.secondary.opacity(0.5))
+//                        }
+//                    }
+//                    .contentShape(Rectangle()) // ✅ タップ可能にする
+//                    .onTapGesture {
+//                        showBpmSetting = true // ✅ タップ時にシートを開く
+//                    }
+//                    .sheet(isPresented: $showBpmSetting) { // ✅ `sheet` を使ってモーダル遷移
+//                        BpmSettingView(
+//                            bpm: musicDefaultBpm,
+//                            trackId: trackId ?? "Unknown",
+//                            bpmErrorMessage: $bpmErrorMessage,
+//                            onBpmUpdate: { newBpm in musicDefaultBpm = newBpm }
+//                        )
+//                        .presentationDetents([.height(80)])
+//                        .environmentObject(songHistoryManager)
+//                    }
+//                    
+//                    HStack {
+//                        Image(systemName: "point.bottomleft.forward.to.arrow.triangle.scurvepath")
+//                            .foregroundColor(.secondary.opacity(0.5))
+//                        Text("\(String(format: "%.1f", distanceTracker.distance)) m")
+//                            .foregroundColor(.secondary.opacity(0.5))
+//                    }
+//                }
+//                .frame(width: 80)
             }
             .frame(height: 50)
             .padding(.horizontal, 16)
